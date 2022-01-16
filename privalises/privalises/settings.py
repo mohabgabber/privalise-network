@@ -1,7 +1,7 @@
 '''
 
 Privalise, A Secure Privacy Friendly Social Network
-Copyright (C) 2021  Mohab Gabber
+Copyright (C) 2022  Mohab Gabber
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -13,27 +13,19 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
-Contact: michaelsjohns@protonmail.com
+Contact: mohabgabber1@protonmail.com
 
 '''
 import os
 from pathlib import Path
-from decouple import config
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = config('hash')
+SECRET_KEY = 'jkmjgbkjbgmoirejoibjgboikejrgkjstojmsvoiigormjoiysmdfvmg'
 DEBUG = True
 ALLOWED_HOSTS = []
 INSTALLED_APPS = [
-    'django_otp',
-    'django_otp.plugins.otp_static',
-    'django_otp.plugins.otp_totp',
-    'two_factor',
     'posts.apps.PostsConfig',
     'users.apps.UsersConfig',
-    'api',
     'crispy_forms',
-    'rest_framework',
-    'rest_framework.authtoken',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -47,7 +39,6 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django_otp.middleware.OTPMiddleware', # 2FA
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -80,11 +71,7 @@ DATABASES = {
         'NAME': str(BASE_DIR / 'db.sqlite3'),
     }
 }
-REST_FRAMEWORK = {  
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication', 
-    ], 
-}
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -111,12 +98,4 @@ MEDIA_URL = '/media/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 LOGIN_REDIRECT_URL = 'home'
-#LOGIN_URL = 'login'
-EMAIL_BACKEND = config('backend')
-EMAIL_HOST = config('host')
-EMAIL_PORT = config('port', cast=int)
-EMAIL_USE_TLS = config('tls')
-EMAIL_HOST_USER = config('email')
-EMAIL_HOST_PASSWORD = config('pass')
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-LOGIN_URL = 'two_factor:login'
+LOGIN_URL = 'login'

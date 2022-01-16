@@ -1,5 +1,5 @@
 {% extends 'posts/base.html' %}
-{% block title %}@{{ user.username }} Profile, On Privalise{% endblock title %}
+{% block title %}@{{ user.username }} Profile, On Privalise!{% endblock title %}
 {% block content %}
 <main class="w-50 mx-auto">
 			<section class="profile">
@@ -12,7 +12,7 @@
 				  <i style='color: blue; width: 100;' class="fas fa-passport"></i>
 		    	{% endif %}
 		       <br/><br/>
-				{% if request.user.id == user.id %}
+				{% if request.user.pk == user.pk %}
               <button type="button" class="btn btn-outline-info">
               	<a href='{% url "profile-update" %}'>Update Info</a>
               </button>
@@ -48,7 +48,7 @@
 					<div class="post-content">
 						<div class="post-info">
 							<div class="post-info1">
-								<a class="username" href="{% url 'profile' post.author.id %}">@{{ post.author }}</a>
+								<a class="username" href="{% url 'profile' post.author.pk %}">@{{ post.author }}</a>
 								<p class="date">{{ post.date_posted }}</p>
 							</div>
       				</div>

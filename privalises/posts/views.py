@@ -75,7 +75,6 @@ def PostDetailView(request, pk):
     else:
         comment_form = CommentForm()
     return render(request, template_name, {'post': post,'comments': comment_list, 'new_comment': new_comment, 'comment_form': comment_form})
-'''
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     fields = ['content', 'image']
@@ -85,7 +84,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
         form.instance.save()
         process_mentions_from_post_content(form.instance)
         return super().form_valid(form)
-'''
+
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     context_object_name = 'post'
@@ -251,7 +250,6 @@ def AddDislike(request):
             result = post.like_count
             post.save()
         return JsonResponse({'result': result, })
-'''
 @login_required
 def AddFollower(request):
     result = ''
@@ -276,7 +274,6 @@ def AddFollower(request):
         result = user.followers_count
         user.save()
     return JsonResponse({'result': result, })
-'''
 @login_required
 def AddLike(request):
     if request.POST.get('action') == 'post':
