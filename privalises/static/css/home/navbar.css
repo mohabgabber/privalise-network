@@ -28,7 +28,6 @@ nav.navbar.dark img:not([id]) {
 .navbar-nav {
 	list-style: none;
 	margin: 0;
-	padding: 1rem;
 
 	display: flex;
 	justify-content: space-evenly;

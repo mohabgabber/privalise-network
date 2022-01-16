@@ -50,54 +50,8 @@
 								</svg>
 							</button>
 						</div>
-
-						<button class="social_button reply">Comment</button>
 						<button class="" type="submit"><i class="fas fa-bookmark"></i><a href="{% url 'add-fav' post.id %}"> Markalise It :D</a></button>
 					</div>
-
-					<div class="reply_accordion">
-						<button class="accordion_button" type="button">
-							Show Comments
-						</button><br/>
-                        {{ post.comments.count }} comments
-						<div class="replies">
-							<div class="post reply">
-								<div class="profile-container">
-									<img class="profile" src="">
-								</div>
-
-								<div class="post-content">
-									<div class="post-info">
-										<div class="post-info1">
-											<a class="username" href="/bradkitt">@bradkitt</a>
-											<p class="date">3h ago</p>
-										</div>
-
-										<p class="info">Replying to <a class="username" href="/theawesomecat64">@theawesomecat64</a></p>
-									</div>
-									<div class="post-text">
-										<p>Dude... are u ok??</p>
-									</div>
-								</div>
-							</div>
-
-							<div class="post reply">
-								<div class="profile-container">
-									<img class="profile" src="resources/example_profile3.jpg">
-								</div>
-		
-								<div class="post-content">
-									<div class="post-info">
-										<div class="post-info1">
-											<a class="username" href="/bradkitt">@bradkitt</a>
-											<p class="date">3h ago</p>
-										</div>
-		
-										<p class="info">Replying to <a class="username" href="/theawesomecat64">@theawesomecat64</a></p>
-									</div>
-									<div class="post-text">
-										<p>Dude... are u ok??</p>
-									</div>
 								</div>
 							</div>
 						</div>

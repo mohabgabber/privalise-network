@@ -13,32 +13,31 @@
 		    	{% endif %}
 		       <br/><br/>
 				{% if request.user.pk == user.pk %}
-              <button type="button" class="btn btn-outline-info">
-              	<a href='{% url "profile-update" %}'>Update Info</a>
-              </button>
-             <button type="button">  <a href="{% url 'password-change' %}" class='btn btn-outline-info'>Change Password !</a>
-             </button>
-              <br/><br/>
+              <button type="button" style="margin-left: 11px;" class="btn btn-outline-info">
+              	<a href="{% url 'profile-update' %}">Update Info</a>
+              </button><br/><br/>
             {% else %}
            {% if is_following == False %}
             <form method="POST" action='{% url "add-follower" profile.pk %}'>
                {% csrf_token %}
-               <button type="submit" class="btn btn-outline-danger">Follow</button>
+               <button type="submit" style="margin-left: 21px;" class="btn btn-outline-danger">Follow</button>
             </form>
             <br/>
             <br/>
             {% else %}
             <form method="POST" action='{% url "remove-follower" profile.pk %}'>
             {% csrf_token %}
-               <button type="submit" class="btn btn-outline-danger">UnFollow</button>
+               <button type="submit" style="margin-left: 21px;"  class="btn btn-outline-danger">UnFollow</button>
             </form>
             <br/>
             <br/>
              {% endif %}
             {% endif %}
+
 			</section>
+			<section><h1>dd</h1></section>
 			<section class="posts">
-			<div class="infinite-container">
+			<div class="infinite-container mx-auto">
 				{% for post in posts %}
 				<div class="post infinite-item">
 					<div class="profile-container">

@@ -36,3 +36,6 @@ body.dark{
 	background-color: var(--dark-bg);
 	color: var(--dark-fg);
 }
+.marginalized{
+	margin-left: 11;
+}

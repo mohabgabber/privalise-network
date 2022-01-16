@@ -77,14 +77,13 @@ def PostDetailView(request, pk):
     return render(request, template_name, {'post': post,'comments': comment_list, 'new_comment': new_comment, 'comment_form': comment_form})
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
-    fields = ['content', 'image']
+    fields = ['content']
     context_object_name = 'content'
     def form_valid(self, form):
         form.instance.author = self.request.user
         form.instance.save()
         process_mentions_from_post_content(form.instance)
         return super().form_valid(form)
-
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     context_object_name = 'post'
@@ -134,9 +133,9 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             return True
         return False
 class ProfileView(LoginRequiredMixin, View):
-    def get(self, request, pk, *args, **kwargs):
-        profile = Profile.objects.get(pk=pk)
-        user = profile.user
+    def get(self, request, username, *args, **kwargs):
+        user = User.objects.get(username=username)
+        profile = user.profile
         posts = Post.objects.filter(author=user).order_by('-date_posted')
         followers = profile.followers.all()    
         page = request.GET.get('page', 1)
@@ -251,30 +250,6 @@ def AddDislike(request):
             post.save()
         return JsonResponse({'result': result, })
 @login_required
-def AddFollower(request):
-    result = ''
-    id = int(request.POST.get('userid'))
-    #user = get_object_or_404(Profile, id=id)
-    user = Profile.objects.get(pk=id)
-    is_following = False
-    for follower in user.followers:
-        if follower == request.user:
-            is_following = True
-            break
-    if is_following:
-        user.followers.remove(request.user)
-    if user.followers.filter(request.user).exists():
-        user.followers.remove(request.user)
-        user.followers_count -= 1
-        result = user.followers_count
-        user.save()
-    else:
-        user.followers.add(request.user)
-        user.followers_count += 1
-        result = user.followers_count
-        user.save()
-    return JsonResponse({'result': result, })
-@login_required
 def AddLike(request):
     if request.POST.get('action') == 'post':
         result = ''
@@ -300,7 +275,6 @@ def AddLike(request):
             post.save()
             notification = Notification.objects.create(notification_type=1, from_user=request.user, to_user=post.author, post=post)
         return JsonResponse({'result': result, })
-
 @login_required
 def FavouritesList(request):
     new = Post.newmanager.filter(favourites=request.user)
