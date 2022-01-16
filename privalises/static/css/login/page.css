@@ -1,0 +1,37 @@
+.form-inputs * {transition: transform 200ms ease;}
+.form-inputs input:hover, .form-inputs button:hover { transform: scale(1.1);}
+
+button[type="submit"] {
+	width: 90%;
+	height: 3rem;
+
+	font-size: 1.3rem;
+
+	cursor: pointer;
+
+	border: 1px solid var(--light-bg);
+	border-radius: 25px;
+
+	color: var(--dark-fg);
+	background-image: linear-gradient(-90deg, var(--dark-bg) -100%, var(--dark-bg3) 100%);
+
+	margin: auto;
+}
+
+.login input[type=text]:focus {
+	outline: none;
+	border: 1px solid rgba(255, 255, 255, 0.9);
+}
+
+.login input[type=password]:focus {
+	outline: none;
+	border: 1px solid rgba(255, 255, 255, 0.9);
+}
+
+::-webkit-input-placeholder {
+	color: rgba(255, 255, 255, 0.6);
+}
+
+::-moz-input-placeholder {
+	color: rgba(255, 255, 255, 0.6);
+}

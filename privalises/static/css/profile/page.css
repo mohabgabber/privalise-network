@@ -1,0 +1,40 @@
+main {
+	padding: 2rem;
+
+	display: flex;
+	flex-direction: column;
+}
+
+.profile {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+
+	margin-bottom: 3rem;
+	padding-bottom: 3rem;
+
+	border-bottom: solid grey 2px;
+}
+
+.picture-container {
+	width: 150px;
+	height: 150px;
+
+	position: relative;
+	overflow: hidden;
+
+	border-radius: 50%;
+
+	margin-right: 2rem;
+}
+
+.picture-container > img.profile-picture {
+	margin: auto;
+
+	display: inline;
+	height: 100%;
+	width: 100%;
+
+	object-fit: cover;
+}

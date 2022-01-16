@@ -1,0 +1,76 @@
+main {
+	margin: 2rem;
+}
+
+main > form{
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.form-group {
+	margin: 2rem 0;
+	width: 100%;
+	min-height: 10rem;
+}
+
+textarea {
+	box-sizing: border-box;
+	width: 100%;
+	min-height: 20rem;
+
+	padding: 1rem;
+
+	font-size: 1rem;
+
+	color: var(--light-fg);
+	background-color: var(--light-bg2);
+	border: solid 4px black;
+	border-radius: 10px;
+
+	outline: none;  /* Outline when writing (on focused) */
+	resize: none;   /* Remove resize handle */
+	overflow: auto; /* Hide the scrollbar unless necessary*/
+}
+
+textarea::placeholder {
+	color: rgb(255, 153, 0);
+	font-size: 1.25rem;
+	text-transform: uppercase;
+	font-weight: bold;
+}
+
+body.dark textarea {
+	color: var(--dark-fg);
+	background-color: var(--dark-bg2);
+	border: solid 4px white;
+}
+
+body.dark textarea::placeholder {
+	color: rgb(224, 146, 0);
+}
+
+button[type="submit"] {
+	width: 80%;
+	height: 3rem;
+
+	font-size: 1.3rem;
+
+	cursor: pointer;
+
+	border: 1px solid var(--light-bg);
+	border-radius: 25px;
+
+	color: var(--dark-fg);
+	background-image: linear-gradient(-90deg, var(--dark-bg) -100%, var(--dark-bg3) 100%);
+
+	margin: auto;
+	margin-top: 2rem;
+}
+
+@media only screen and (min-width: 500px) {
+	main {
+		margin-left: 7rem;
+		padding: 2rem;
+	}
+}

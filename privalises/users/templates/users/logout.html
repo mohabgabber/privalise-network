@@ -1,0 +1,18 @@
+{% extends 'users/base.html' %}
+{% block title %} Logout {% endblock %}
+{% block top %}
+.login{
+    position: absolute;
+    top: calc(50% - 80px);
+    left: calc(50% - 50px);
+    height: 150px;
+    width: 350px;
+    padding: 10px;
+    z-index: 2;
+}
+{% endblock %}
+{% block content %}
+    <h1>You Are Logged Out :(</h1>
+   <br/>
+   <h3>Wanna Login? <a href="{% url 'login' %}" style="color: cyan;">Login Now !</a></h3>
+{% endblock %} 

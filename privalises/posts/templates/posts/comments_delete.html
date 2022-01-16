@@ -1,0 +1,12 @@
+{% extends 'posts/base.html' %}
+{% block title %} Delete Comment ! {% endblock %}
+{% block content %}
+    <form method="POST">
+        {% csrf_token %}
+        <br><br>
+        <h2>Are You Sure you Wanna Delete This Comment?</h2>
+        <br/>
+        <button type="submit" class="btn btn-outline-danger">Yes, Delete</button>
+         <a href="{% url 'post-detail' comment.post.id %}" class="btn btn-outline-info">Cancel</a>
+   </form>
+{% endblock %} 

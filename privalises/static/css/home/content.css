@@ -1,0 +1,42 @@
+main.content {
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	margin-top: 1rem;
+
+	/*border: 2px solid lightslategrey;
+	border-top: none;
+	border-bottom: none;
+*/
+}
+
+
+@media only screen and (max-width: 600px) {
+	main.content {
+		margin-bottom: 5rem;
+
+		/*padding: 15px;*/
+		padding: 0;
+		padding-left: 1rem;
+		padding-right: 1rem;
+		top: 0;
+
+		width: 92%;
+
+		font-size: 0.95rem;
+	}
+}
+
+
+@media only screen and (min-width: 600px) {
+	main.content {
+		margin-left:  5rem;
+		margin-right: 2rem;
+
+		/*padding: 15px;*/
+		padding-top: 2rem;
+		padding-left: 1rem;
+
+		width: 90%;
+	}
+}

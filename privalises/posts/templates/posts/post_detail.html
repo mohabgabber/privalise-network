@@ -1,0 +1,131 @@
+{% extends 'posts/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <div data-value="{{ post.id }}" id="post-id" class='posts-div'><br/>
+       <img class='rounded-circle article-img' src="{{ post.author.profile.image.url }}">
+       <div class='media-body'>
+       <div class='article-metadata'>
+      <p>By {{ post.author }} On {{ post.date_posted }}</p>
+      {% if post.author == user %}
+        <a href="{% url 'post-update' post.id %}" class='btn btn-outline-info mb-1'>Edit</a>
+        <a href="{% url 'post-delete' post.id %}" class='btn btn-outline-danger mb-1'>Delete</a>
+      {% endif %}
+        </div>
+        <div class='article-content detailed tags-id'>
+        <p class='media'>{{ post.content }}</p>
+           {% if post.image %}
+                  <img src="{{ post.image.url }}" class="post-image" />
+                {% endif %}
+    </div>
+     <span class="" id="like_count">{{post.like_count}}</span>
+          <button class="btn btn-link text-dark p-0 border-0 btn-outline-light" id="like-button" value="{{post.id}}">
+            <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-heart" fill="currentColor"
+              xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd"
+                d="M8 2.748l-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z" />
+            </svg>
+          </button>
+      
+  </div>
+</div>
+    <div>
+      <div class="card mb-4  mt-3 ">
+      <div class="card-body" id="comments-collection">
+        <!-- comments -->
+        <h2>{{ comments.count }} comments</h2>
+
+        {% for comment in comments.all %}
+                {% if comment.is_parent %}
+        <div class="comments" style="padding: 10px;">
+          <p class="font-weight-bold">
+            {{ comment.author }}
+            <span class=" text-muted font-weight-normal">
+              {{ comment.date_created }}
+            </span>
+            {% if comment.author == user %}
+        <a href="{% url 'comment-delete' post.id comment.id %}" class='btn btn-outline-danger mb-1'>Delete</a>
+      {% endif %}
+          </p>
+          {{ comment.content | linebreaks }}
+        </div>
+        <form method="POST" action="{% url 'add-comment-like' post.pk comment.pk %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{{ request.path }}">
+                            <button type="submit" class='btn btn-outline-info'><i class="fas fa-kiss-wink-heart"></i></button>{{ comment.likes.all.count }}
+                        </form>
+                        <form method="POST" action="{% url 'add-comment-dislike' post.pk comment.pk %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{{ request.path }}">
+                            <button class='btn btn-outline-info' type="submit"><i class="fas fa-heart-broken"></i></button>{{ comment.dislikes.all.count }}
+                        </form><br/>
+        <button type="submit" onclick="commentReplyToggle('{{ comment.pk }}')" class="btn btn-primary">
+            <i class="far fa-comment-dots"></i>
+            Reply
+          </button>
+          <form method="POST" id="{{ comment.pk }}" action="{% url 'add-comment-reply' post.pk comment.pk %}" class='d-none'>
+            {% csrf_token %}
+            {{ comment_form|crispy }}
+            <button type="submit">Post</button>
+          </form>
+          {% for child_comment in comment.children %}
+              <div class="comments" style="padding: 10px;">
+          <p class="font-weight-bold">
+            {{ child_comment.author }}
+            <span class=" text-muted font-weight-normal">
+              {{ child_comment.date_created }}
+            </span>
+            {% if child_comment.author == user %}
+        <a href="{% url 'comment-delete' post.id child_comment.id %}" class='btn btn-outline-danger mb-1'>Delete</a>
+      {% endif %}
+          </p>
+          @{{ child_comment.author }} Replied To @{{ comment.author }}
+          {{ child_comment.content | linebreaks }}
+        </div>
+          {% endfor %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+      <div class="card mb-4  mt-3 ">
+      <div class="card-body">
+        {% if new_comment %}
+        <div class="alert alert-success" role="alert">
+          Your comment is Live
+        </div>
+        {% else %}
+        <h3>Leave a comment</h3>
+        <form method="post" id="comment-form" style="margin-top: 1.3em;">
+          {{ comment_form| crispy }}
+          {% csrf_token %}
+          <button type="submit" class="btn btn-primary  btn-lg">Submit</button>
+        </form>
+        {% endif %}
+      </div> 
+    </div>
+    </div>
+<script>
+  $(document).on('click', '#like-button', function (e) {
+    e.preventDefault();
+    $.ajax({
+      type: 'POST',
+      url: '{% url "add-like" %}',
+      data: {
+        postid: $('#like-button').val(),
+        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+        action: 'post'
+      },
+      success: function (json) {
+        document.getElementById("like_count").innerHTML = json['result']
+        console.log(json)
+      },
+      error: function (xhr, errmsg, err) {
+
+      }
+    });
+  })
+</script>
+<script type="text/javascript" src="{% static 'js/reply.js' %}"></script>
+{% endblock %}
+        

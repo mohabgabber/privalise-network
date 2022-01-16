@@ -1,0 +1,25 @@
+{% extends 'users/base.html' %}
+{% load crispy_forms_tags %}
+{% block title %} Login Now {% endblock %}
+{% block top %}
+.login{
+    position: absolute;
+    top: calc(50% - 250px);
+    left: calc(50% - 50px);
+    height: 150px;
+    width: 350px;
+    padding: 10px;
+    z-index: 2;
+}
+{% endblock %}
+{% block content %}
+    <form method="POST">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <br/>
+        <button type="submit" class="btn btn-outline-info">Submit</button>
+        <h4><a href="{% url 'login' %}" style="color: cyan;">Login?</a></h4>
+   </form>
+   <br/>
+   <h3>Don`t Have An Account? <a href="{% url 'register' %}" style="color: cyan;">Sign Up !</a></h3>
+{% endblock %} 

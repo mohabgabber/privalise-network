@@ -1,0 +1,5 @@
+const username = document.getElementById('id_username')
+const imgBox = document.getElementById('id_image')
+const email = document.getElementById('id_email')
+const csrf = document.getElementByName('csrfmiddlewaretoken')
+const form = document.getElementById('forms')

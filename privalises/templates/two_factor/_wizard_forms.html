@@ -1,0 +1,10 @@
+{% load example %}
+{{ wizard.management_form }}
+
+{% for field in wizard.form %}
+{% if field.label == 'Username' %}
+{{field| add_placeholder:'Username'}}
+{% else %}
+{{field| add_placeholder:'Password'}}
+{% endif %}
+{% endfor %}

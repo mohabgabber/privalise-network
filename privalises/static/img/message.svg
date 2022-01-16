@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.1 (c4e8f9ed74, 2021-05-24)"
+   sodipodi:docname="message.svg"
+   inkscape:export-filename="C:\Users\Marcos\Desktop\demo\resources\message.png"
+   inkscape:export-xdpi="96.000015"
+   inkscape:export-ydpi="96.000015"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#505050"
+     bordercolor="#ffffff"
+     borderopacity="1"
+     inkscape:pageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="1"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="1.8847451"
+     inkscape:cx="411.72676"
+     inkscape:cy="806.4751"
+     inkscape:window-width="1920"
+     inkscape:window-height="1025"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1"
+     showguides="true"
+     inkscape:guide-bbox="true" />
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g873"
+       inkscape:export-filename="/home/marcos/GitHub/demo-web/resources/message_black.png"
+       inkscape:export-xdpi="96.000015"
+       inkscape:export-ydpi="96.000015">
+      <rect
+         style="fill:none;stroke:none;stroke-width:7.10918;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+         id="rect1493"
+         width="66.145828"
+         height="66.145828"
+         x="77.850487"
+         y="171.28844"
+         inkscape:export-filename="/home/marcos/GitHub/demo-web/resources/message_black.png"
+         inkscape:export-xdpi="96.000015"
+         inkscape:export-ydpi="96.000015" />
+      <g
+         id="g872"
+         inkscape:export-filename="/home/marcos/GitHub/demo-web/resources/message_black.png"
+         inkscape:export-xdpi="96.000015"
+         inkscape:export-ydpi="96.000015"
+         style="stroke:#000000;stroke-width:1.85208333;stroke-miterlimit:4;stroke-dasharray:none">
+        <rect
+           style="fill:none;stroke:#000000;stroke-width:1.85208333;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+           id="rect846"
+           width="57.057354"
+           height="35.908623"
+           x="82.394722"
+           y="186.40703" />
+        <path
+           sodipodi:type="star"
+           style="fill:none;stroke:#000000;stroke-width:1.83052971;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none"
+           id="path1052"
+           inkscape:flatsided="true"
+           sodipodi:sides="3"
+           sodipodi:cx="254.55534"
+           sodipodi:cy="685.06714"
+           sodipodi:r1="19.295019"
+           sodipodi:r2="9.6475096"
+           sodipodi:arg1="0.52359878"
+           sodipodi:arg2="1.5707963"
+           inkscape:rounded="0"
+           inkscape:randomized="0"
+           transform="matrix(1.6695125,0,0,-0.61316564,-314.05991,612.51603)"
+           inkscape:transform-center-y="1.3715618"
+           inkscape:transform-center-x="2.9675383e-06"
+           d="m 271.26532,694.71465 -33.41995,0 16.70997,-28.94253 z" />
+      </g>
+    </g>
+  </g>
+</svg>

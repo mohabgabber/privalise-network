@@ -1,0 +1,38 @@
+:root {
+	font-size: 16px;
+
+	--dark-bg: #080d14;
+	--dark-bg2: #091220;
+	--dark-bg3: #132746;
+	--dark-post-bg: #1e252e;
+	--dark-fg: rgb(221, 221, 221);
+	--dark-fg2: rgba(204, 204, 204, 0.575);
+	--dark-post-separator: rgb(95, 95, 95);
+
+
+	--light-bg: white;
+	--light-bg2: #ddd;
+	--light-post-bg: #ddd;
+	--light-fg: black;
+	--light-fg2: rgba(0, 0, 0, 0.432);
+	--light-post-separator: rgb(44, 44, 44);
+}
+
+html, body {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font-family: 'Ubuntu';
+
+	background-color: var(--light-bg);
+	color: var(--light-fg);
+
+	-webkit-text-size-adjust: 100%; /* Prevent font scaling in landscape while allowing user zoom */
+}
+
+body.dark{
+	background-color: var(--dark-bg);
+	color: var(--dark-fg);
+}

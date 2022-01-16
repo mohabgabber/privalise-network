@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<title> Register Now </title>
+		<link rel="stylesheet" href="{% static 'css/main.css' %}">
+		<link rel="stylesheet" href="{% static 'css/logo.css' %}">
+		<link rel="stylesheet" href="{% static 'css/login/page.css' %}">
+		<link rel="stylesheet" href="{% static 'css/register/page.css' %}">
+
+		<script>
+			function checkUsername(input){
+				let text = document.getElementById(input).value;
+				
+				console.log(/^([A-Za-z0-9\.\-\_]+)$/.test(text));
+
+				return /^([A-Za-z0-9\.\-\_]+)$/.test(text);
+			}
+
+			function checkPasswords(pwd1, pwd2){
+				let text1 = document.getElementById(pwd1).value;
+				let text2 = document.getElementById(pwd2).value;
+
+				let res = text1===text2;
+
+				document.getElementById("passwderror").style="display:" + (res?"none":"unset");
+
+				return res;
+			}
+
+			function checkPasswords(event, pwd1, pwd2){
+				let text1 = pwd1.value;
+				let text2 = pwd2.value + event.key;
+
+				let res = text1===text2;
+
+				document.getElementById("passwderror").style="display:" + (res?"none":"unset");
+
+				return res;
+			}
+		</script>
+	</head>
+
+	<body>
+		<main class="dark">
+			<div class="logo-text">
+				<div>Priva<span>Lise</span></div>
+			</div>
+		
+			<form method="POST" style="margin: 0" onsubmit="return (checkPasswords('id_password1', 'id_password2') && checkUsername('id_username'))">
+				<table class="login form-inputs">
+						{% csrf_token %}
+
+						<tr>
+							<td id="div_id_username">
+								<input id="id_username" class="textinput textInput form-control" 
+								placeholder="Username"
+								type="text" name="username" maxlength="40" 
+								autofocus="" required 
+								onkeypress="checkUsername('id_username')"
+								style="margin-top:auto;margin-bottom:auto;">	
+							</td>
+
+							<td>
+								<small id="hint_id_username" class="form-text text-muted">
+									<ul>
+										<li>
+											Required.
+										</li>
+										<li>
+											150 characters or fewer.
+										</li>
+										<li>
+											Letters, digits and only <code>.</code>, <code>-</code> or <code>_</code>.
+										</li>
+									</ul>
+								</small>
+							</td>
+						</tr>
+
+						<tr>
+							<td id="div_id_password1" rowspan="2"> 
+								<div class="multiple-inputs" style="margin-top: 2rem;">
+									<input id="id_password1" class="textinput textInput form-control"
+									placeholder="Password" minlength="8"
+									type="password" name="password1" autocomplete="new-password" required>
+
+									<input class="textinput textInput form-control" id="id_password2"
+									placeholder="Repeat your password" minlength="8"
+									onkeypress="checkPasswords(event, document.getElementById('id_password1'), this)"
+									type="password" name="password2" autocomplete="new-password" required>
+								</div>
+
+								<p id="passwderror" class="error" style="display: none;">The passwords do not match</p>
+							</td>
+
+							<td>
+								<small id="hint_id_password1" class="form-text text-muted">
+									<ul>
+										<li>Your password can’t be too similar to your other personal information.</li>
+										<li>Your password must contain at least 8 characters.</li>
+										<li>Your password can’t be a commonly used password.</li>
+										<li>Your password can’t be entirely numeric.</li>
+									</ul>
+								</small>
+							</td>
+						</tr>
+
+						<tr></tr>
+						<tr>
+							<td colspan="2">
+								<button type="submit" class="btn btn-outline-info">Join Now</button>
+							</td>
+						</tr>
+
+				</table>
+			</form>
+		</main>
+		<h3>Already Have An Account? <a href="{% url 'login' %}" style="color: cyan;">Login !</a></h3>
+	</body>
+</html>

@@ -1,0 +1,87 @@
+{% extends 'posts/base.html' %}
+{% load crispy_forms_tags %}
+{% block title %} {{ user.username }} Profile {% endblock %}
+{% load static %}
+<!DOCTYPE html>
+<!-- saved from url=(0031)http://localhost:8080/profile/5 -->
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		
+		<title>Your profile</title>
+	</head>
+	<body id="body" class="dark">
+          {% block content %}
+			<section class="profile">
+				<div class="picture-container">
+					<img class="profile-picture" src="{{ user.profile.image.url }}">
+				</div>
+
+				<h2 class="account-heading">@{{ user.username }} {% if user.profile.verified %}<i style='color: blue; width: 100;' class="fas fa-passport"></i>{% endif %}</h2><br/><br/>
+				{% if request.user.id == user.id %}
+        <button type="button" class="btn btn-outline-info"><a href='{% url "profile-update" %}'>Update Info</a></button>
+   <a href="{% url 'password-change' %}" class='btn btn-outline-info'>Change Password !</a><br/><br/>
+         {% else %}
+         {% if is_following == False %}
+         <form method="POST" action='{% url "add-follower" profile.id %}'>
+            {% csrf_token %}
+
+            <button type="submit" class="btn btn-outline-danger">Follow</button></form><br/><br/>
+             
+          {% else %}
+         <form method="POST" action='{% url "remove-follower" profile.id %}'>
+            {% csrf_token %}
+            
+        <button type="submit" class="btn btn-outline-danger">UnFollow</button>
+    </form><br/><br/>
+ 
+
+        {% endif %}{% endif %}
+			</section>
+
+			<section class="posts">
+				<div class="post">
+					<div class="profile-container">
+						<img class="profile" src="resources/example_profile3.jpg">
+					</div>
+
+					<div class="post-content">
+						<div class="post-info">
+							<div class="post-info1">
+								<a class="username" href="/bradkitt">@bradkitt</a>
+								<p class="date">1h ago</p>
+							</div>
+
+							<p class="info">Replying to <a class="username" href="/theawesomecat64">@theawesomecat64</a></p>
+						</div>
+
+						<div class="post-text">
+							<p>Wtf... I'll call an ambulance!</p>
+						</div>
+					</div>
+				</div>
+
+				<div class="post">
+					<div class="profile-container">
+						<img class="profile" src="resources/example_profile3.jpg">
+					</div>
+
+					<div class="post-content">
+						<div class="post-info">
+							<div class="post-info1">
+								<a class="username" href="/bradkitt">@bradkitt</a>
+								<p class="date">3h ago</p>
+							</div>
+
+							<p class="info">Replying to <a class="username" href="/theawesomecat64">@theawesomecat64</a></p>
+						</div>
+						<div class="post-text">
+							<p>Dude... are u ok??</p>
+						</div>
+					</div>
+				</div>
+			</section>
+			{% endblock content %}
+	</body>
+</html>

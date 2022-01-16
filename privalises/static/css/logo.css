@@ -1,0 +1,22 @@
+.header {
+    position: absolute;
+    top: calc(50% - 35px);
+    left: calc(50% - 255px);
+    z-index: 2;
+}
+
+.logo-text div {
+    float: left;
+    color: rgb(83, 95, 107);
+    font-family: 'Exo', sans-serif !important;
+    font-size: 35px;
+    font-weight: 200;
+}
+
+.dark .logo-text div {
+    color: white;
+}
+
+.logo-text div span {
+    color: #5379fa !important;
+}
