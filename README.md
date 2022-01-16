@@ -9,20 +9,6 @@ We actively avoid using any 3rd party software, such as google APIs, google anal
 
 We also plan on creating an onion version of the web, so stay tunned!!
 
-## Community: contribute or hang out with the developers!
-Join our [discord server](https://discord.gg/2XzgH4bZYp) now!
-
-## Support: Donate Anonymously To Support The Development Of This Awesome Project
-bitcoin: bc1qvyfd5flhkkaxrgmscx3gzhrsrt72srgy3agjkl
-
-![Qr Code](https://user-images.githubusercontent.com/87126411/126029544-9a5b1f67-9c86-40e2-baf3-7202c40707bb.png)
-
-monero: 89xGzwEh8MiSbi1dLWRzijXGsi3AX5WadTQztxtiN63yKww7n9PYZiw1wjdgGKWy7ueDh5MrYZm6EggBv2ErGKH1V9Lujjh
-
-![monero](https://user-images.githubusercontent.com/78929105/128041075-24a358a8-8b01-4099-8d4b-45247f5ea7f7.png)
-
-
-Thanks :D
 ## The Technology Behind It:
    * Python 3.9.2
    * Django 2.2.22
@@ -43,13 +29,11 @@ Thanks :D
    * Ajax Powered Likes/Dislikes with counter
    * 2 factor authentication
 
-## New front-end
-The entire front-end is being completely re-designed from the ground up. This may cause some inconsistencies or non-responsive parts of it, as well as sudden changes in design (hopefully for the better).
-
-Any feedback or suggestion is very much appreciated and can be sent to [the discord server](https://discord.gg/2XzgH4bZYp).
+## The front-end
+The frontend is mostly made (like 90%) by [margual56](https://github.com/margual56)
 
  ## Set Up: 
-  * Clone The Repository `git clone https://github.com/privalise/social-network.git && cd social-network`
+  * Clone The Repository `git clone https://github.com/privalise-network.git && cd privalise-network`
   * Install Requirements `pip install -r requirements.txt && cd privalises`
   * Let's Migrate And Make Migrations `python manage.py makemigrations && python manage.py migrate`
   * Now Finally We Will Run The Server `python manage.py runserver`
@@ -57,27 +41,15 @@ Any feedback or suggestion is very much appreciated and can be sent to [the disc
  ### Additional Steps:
   1. Create '.env' file in the root directory
   2. Specify The Following
-	  * email (Add The EMAIL_HOST_USER)
-	  * pass (Specify The EMAIL_HOST_PASSWORD)
-	  * port  (Specify The EMAIL_PORT)
 	  * hash  (Specify The SECRET_KEY)
-	  * backend (Specify The EMAIL_BACKEND)
-	  * host (Specify The EMAIL_HOST)
-	  * tls (Specify The EMAIL_USE_TLS)
 	 ### In The End It Should Look Like This:
 	  ```python
-	  email=email@email.email
-	  pass=password
 	  hash=gjkmjgbkjbgmoirejoibjgboikejrgkjstojmsvoiigormjoiysmdfvmg
-	  port=587
-	  tls=True
-	  host=smtp.provider.com
-	  backend=django.core.mail.backends.smtp.EmailBackend	
 	  ```
 
 # LICENSE
 	Privalise, A Secure Privacy Friendly Social Network
-	Copyright (C) 2021 Mohab Gabber
+	Copyright (C) 2022 Mohab Gabber
 	
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
