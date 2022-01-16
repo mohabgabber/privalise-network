@@ -35,17 +35,8 @@ The frontend is mostly made (like 90%) by [margual56](https://github.com/margual
  ## Set Up: 
   * Clone The Repository `git clone https://github.com/privalise-network.git && cd privalise-network`
   * Install Requirements `pip install -r requirements.txt && cd privalises`
-  * Let's Migrate And Make Migrations `python manage.py makemigrations && python manage.py migrate`
+  * Let's Make Migrations And Migrate  `python manage.py makemigrations && python manage.py migrate`
   * Now Finally We Will Run The Server `python manage.py runserver`
-  
- ### Additional Steps:
-  1. Create '.env' file in the root directory
-  2. Specify The Following
-	  * hash  (Specify The SECRET_KEY)
-	 ### In The End It Should Look Like This:
-	  ```python
-	  hash=gjkmjgbkjbgmoirejoibjgboikejrgkjstojmsvoiigormjoiysmdfvmg
-	  ```
 
 # LICENSE
 	Privalise, A Secure Privacy Friendly Social Network
