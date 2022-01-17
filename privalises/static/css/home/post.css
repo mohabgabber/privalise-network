@@ -27,12 +27,12 @@ body.dark div.post{
 }
 
 div.post > .profile-container {
-	width: 50px;
-	height: 50px;
+	width: 70px;
+	height: 70px;
 
 	position: relative;
 	overflow: hidden;
-
+    object-fit: scale-down;
 	border-radius: 50%;
 }
 
@@ -42,8 +42,7 @@ div.post > .profile-container > img.profile {
 	display: inline;
 	height: 100%;
 	width: 100%;
-
-	object-fit: cover;
+    object-fit: scale-down;
 }
 
 div.post > div.post-content {

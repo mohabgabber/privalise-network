@@ -2,7 +2,7 @@
 {% block title %}@{{ user.username }} Profile, On Privalise!{% endblock title %}
 {% block content %}
 	<main class="mx-auto content">
-		<section class="profile">
+		<section class="w-50 profile">
 			<div class="picture-container">
 				<img class="profile-picture" src="{{ user.profile.image.url }}">
 			</div>
@@ -16,9 +16,10 @@
 	      <br/><br/>
 
 			{% if request.user == user %}
-           <button type="button" style="margin-left: 11px;" class="btn btn-outline-info">
-	           <a href="{% url 'profile-update' %}">Settings</a>
-           </button>
+           <a href="{% url 'profile-update' %}">
+           	<button type="button" style="margin-left: 11px;" class="btn btn-outline-info">
+	           Settings
+           </button></a>
            <br/><br/>
          {% else %}
 	         {% if is_following == False %}
@@ -36,7 +37,7 @@
 	         {% endif %}
          {% endif %}
 		</section>
-		<div class="infinite-container">
+		<div class="infinite-container w-50">
 			{% for post in posts %}
 				<div class="post infinite-item">
 					<div class="profile-container">
@@ -60,8 +61,15 @@
 				</div>
 			{% endfor %}
 		</div>
-		{% if posts.has_next %}
-			<a class="infinite-more-link" href="?page={{ posts.next_page_number }}">Loading More</a>
-	   {% endif %}
+		<center>
+        {% if posts.has_previous %}
+            <a href="?page={{posts.previous_page_number}}" class="btn btn-outline-info"><</a>
+        {% endif %}
+        <span class="btn btn-primary">{{posts.number}}</span>
+        
+        {% if posts.has_next %}
+            <a href="?page={{posts.next_page_number}}" class="btn btn-outline-info">></a>
+        {% endif %}
+    </center>
 	</main>
 {% endblock content %}

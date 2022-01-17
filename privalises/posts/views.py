@@ -21,7 +21,7 @@ class PostListView(LoginRequiredMixin, View):
         posts = Post.objects.filter(author__profile__followers__in=[logged_in_user.id]).order_by('-date_posted')
         #posts = Post.objects.all().order_by('-date_posted') 
         page = request.GET.get('page', 1)
-        paginator = Paginator(posts, 15)
+        paginator = Paginator(posts, 1)
         try:
             post_list = paginator.page(page)
         except PageNotAnInteger:
@@ -115,7 +115,7 @@ class ProfileView(LoginRequiredMixin, View):
         posts = Post.objects.filter(author=user).order_by('-date_posted')
         followers = profile.followers.all()    
         page = request.GET.get('page', 1)
-        paginator = Paginator(posts, 2)
+        paginator = Paginator(posts, 1)
         try:
             post_list = paginator.page(page)
         except PageNotAnInteger:

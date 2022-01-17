@@ -2,13 +2,13 @@
 {% load crispy_forms_tags %}
 {% block content %}
 <br><br>
+<main class="mx-auto">
     <div class='profile'>
         <div class="picture-container">
             <img class="profile-picture" src="{{ user.profile.image.url }}">
         </div>
         <h2 class='account-heading'>{{ user.username }}</h2>
         <h2 class='text-secondary'>{{ profile.name }}</h2>
-        <h2 class='text-secondary'>{{ user.email }}</h2>
         <p>{{ profile.bio }}</p>
         
     </div>
@@ -23,5 +23,5 @@
         </fieldset>
 
    </form><a href="{% url 'password-change' %}" class='btn btn-outline-info'>Change Password !</a></div>
-   
+</main>
 {% endblock content %} 

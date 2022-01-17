@@ -1,15 +1,22 @@
 {% extends 'posts/base.html' %}
 {% load crispy_forms_tags %}
-{% block content %}<br/>
-    <div class='post-creation mx-auto'>
+{% block content %}
+
+<main class="w-50 mx-auto">
+<div class="mx-auto logo-text">
+  <div>Priva<span>Lise</span></div>
+</div>
+    <div class='w-50 post-creation mx-auto'>
         <br/>
+        <center>
         <form class='post-create'  method="POST">
             {% csrf_token %}
             {{ form|crispy }}<br/>
             <button type='submit' class='btn btn-primary'>Publish</button>
         </form>
+        </center>
     </div>
-
+</main>
 {% endblock %}
 
 
