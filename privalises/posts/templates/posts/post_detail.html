@@ -1,5 +1,6 @@
 {% extends 'posts/base.html' %}
 {% load static %}
+{% block title %}{{post.author}}'s Post On Privalise!, Where Everything Is Awesome{% endblock title %}
 {% block content %}
   <main class="w-50 mx-auto">
     <div class="mx-auto logo-text">
@@ -32,26 +33,26 @@
       <br/>
       <div class="post" style="background-color: var(--light-post-bg); text-align: left;">
         <h2 style="color: black;">{{ commentcount }} Comments!</h2>
-        {% for comment in comments %}
-          <div  class="post">
-            <div class="profile-container">
-              <img class="profile-picture post-img" src="{{ comment.author.profile.image.url }}">
-            </div>
-
-            <div class="post-content">
-              <div class="post-info">
-                <div class="post-info1">
-                  <a class="username" href="{% url 'profile' comment.author %}">@{{ comment.author }}</a>
-                  <p class="date">{{ comment.date_created }}</p>
-                </div>
-              </div>
-              <div class="post-text">
-                <p>{{ comment.content }}</p>
-              </div>
-            </div>  
-          </div>
-        {% endfor %}
       </div>
+      {% for comment in comments %}
+        <div  class="post">
+          <div class="profile-container">
+            <img class="profile-picture post-img" src="{{ comment.author.profile.image.url }}">
+          </div>
+
+          <div class="post-content">
+            <div class="post-info">
+              <div class="post-info1">
+                <a class="username" href="{% url 'profile' comment.author %}">@{{ comment.author }}</a>
+                <p class="date">{{ comment.date_created }}</p>
+              </div>
+            </div>
+            <div class="post-text" style="text-align: left;">
+              <p>{{ comment.content }}</p>
+            </div>
+          </div>  
+        </div>
+      {% endfor %}
     </center>
   </main>
 {% endblock content %}
