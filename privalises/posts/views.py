@@ -50,7 +50,11 @@ class PostListView(LoginRequiredMixin, View):
 def PostDetailView(request, pk):
     template_name = 'posts/post_detail.html'
     post = get_object_or_404(Post, pk=pk)
-    return render(request, template_name, {'post': post,})
+    comments = Comment.objects.filter(post=post).order_by('-date_created')
+    commentcount = 0
+    for comment in comments:
+        commentcount += 1
+    return render(request, template_name, {'post': post, 'comments': comments, 'commentcount': commentcount})
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     fields = ['content']

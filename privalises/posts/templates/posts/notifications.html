@@ -1,38 +1,40 @@
 {% extends 'posts/base.html' %}
 {% block title %}@{{ user.username }} Latest Notifications, On Privalise{% endblock title %}
 {% block content %}
-<main class="w-50 mx-auto">
+<main>
+	<div class="mx-auto logo-text">
+	  <div>Priva<span>Lise</span></div>
+	</div>
 	<section class="posts">
             you have {{ notifications.count }} Notification{{ notifications.count|pluralize }}
 			{% for notification in notifications %}
 			{% if notification.post %}
 				{% if notification.notification_type == 1 %}
 				<div class="dropdown-item-parent">
-					<a href="{% url 'post-notification' notification.pk notification.post.pk %}">@{{ notification.from_user }} liked your post</a>
-					<span class="dropdown-item-close" onclick="removeNotification(`{% url 'notification-delete' notification.pk %}`, `{{ request.path }}`)">&times;</span>
+					<a href="{% url 'post-notification' notification.pk notification.post.pk %}" class="alert alert-succ content">@{{ notification.from_user }} liked your post</a> 
 				</div>
 				{% elif notification.notification_type == 2 %}
 				<div class="dropdown-item-parent">
-					<a href="{% url 'post-notification' notification.pk notification.post.pk %}">@{{ notification.from_user }} commented on your post</a>
-					<span class="dropdown-item-close" onclick="removeNotification(`{% url 'notification-delete' notification.pk %}`, `{{ request.path }}`)">&times;</span>
+					<a class="alert alert-success content" href="{% url 'post-notification' notification.pk notification.post.pk %}">@{{ notification.from_user }} commented on your post</a>
+					<a class="dropdown-item-close" href="{% url 'notification-delete' notification.pk %}">&times;</a>
 				</div>
 				{% endif %}
 			{% elif notification.comment %}
 				{% if notification.notification_type == 1 %}
 				<div class="dropdown-item-parent">
-					<a href="{% url 'post-notification' notification.pk notification.comment.post.pk %}">@{{ notification.from_user }} liked your comment</a>
-					<span class="dropdown-item-close" onclick="removeNotification(`{% url 'notification-delete' notification.pk %}`, `{{ request.path }}`)">&times;</span>
+					<a class="alert alert-success content" href="{% url 'post-notification' notification.pk notification.comment.post.pk %}">@{{ notification.from_user }} liked your comment</a>
+					<a class="dropdown-item-close" href="{% url 'notification-delete' notification.pk %}">&times;</a>
 				</div>
 				{% elif notification.notification_type == 2 %}
 				<div class="dropdown-item-parent">
-					<a href="{% url 'post-notification' notification.pk notification.comment.post.pk %}">@{{ notification.from_user }} replied to your comment</a>
-					<span class="dropdown-item-close" onclick="removeNotification(`{% url 'notification-delete' notification.pk %}`, `{{ request.path }}`)">&times;</span>
+					<a class="alert alert-success content" href="{% url 'post-notification' notification.pk notification.comment.post.pk %}">@{{ notification.from_user }} replied to your comment</a>
+					<a class="dropdown-item-close" href="{% url 'notification-delete' notification.pk %}">&times;</a>
 				</div>
 				{% endif %}
 			{% else %}
 			<div class="dropdown-item-parent">
-					<a href="{% url 'follow-notification' notification.pk notification.from_user.profile.pk %}">@{{ notification.from_user }} has started following you</a>
-					<span class="dropdown-item-close" onclick="removeNotification(`{% url 'notification-delete' notification.pk %}`, `{{ request.path }}`)">&times;</span>
+					<a class="alert alert-success content" href="{% url 'follow-notification' notification.pk notification.from_user.profile.pk %}">@{{ notification.from_user }} has started following you</a>
+					<a class="dropdown-item-close" href="{% url 'notification-delete' notification.pk %}">&times;</a>
 				</div>
 			{% endif %}
 			{% endfor %}

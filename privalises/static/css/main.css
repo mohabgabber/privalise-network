@@ -12,7 +12,8 @@
 
 	--light-bg: white;
 	--light-bg2: #ddd;
-	--light-post-bg: #ddd;
+	--light-post-bg: #dde;
+	/*--light-comment-bg: #dds;*/
 	--light-fg: black;
 	--light-fg2: rgba(0, 0, 0, 0.432);
 	--light-post-separator: rgb(44, 44, 44);
