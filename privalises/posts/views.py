@@ -28,9 +28,11 @@ class PostListView(LoginRequiredMixin, View):
             post_list = paginator.page(1)
         except EmptyPage:
             post_list = paginator.page(paginator.num_pages)
-        form = PostForm()
-        context = {'posts': post_list, 'form': form,}
+
+        #form = PostForm()
+        context = {'posts': post_list,}
         return render(request, 'posts/post_list.html', context)
+    '''
     def post(self, request, *args, **kwargs):
         logged_in_user = request.user
         posts = Post.objects.filter(author__profile__followers__in=[logged_in_user.id]).order_by('-date_posted')
@@ -41,40 +43,14 @@ class PostListView(LoginRequiredMixin, View):
             new_post.save()
             new_post.create_tags()
             process_mentions_from_post_content(new_post)
-        context = {'posts': posts, 'form': form,}
-        return render(request, 'posts/post_list.html', context)
+    context = {'posts': posts,}
+    return render(request, 'posts/post_list.html', context)
+    '''
 @login_required
 def PostDetailView(request, pk):
     template_name = 'posts/post_detail.html'
     post = get_object_or_404(Post, pk=pk)
-    comments = post.comments
-    page = request.GET.get('page', 1)
-    paginator = Paginator(comments, 15)
-    try:
-        comment_list = paginator.page(page)
-    except PageNotAnInteger:
-        comment_list = paginator.page(1)
-    except EmptyPage:
-        comment_list = paginator.page(paginator.num_pages)
-    new_comment = None
-    #reply = ReplyForm
-    if request.method == 'POST':
-        print(request.POST)
-        comment_form = CommentForm(data=request.POST)
-        comment_form = CommentForm(data=request.POST)
-        if comment_form.is_valid():
-            new_comment = comment_form.save(commit=False)
-            new_comment.author = User.objects.get(pk=request.user.id)
-            new_comment.post = post
-            # Save the comment to the database
-            new_comment.save()
-            new_comment.create_tags()
-            notification = Notification.objects.create(notification_type=2, from_user=request.user, to_user=post.author, post=post)
-            # commentToJson = json.dumps(new_comment.toJson(), indent=4)
-            return JsonResponse({'comment': new_comment.content, 'date_created': new_comment.date_created, 'author': new_comment.author.username})
-    else:
-        comment_form = CommentForm()
-    return render(request, template_name, {'post': post,'comments': comment_list, 'new_comment': new_comment, 'comment_form': comment_form})
+    return render(request, template_name, {'post': post,})
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     fields = ['content']
@@ -157,11 +133,19 @@ class ProfileView(LoginRequiredMixin, View):
         followers_num = len(followers)
         context = {'user': user, 'profile': profile, 'posts': post_list, 'followers_num': followers_num, 'is_following': is_following,}
         return render(request, 'posts/profile.html', context)
+class AddFollower(LoginRequiredMixin, View):
+    def post(self, request, username, *args, **kwargs):
+        user = User.objects.get(username=username)
+        profile = user.profile
+        profile.followers.add(request.user)
+        notification = Notification.objects.create(notification_type=3, from_user=request.user, to_user=user)
+        return redirect('profile', username=user.username)
 class RemoveFollower(LoginRequiredMixin, View):
-    def post(self, request, pk, *args, **kwargs):
-        profile = Profile.objects.get(pk=pk)
+    def post(self, request, username, *args, **kwargs):
+        user = User.objects.get(username=username)
+        profile = user.profile
         profile.followers.remove(request.user)
-        return redirect('profile', pk=profile.pk)
+        return redirect('profile', username=user.username)
 class Search(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         query = self.request.GET.get('query')
@@ -295,12 +279,6 @@ def get_profile_view_by_username(request, username):
         if users:
             return redirect('profile', pk=users[0].id)
         return redirect('profile', pk=0)
-class AddFollower(LoginRequiredMixin, View):
-    def post(self, request, pk, *args, **kwargs):
-        profile = Profile.objects.get(pk=pk)
-        profile.followers.add(request.user)
-        notification = Notification.objects.create(notification_type=3, from_user=request.user, to_user=profile.user)
-        return redirect('profile', pk=profile.pk)
 class PostNotification(View):
     def get(self, request, notification_pk, post_pk, *args, **kwargs):
         notification = Notification.objects.get(pk=notification_pk)

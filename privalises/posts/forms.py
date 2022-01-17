@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 class ProfileUpdteForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ['name', 'bio', 'image']
+        fields = ['name', 'bio', 'public_key', 'image']
 
 class CommentForm(forms.ModelForm):
     class Meta:
@@ -22,7 +22,7 @@ class UserUpdateForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['username', 'email']
+        fields = ['username']
 
 class PostForm(forms.ModelForm):
     image = forms.ImageField(required=False)

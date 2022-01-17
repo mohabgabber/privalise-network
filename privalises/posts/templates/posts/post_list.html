@@ -1,68 +1,41 @@
 {% extends 'posts/base.html' %}
 {% block content %}
 
+<div class="mx-auto logo-text">
+  <div>Priva<span>Lise</span></div>
+</div>
+
 <main class="content">
-	<div class="logo-text" style="margin-bottom: 1rem;">
-        <div>Priva<span>Lise</span></div>
-   </div>
-      {% if messages %}
-	       {% for message in messages %}
-	          <div class="alert alert-{{ message.tags }} content">{{ message }}</div>
-	       {% endfor %}
-      {% endif %}
-    <div class="infinite-container">
-      {% for post in posts %}
-			<div class="post infinite-item">
-				<div class="profile-container">
-					<img class="profile" src="{{ post.author.profile.image.url }}">
-				</div>
 
-				<div class="post-content">
-					<div class="post-info1">
-						<a class="username" href="{% url 'profile' post.author.id %}">@{{ post.author }}</a>
-						<p class="date">{{ post.date_posted }}</p>
-					</div>
+  {% if messages %}
+     {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} content">{{ message }}</div>
+     {% endfor %}
+  {% endif %}
 
-					<div class="post-text tags-id">
-						<p>{{ post.content }}</p>
-					</div>
-<input type="hidden" value="{% url 'post-detail' post.pk %}" id="firstname">
-					<div class="social_buttons">
-						<button onclick="CopyName()" id='share-url' class="social_button share">SHARE</button>
+  <div class="infinite-container">
+				{% for post in posts %}
+					<div class="post infinite-item">
+						<div class="profile-container">
+				        <img class="profile-picture post-img" src="{{ post.author.profile.image.url }}">
+				      </div>
 
-						<div class="like-dislike">{% csrf_token %}
-							<button id="like-button"  value="{{ post.id }}" class="social_button like">
-								<svg width="100px" height="100px" version="1.1" viewBox="0 0 100 100">
-									<g id="layer1" transform="translate(55 65)">
-										<path id="path2622" d="m25.45-41.897c-8.8052-9.6393-23.081-9.6393-31.887 2e-6l-0.00511 0.0055-0.00511-0.0055c-8.8052-9.6392-23.081-9.6393-31.887 0-8.8052 9.6393-8.8052 25.268 0 34.907l0.0051 0.00546 31.887 34.907 31.887-34.907 5e-3 -0.00546c8.8052-9.6393 8.8052-25.268 1e-6 -34.907z"/>
-									</g>
-								</svg>
-							</button>
-
-							<p class="count" id='like_count'>
-								{{ post.like_count }}
-							</p>{% csrf_token %}
-							<button id="dislike-button"  value="{{ post.id }}" class="social_button dislike">
-								<svg width="100px" height="100px" version="1.1" viewBox="0 0 100 100">
-									<g id="layer1" transform="translate(160 65)">
-										<path id="rect846" d="m-122.78-51.621c-5.7704-3e-6 -11.541 2.4087-15.943 7.2264-8.8053 9.6352-8.8053 25.257 0 34.892l5e-3 0.0053 31.887 34.892 31.887-34.892 0.0048-0.0053c8.8053-9.6352 8.8053-25.257 0-34.892-6.9312-7.5845-17.251-9.197-25.626-4.841l2.9122 22.877-7.7802-1.0558 4.4557 35.002-15.744-40.725 9.7086 1.3175-6.8862-17.812c-2.8289-1.325-5.8545-1.9887-8.8807-1.9887z"/>
-									</g>
-								</svg>
-							</button>
-						</div>
-						<button class="" type="submit"><i class="fas fa-bookmark"></i><a href="{% url 'add-fav' post.id %}"> Markalise It :D</a></button>
-					</div>
+						<div class="post-content">
+							<div class="post-info">
+								<div class="post-info1">
+									<a class="username" href="{% url 'profile' post.author %}">@{{ post.author }}</a>
+									<p class="date">{{ post.date_posted }}</p>
 								</div>
-							</div>
+	      				</div>
+
+							<a href="{% url 'post-detail' post.pk %}">
+								<div class="post-text tags-id mentions-id">
+									<p>{{ post.content }}</p>
+								</div>
+						   </a>
 						</div>
 					</div>
-				</div>
-				</div>
-	</div></div></div></div>		</div></main>
-	
-			{% endfor %}
+				{% endfor %}
+			</div>
 
-  {% if posts.has_next %}
-    <a class="infinite-more-link" href="?page={{ posts.next_page_number }}">Loading More</a>
-  {% endif %}	
-	{% endblock content %}
+{% endblock content %}

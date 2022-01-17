@@ -3,14 +3,16 @@
 {% block content %}
 <br><br>
     <div class='profile'>
-
-        <img class='profile-image' id="imgbox"  src="{{ user.profile.image.url }}"><br>
+        <div class="picture-container">
+            <img class="profile-picture" src="{{ user.profile.image.url }}">
+        </div>
         <h2 class='account-heading'>{{ user.username }}</h2>
         <h2 class='text-secondary'>{{ profile.name }}</h2>
         <h2 class='text-secondary'>{{ user.email }}</h2>
         <p>{{ profile.bio }}</p>
         
     </div>
+    <div class="mx-auto">
  <form method="POST" enctype='multipart/form-data' id='forms'>
         {% csrf_token %}
         <filedset class='form-group settings'>
@@ -19,6 +21,7 @@
         <br/>
         <button type="submit" class="btn btn-outline-info">Update Info</button>
         </fieldset>
-   </form>
-   <a href="{% url 'password-change' %}" class='btn btn-outline-info'>Change Password !</a>
+
+   </form><a href="{% url 'password-change' %}" class='btn btn-outline-info'>Change Password !</a></div>
+   
 {% endblock content %} 

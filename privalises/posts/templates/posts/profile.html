@@ -1,66 +1,67 @@
 {% extends 'posts/base.html' %}
 {% block title %}@{{ user.username }} Profile, On Privalise!{% endblock title %}
 {% block content %}
-<main class="w-50 mx-auto">
-			<section class="profile">
-				<div class="picture-container">
-					<img class="profile-picture" src="{{ user.profile.image.url }}">
-				</div>
+	<main class="mx-auto content">
+		<section class="profile">
+			<div class="picture-container">
+				<img class="profile-picture" src="{{ user.profile.image.url }}">
+			</div>
 
-				<h2 class="account-heading">@{{ user.username }}</h2>
-				{% if user.profile.verified %}
-				  <i style='color: blue; width: 100;' class="fas fa-passport"></i>
-		    	{% endif %}
-		       <br/><br/>
-				{% if request.user.pk == user.pk %}
-              <button type="button" style="margin-left: 11px;" class="btn btn-outline-info">
-              	<a href="{% url 'profile-update' %}">Update Info</a>
-              </button><br/><br/>
-            {% else %}
-           {% if is_following == False %}
-            <form method="POST" action='{% url "add-follower" profile.pk %}'>
-               {% csrf_token %}
-               <button type="submit" style="margin-left: 21px;" class="btn btn-outline-danger">Follow</button>
-            </form>
-            <br/>
-            <br/>
-            {% else %}
-            <form method="POST" action='{% url "remove-follower" profile.pk %}'>
-            {% csrf_token %}
-               <button type="submit" style="margin-left: 21px;"  class="btn btn-outline-danger">UnFollow</button>
-            </form>
-            <br/>
-            <br/>
-             {% endif %}
-            {% endif %}
+			<h2 class="account-heading">@{{ user.username }}</h2>
 
-			</section>
-			<section><h1>dd</h1></section>
-			<section class="posts">
-			<div class="infinite-container mx-auto">
-				{% for post in posts %}
+			{% if user.profile.verified %}
+			  <i style='color: blue; width: 100;' class="fas fa-passport"></i>
+	    	{% endif %}
+
+	      <br/><br/>
+
+			{% if request.user == user %}
+           <button type="button" style="margin-left: 11px;" class="btn btn-outline-info">
+	           <a href="{% url 'profile-update' %}">Settings</a>
+           </button>
+           <br/><br/>
+         {% else %}
+	         {% if is_following == False %}
+		         <form method="POST" action='{% url "add-follower" user.username %}'>
+		            {% csrf_token %}
+		            <button type="submit" style="margin-left: 21px;" class="btn btn-outline-danger">Follow</button>
+		         </form>
+		         <br/><br/>
+	         {% else %}
+		         <form method="POST" action='{% url "remove-follower" user.username %}'>
+			         {% csrf_token %}
+		            <button type="submit" style="margin-left: 21px;"  class="btn btn-outline-danger">UnFollow</button>
+		         </form>
+		         <br/><br/>
+	         {% endif %}
+         {% endif %}
+		</section>
+		<div class="infinite-container">
+			{% for post in posts %}
 				<div class="post infinite-item">
 					<div class="profile-container">
-						<img class="profile" src="{{ post.author.profile.image.url }}">
+						<img class="profile-picture" src="{{ user.profile.image.url }}">
 					</div>
 
 					<div class="post-content">
 						<div class="post-info">
 							<div class="post-info1">
-								<a class="username" href="{% url 'profile' post.author.pk %}">@{{ post.author }}</a>
+								<a class="username" href="{% url 'profile' post.author %}">@{{ post.author }}</a>
 								<p class="date">{{ post.date_posted }}</p>
 							</div>
-      				</div>
+	   				</div>
 
-						<a href="{% url 'post-detail' post.pk %}"><div class="post-text tags-id mentions-id">
-							<p>{{ post.content }}</p>
-						</div></a>
+						<a href="{% url 'post-detail' post.pk %}">
+							<div class="post-text tags-id mentions-id">
+								<p>{{ post.content }}</p>
+							</div>
+					   </a>
 					</div>
 				</div>
-			</div>
-				{% endfor %}
-				{% if posts.has_next %}
-    <a class="infinite-more-link" href="?page={{ posts.next_page_number }}">Loading More</a>
-  {% endif %}
-			</section></main>
+			{% endfor %}
+		</div>
+		{% if posts.has_next %}
+			<a class="infinite-more-link" href="?page={{ posts.next_page_number }}">Loading More</a>
+	   {% endif %}
+	</main>
 {% endblock content %}
