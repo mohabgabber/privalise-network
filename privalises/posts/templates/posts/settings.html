@@ -16,12 +16,23 @@
  <form method="POST" enctype='multipart/form-data' id='forms'>
         {% csrf_token %}
         <filedset class='form-group settings'>
-        {{ u_form|crispy }}
+        
+    <div class="container">
+      <div class="row">
+        <div class="col">
+         {{ u_form|crispy }}<br/>
+         <button type="submit" class="btn btn-outline-info">Update Info</button>
+         <a href="{% url 'password-change' %}" class='btn btn-outline-info'>Change Password !</a>
+        </div>
+        <div class="col">
         {{ p_form|crispy }}
+        </div>
+      </div>
+        
         <br/>
-        <button type="submit" class="btn btn-outline-info">Update Info</button>
+        
         </fieldset>
 
-   </form><a href="{% url 'password-change' %}" class='btn btn-outline-info'>Change Password !</a></div>
+   </form></div>
 </main>
 {% endblock content %} 

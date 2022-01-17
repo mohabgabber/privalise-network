@@ -2,21 +2,33 @@
 {% load crispy_forms_tags %}
 {% block content %}
 
-<main class="w-50 mx-auto">
-<div class="mx-auto logo-text">
-  <div>Priva<span>Lise</span></div>
-</div>
-    <div class='w-50 post-creation mx-auto'>
-        <br/>
+<div class="container">
+  <div class="row">
+    <div class="col">
         <center>
+      <div class='post-creation'>
+        <br/>
         <form class='post-create'  method="POST">
             {% csrf_token %}
             {{ form|crispy }}<br/>
             <button type='submit' class='btn btn-primary'>Publish</button>
         </form>
-        </center>
+    </div></center>
     </div>
-</main>
+    <div class="col">
+        <br/>
+      <h2>Hello Friend,</h2><br/>
+      <h3>Are You Wondring What Should You Write About?</h3>
+      <h3>well, Fear not!. here are some suggestions:</h3>
+      <ul>
+          <h3><li>Technology</li></h3>
+          <h3><li>Politics</li></h3>
+          <h3><li>Freedom Of Speech</li></h3>
+          <h3><li>Your Ex ;)</li></h3>
+      </ul>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 
