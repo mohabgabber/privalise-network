@@ -4,29 +4,28 @@
 ## The Main Idea:
 Can you imagine a centralized, but privacy-respecting social network? One that is modern, easy to use, fast and provides security and protection for everyone. That is why we created PrivaLise!
 
-Encrypted credentials, 2 factor authentication, no associated personal information to hack... To Put It Simply: The Web App will not record anything about its users. <br/>
-We actively avoid using any 3rd party software, such as google APIs, google analytics, any FAANG framework (React, Vue...), so rest assured that you will be totally anonymous :D
+2 factor authentication via PGP, no associated personal information to hack... To Put It Simply: The Web App will not record anything about its users. <br/>
+We'll always avoid using any 3rd party software, such as google APIs, google analytics, any FAANG framework (React, Vue...), so rest assured that you will be totally anonymous :D
 
-We also plan on creating an onion version of the web, so stay tunned!!
+it's also perfect as an onion service, bc the website doesn't have any js in it, so it can work in tor with the safest mode enabled.
 
 ## The Technology Behind It:
-   * Python 3.9.2
-   * Django 2.2.22
+   * Python 3.10
+   * Django 4
    * Pure HTML/CSS/JS
 
 ## Main Features:
    * Sign IN/UP/OUT
+   * Can Run On Tor With Safest Mode Enabled
    * Post CRUD
    * Update Username / Profile Pic
    * Notifications
-   * Infinite Scroll On The Home Page
-   * Password Recovery / Change
+   * Paginating For Posts
+   * Password Change
    * Follow/Unfollow users
    * Commenting And Replying To Comments
    * Hashtags And Mentions
-   * Dark/Light Theme
    * Public Profile For Each User With a profle pic
-   * Ajax Powered Likes/Dislikes with counter
    * 2 factor authentication
 
 ## The front-end
