@@ -8,7 +8,7 @@
 
 ## Reporting a Vulnerability
 
-If You Find A Vulnerability Please Contact Us At: privaliseorg@protonmail.com
+If You Find A Vulnerability Please Contact Us At: mohabgabber1@protonmail.com
 
 We'll Probably Fix The Issue After A Week, We'll Contact You With An Update About The Vulnurability.
 
