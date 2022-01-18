@@ -2,9 +2,6 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.urls import reverse
-#from PIL import Image
-import PIL.Image
-import json
 class Post(models.Model):
     image = models.ImageField(blank=True, null=True, upload_to='post_image')
     content = models.TextField()
@@ -84,6 +81,7 @@ class Profile(models.Model):
     bio = models.TextField(max_length=500, blank=True, null=True)
     public_key = models.TextField(blank=True, null=True)
     name = models.CharField(max_length=30, blank=True, null=True)
+    monero = models.CharField(max_length=95, blank=True, null=True)
     followers = models.ManyToManyField(User, blank=True, related_name='followers')
     verified = models.BooleanField(default=False)
     followers_count = models.BigIntegerField(default='0')
@@ -92,8 +90,6 @@ class Profile(models.Model):
         return f'{self.user.username} Profile'
 class Tag(models.Model):
     name = models.CharField(max_length=255)
-class Image(models.Model):
-    image = models.ImageField(upload_to='uploads/post_photos', blank=True, null=True)
 class Notification(models.Model):
     # 1 = Like, 2 = Comment, 3 = Follow, #4 = Mention
     notification_type = models.IntegerField()
@@ -103,7 +99,6 @@ class Notification(models.Model):
     comment = models.ForeignKey('Comment', on_delete=models.CASCADE, related_name='+', blank=True, null=True)
     date = models.DateTimeField(default=timezone.now)
     user_has_seen = models.BooleanField(default=False)
-
 '''
 class Hashtag(models.Model):
     title = models.CharField(max_length=255, blank=True, null=True, unique=True)

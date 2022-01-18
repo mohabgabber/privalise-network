@@ -1,7 +1,7 @@
 {% extends 'posts/base.html' %}
 {% block title %}@{{ user.username }} Profile, On Privalise!{% endblock title %}
 {% block content %}
-	<main class="container-fluid mx-auto content">
+	<main class="w-100 container-fluid mx-auto content">
 		<section class="profile">
 			<div class="picture-container">
 				<img class="profile-picture" src="{{ user.profile.image.url }}">
@@ -13,29 +13,30 @@
 			  <i style='color: blue; width: 100;' class="fas fa-passport"></i>
 	    	{% endif %}
 
-	      <br/><br/>
+	        <br/><br/>
 
 			{% if request.user == user %}
-           <a href="{% url 'profile-update' %}">
-           	<button type="button" style="margin-left: 11px;" class="btn btn-outline-info">
-	           Settings
-           </button></a>
-           <br/><br/>
-         {% else %}
-	         {% if is_following == False %}
-		         <form method="POST" action='{% url "add-follower" user.username %}'>
-		            {% csrf_token %}
-		            <button type="submit" style="margin-left: 21px;" class="btn btn-outline-danger">Follow</button>
-		         </form>
-		         <br/><br/>
-	         {% else %}
-		         <form method="POST" action='{% url "remove-follower" user.username %}'>
-			         {% csrf_token %}
-		            <button type="submit" style="margin-left: 21px;"  class="btn btn-outline-danger">UnFollow</button>
-		         </form>
-		         <br/><br/>
-	         {% endif %}
-         {% endif %}
+	            <a href="{% url 'profile-update' %}">
+	           	<button type="button" style="margin-left: 11px;" class="btn btn-outline-info">
+		           Settings
+	            </button></a>
+	            <br/><br/>
+            {% else %}
+	            {% if is_following == False %}
+			        <form method="POST" action='{% url "add-follower" user.username %}'>
+			            {% csrf_token %}
+				        <button type="submit" style="margin-left: 21px;" class="btn btn-outline-danger">Follow</button>
+			        </form>
+			        <br/><br/>
+	            {% else %}
+		            <form method="POST" action='{% url "remove-follower" user.username %}'>
+			            {% csrf_token %}
+		                <button type="submit" style="margin-left: 21px;"  class="btn btn-outline-danger">UnFollow</button>
+		            </form>
+		            <br/><br/>
+	            {% endif %}
+            {% endif %}
+
 		</section>
 		<div class="infinite-container w-50">
 			{% for post in posts %}
