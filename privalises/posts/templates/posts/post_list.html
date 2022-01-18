@@ -1,50 +1,52 @@
 {% extends 'posts/base.html' %}
 {% block title %}Privalise!, Where Everything Is Awesome{% endblock title %}
 {% block content %}
-<main class="w-50 mx-auto">
-	<div class="mx-auto logo-text">
-	  <div>Priva<span>Lise</span></div>
-	</div>
-  {% if messages %}
-     {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} content">{{ message }}</div>
-     {% endfor %}
-  {% endif %}
-  <center>
-  	<br/>
-  <div class="infinite-container">
-		{% for post in posts %}
-			<div class="post infinite-item" style="text-align: left;">
-				<div class="profile-container">
-		        <img class="profile-picture post-img" src="{{ post.author.profile.image.url }}">
-		    </div>
+	<main class="container-fluid mx-auto content">
+		<div class="mx-auto logo-text">
+		  <div>Priva<span>Lise</span></div>
+		</div>
+	  {% if messages %}
+	     {% for message in messages %}
+	        <div class="alert alert-{{ message.tags }} content">{{ message }}</div>
+	     {% endfor %}
+	  {% endif %}
+	  <center>
+	  	<br/>
+	  <div class="container">
+			{% for post in posts %}
+			<div class="col-sm-8">
+				<div class="post" style="text-align: left;">
+					<div class="profile-container">
+			        <img class="profile-picture post-img" src="{{ post.author.profile.image.url }}">
+			    </div>
 
-				<div class="post-content">
-					<div class="post-info">
-						<div class="post-info1">
-							<a class="username" href="{% url 'profile' post.author %}">@{{ post.author }}</a>
-							<p class="date">{{ post.date_posted }}</p>
+					<div class="post-content">
+						<div class="post-info">
+							<div class="post-info1">
+								<a class="username" href="{% url 'profile' post.author %}">@{{ post.author }}</a>
+								<p class="date">{{ post.date_posted }}</p>
 
-						</div>
-    			</div>
+							</div>
+	    			</div>
 
-					<a style="text-decoration: inherit; color: inherit;" href="{% url 'post-detail' post.pk %}">
-						<div class="post-text tags-id mentions-id">
-							<p>{{ post.content }}</p>
-							<a style="width: 40%; height: 35%;" href="{% url 'post-detail' post.pk %}" class="btn btn-outline-info">Open Post</a>
-						</div>
-				   </a>
+						<a style="text-decoration: inherit; color: inherit;" href="{% url 'post-detail' post.pk %}">
+							<div class="post-text tags-id mentions-id">
+								<p>{{ post.content }}</p>
+								<a style="width: 40%; height: 35%;" href="{% url 'post-detail' post.pk %}" class="btn btn-outline-info">Open Post</a>
+							</div>
+					   </a>
+					</div>
 				</div>
-			</div>
-		{% endfor %}
-	</div>
-			<center>
-				{% if posts.has_previous %}
-		      <a href="?page={{posts.previous_page_number}}" class="btn btn-outline-info"><</a>
-		    {% endif %}
-		    <span class="btn btn-primary">{{posts.number}}</span>  
-		    {% if posts.has_next %}
-		      <a href="?page={{posts.next_page_number}}" class="btn btn-outline-info">></a>
-		    {% endif %}
-	    </center>
+				</div>
+			{% endfor %}
+		</div>
+				<center>
+					{% if posts.has_previous %}
+			      <a href="?page={{posts.previous_page_number}}" class="btn btn-outline-info"><</a>
+			    {% endif %}
+			    <span class="btn btn-primary">{{posts.number}}</span>  
+			    {% if posts.has_next %}
+			      <a href="?page={{posts.next_page_number}}" class="btn btn-outline-info">></a>
+			    {% endif %}
+		    </center>
 {% endblock content %}

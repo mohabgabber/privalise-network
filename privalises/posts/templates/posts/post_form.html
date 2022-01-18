@@ -1,21 +1,23 @@
 {% extends 'posts/base.html' %}
 {% load crispy_forms_tags %}
-{% block content %}
+{% block title %}Create A New Post On Privalise!, Where Everything Is Awesome{% endblock title %}
 
+{% block content %}
+<br><br><br>
 <div class="container">
   <div class="row">
-    <div class="col">
+    <div class="col-sm-8">
         <center>
       <div class='post-creation'>
         <br/>
         <form method='POST'>
           {% csrf_token %}
-          <textarea name="content" class="form-control" style="width: 100%;" cols="100" rows="7" placeholder="Comment Human!"></textarea><br/>
+          <textarea name="content" class="form-control" style="width: 100%;" cols="100" rows="7" placeholder="Post Human!"></textarea><br/>
           <button class="btn btn-primary">Post</button>
         </form><br/>
     </div></center>
     </div>
-    <div class="col">
+    <div class="col-sm-4">
         <br/>
       <h2>Hello Friend,</h2><br/>
       <h3>Are You Wondring What Should You Write About?</h3>

@@ -1,8 +1,8 @@
 {% extends 'posts/base.html' %}
 {% block title %}@{{ user.username }} Profile, On Privalise!{% endblock title %}
 {% block content %}
-	<main class="mx-auto content">
-		<section class="w-77 profile">
+	<main class="container-fluid mx-auto content">
+		<section class="profile">
 			<div class="picture-container">
 				<img class="profile-picture" src="{{ user.profile.image.url }}">
 			</div>
@@ -64,14 +64,14 @@
 			{% endfor %}
 		</div>
 		<center>
-        {% if posts.has_previous %}
-            <a href="?page={{posts.previous_page_number}}" class="btn btn-outline-info"><</a>
-        {% endif %}
-        <span class="btn btn-primary">{{posts.number}}</span>
-        
-        {% if posts.has_next %}
-            <a href="?page={{posts.next_page_number}}" class="btn btn-outline-info">></a>
-        {% endif %}
-    </center>
+	        {% if posts.has_previous %}
+	            <a href="?page={{posts.previous_page_number}}" class="btn btn-outline-info"><</a>
+	        {% endif %}
+	        <span class="btn btn-primary">{{posts.number}}</span>
+	        
+	        {% if posts.has_next %}
+	            <a href="?page={{posts.next_page_number}}" class="btn btn-outline-info">></a>
+	        {% endif %}
+	    </center>
 	</main>
 {% endblock content %}
