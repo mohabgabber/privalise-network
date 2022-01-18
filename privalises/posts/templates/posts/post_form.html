@@ -12,7 +12,9 @@
         <br/>
         <form method='POST'>
           {% csrf_token %}
-          <textarea name="content" class="form-control" style="width: 100%;" cols="100" rows="7" placeholder="Post Human!"></textarea><br/>
+          {{ form.media }}
+          {{ form }}
+          <!--<textarea name="content" class="form-control" style="width: 100%;" cols="100" rows="7" placeholder="Post Human!"></textarea>--><br/>
           <button class="btn btn-primary">Post</button>
         </form><br/>
     </div></center>

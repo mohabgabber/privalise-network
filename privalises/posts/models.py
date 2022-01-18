@@ -2,9 +2,10 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.urls import reverse
+from ckeditor.fields import RichTextField
 class Post(models.Model):
     image = models.ImageField(blank=True, null=True, upload_to='post_image')
-    content = models.TextField()
+    content = RichTextField()
     date_posted = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     dislikes = models.ManyToManyField(User, blank=True, default=None, related_name='dislikes')

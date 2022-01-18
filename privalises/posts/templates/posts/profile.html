@@ -56,7 +56,7 @@
 
 					<a style="text-decoration: inherit; color: inherit;" href="{% url 'post-detail' post.pk %}">
 						<div class="post-text tags-id mentions-id">
-							<p>{{ post.content }}</p>
+							<p>{{ post.content|safe }}</p>
 							<a style="width: 40%; height: 35%;" href="{% url 'post-detail' post.pk %}" class="btn btn-outline-info">Open Post</a>
 						</div>
 				   </a>
