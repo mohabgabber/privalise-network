@@ -46,24 +46,71 @@ class PostListView(LoginRequiredMixin, View):
     context = {'posts': posts,}
     return render(request, 'posts/post_list.html', context)
     '''
-@login_required
-def PostDetailView(request, pk):
-    template_name = 'posts/post_detail.html'
-    post = get_object_or_404(Post, pk=pk)
-    comments = Comment.objects.filter(post=post).order_by('-date_created')
-    commentcount = 0
-    for comment in comments:
-        commentcount += 1
-    return render(request, template_name, {'post': post, 'comments': comments, 'commentcount': commentcount})
-class PostCreateView(LoginRequiredMixin, CreateView):
-    model = Post
-    fields = ['content']
-    context_object_name = 'content'
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        form.instance.save()
-        process_mentions_from_post_content(form.instance)
-        return super().form_valid(form)
+class PostDetailView(LoginRequiredMixin, View):
+    def get(self, request, pk, *args, **kwargs):
+        post = Post.objects.get(pk=pk)
+        form = CommentForm()
+        comments = Comment.objects.filter(post=post)
+        commentcount = 0
+        for comment in comments:
+            commentcount += 1
+        context = {
+            'post': post,
+            'form': form,
+            'commentcount': commentcount,
+            'comments': comments,
+        }
+        return render(request, 'posts/post_detail.html', context)
+    def post(self, request, pk, *args, **kwargs):
+        post = Post.objects.get(pk=pk)
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            new_comment = form.save(commit=False)
+            new_comment.content = request.POST.get('content')
+            new_comment.author = request.user
+            new_comment.post = post
+            new_comment.save()
+            new_comment.create_tags()
+        comments = Comment.objects.filter(post=post)
+        commentcount = 0
+        for comment in comments:
+            commentcount += 1
+        notification = Notification.objects.create(notification_type=2, from_user=request.user, to_user=post.author, post=post)
+        context = {
+            'post': post,
+            'form': form,
+            'commentcount': commentcount,
+            'comments': comments,
+        }
+        return render(request, 'posts/post_detail.html', context)
+class CommentReplyView(LoginRequiredMixin, View):
+    def post(self, request, post_pk, pk, *args, **kwargs):
+        post = Post.objects.get(pk=post_pk)
+        parent_comment = Comment.objects.get(pk=pk)
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            new_comment = form.save(commit=False)
+            new_comment.author = request.user
+            new_comment.post = post
+            new_comment.parent = parent_comment
+            new_comment.save()
+        notification = Notification.objects.create(notification_type=2, from_user=request.user, to_user=parent_comment.author, comment=new_comment)
+        return redirect('post-detail', pk=post_pk)
+class PostCreateView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        form = PostForm()
+        context = {'form': form,}
+        return render(request, 'posts/post_form.html', context)
+    def post(self, request, *args, **kwargs):
+        form = PostForm(request.POST)
+        if form.is_valid():
+            new_post = form.save(commit=False)
+            new_post.content = request.POST.get('content')
+            new_post.author = request.user
+            new_post.save()
+            new_post.create_tags()
+        context = {'form': form,}
+        return render(request, 'posts/post_form.html', context)
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     context_object_name = 'post'

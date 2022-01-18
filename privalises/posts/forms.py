@@ -25,8 +25,6 @@ class UserUpdateForm(forms.ModelForm):
         fields = ['username']
 
 class PostForm(forms.ModelForm):
-    image = forms.ImageField(required=False)
-
     class Meta:
         model = Post
-        fields = ['content', 'image']
+        fields = ['content']

@@ -1,5 +1,6 @@
 {% extends 'posts/base.html' %}
 {% load static %}
+{% load crispy_forms_tags %}
 {% block title %}{{post.author}}'s Post On Privalise!, Where Everything Is Awesome{% endblock title %}
 {% block content %}
   <main class="w-50 mx-auto">
@@ -29,6 +30,14 @@
             <p>{{ post.content }}</p>
           </div>
         </div>  
+      </div>
+      
+      <div class="post" style="background-color: var(--light-post-bg); text-align: left;">
+        <form method='POST'>
+          {% csrf_token %}
+          <textarea name="content" class="form-control" style="width: 100%;" cols="100" rows="7" placeholder="Comment Human!"></textarea><br/>
+          <button class="btn btn-primary">Post</button>
+        </form>
       </div>
       <br/>
       <div class="post" style="background-color: var(--light-post-bg); text-align: left;">

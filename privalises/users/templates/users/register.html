@@ -10,38 +10,6 @@
 		<link rel="stylesheet" href="{% static 'css/logo.css' %}">
 		<link rel="stylesheet" href="{% static 'css/login/page.css' %}">
 		<link rel="stylesheet" href="{% static 'css/register/page.css' %}">
-
-		<script>
-			function checkUsername(input){
-				let text = document.getElementById(input).value;
-				
-				console.log(/^([A-Za-z0-9\.\-\_]+)$/.test(text));
-
-				return /^([A-Za-z0-9\.\-\_]+)$/.test(text);
-			}
-
-			function checkPasswords(pwd1, pwd2){
-				let text1 = document.getElementById(pwd1).value;
-				let text2 = document.getElementById(pwd2).value;
-
-				let res = text1===text2;
-
-				document.getElementById("passwderror").style="display:" + (res?"none":"unset");
-
-				return res;
-			}
-
-			function checkPasswords(event, pwd1, pwd2){
-				let text1 = pwd1.value;
-				let text2 = pwd2.value + event.key;
-
-				let res = text1===text2;
-
-				document.getElementById("passwderror").style="display:" + (res?"none":"unset");
-
-				return res;
-			}
-		</script>
 	</head>
 
 	<body>
@@ -50,17 +18,15 @@
 				<div>Priva<span>Lise</span></div>
 			</div>
 		
-			<form method="POST" style="margin: 0" onsubmit="return (checkPasswords('id_password1', 'id_password2') && checkUsername('id_username'))">
+			<form method="POST" style="margin: 0">
 				<table class="login form-inputs">
 						{% csrf_token %}
-
 						<tr>
 							<td id="div_id_username">
 								<input id="id_username" class="textinput textInput form-control" 
 								placeholder="Username"
 								type="text" name="username" maxlength="40" 
 								autofocus="" required 
-								onkeypress="checkUsername('id_username')"
 								style="margin-top:auto;margin-bottom:auto;">	
 							</td>
 
@@ -90,7 +56,6 @@
 
 									<input class="textinput textInput form-control" id="id_password2"
 									placeholder="Repeat your password" minlength="8"
-									onkeypress="checkPasswords(event, document.getElementById('id_password1'), this)"
 									type="password" name="password2" autocomplete="new-password" required>
 								</div>
 

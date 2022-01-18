@@ -4,7 +4,7 @@ from django.urls import path
 from .views import AddFavourites, AddLike, RemoveNotification, ListNotifications, AddDislike, PostNotification, FollowNotification,  Search, AddCommentLike, AddCommentDislike, CommentReply, ProfileView, get_profile_view_by_username, settings, AddFollower, RemoveFollower, PostListView, PostCreateView, PostDetailView, PostUpdateView, PostDeleteView, CommentDeleteView
 urlpatterns = [
     path('', PostListView.as_view(), name='home'),
-    path('post/<int:pk>/', PostDetailView, name='post-detail'),
+    path('post/<int:pk>/', PostDetailView.as_view(), name='post-detail'),
     path('post/<int:pk>/update/', PostUpdateView.as_view(), name='post-update'),
     path('profile/settings/', settings, name='profile-update'),
     path('post/<int:pk>/delete/', PostDeleteView.as_view(), name='post-delete'),

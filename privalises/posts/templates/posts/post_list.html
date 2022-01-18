@@ -14,7 +14,7 @@
   	<br/>
   <div class="infinite-container">
 		{% for post in posts %}
-			<div class="post infinite-item">
+			<div class="post infinite-item" style="text-align: left;">
 				<div class="profile-container">
 		        <img class="profile-picture post-img" src="{{ post.author.profile.image.url }}">
 		    </div>
@@ -24,12 +24,14 @@
 						<div class="post-info1">
 							<a class="username" href="{% url 'profile' post.author %}">@{{ post.author }}</a>
 							<p class="date">{{ post.date_posted }}</p>
+
 						</div>
     			</div>
 
 					<a style="text-decoration: inherit; color: inherit;" href="{% url 'post-detail' post.pk %}">
 						<div class="post-text tags-id mentions-id">
 							<p>{{ post.content }}</p>
+							<a style="width: 40%; height: 35%;" href="{% url 'post-detail' post.pk %}" class="btn btn-outline-info">Open Post</a>
 						</div>
 				   </a>
 				</div>
