@@ -70,7 +70,6 @@ class PostDetailView(LoginRequiredMixin, View):
             new_comment.author = request.user
             new_comment.post = post
             new_comment.save()
-            new_comment.create_tags()
         comments = Comment.objects.filter(post=post)
         commentcount = 0
         for comment in comments:
@@ -110,7 +109,7 @@ class PostCreateView(LoginRequiredMixin, View):
             new_post.save()
             new_post.create_tags()
         context = {'form': form,}
-        return render(request, 'posts/post_form.html', context)
+        return redirect('post-detail', pk=new_post.pk)
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     context_object_name = 'post'
@@ -122,19 +121,29 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return False    
 @login_required
 def settings(request):
-     if request.method == 'POST':
-         u_form = UserUpdateForm(request.POST, instance=request.user)
-         p_form = ProfileUpdteForm(request.POST, request.FILES, instance=request.user.profile)
-         if u_form.is_valid() and p_form.is_valid():
-             u_form.save()
-             p_form.save()
-             messages.success(request, f'your account has been updated')
-             return redirect('home')
-     else:
-         u_form = UserUpdateForm(instance=request.user)
-         p_form = ProfileUpdteForm(instance=request.user.profile)
-     context = {'u_form': u_form, 'p_form': p_form}
-     return render(request, 'posts/settings.html', context)
+    if request.method == 'POST':
+        u_form = UserUpdateForm(request.POST, instance=request.user)
+        p_form = ProfileUpdteForm(request.POST, request.FILES, instance=request.user.profile)
+        if u_form.is_valid() and p_form.is_valid():
+            userform = u_form.save(commit=False)
+            profileform = p_form.save(commit=False)
+            u_form.username = request.POST.get('username')
+            p_form.name = request.POST.get('name')
+            p_form.xmppusername = request.POST.get('xmppusername')
+            p_form.xmppserver = request.POST.get('xmppserver')
+            p_form.monero = request.POST.get('monero')
+            p_form.bio = request.POST.get('bio')
+            p_form.public_key = request.POST.get('public_key')
+            p_form.image = request.POST.get('image')
+            u_form.save()
+            p_form.save()
+            messages.success(request, f'your account has been updated')
+            return redirect('profile', username=request.user)
+    else:
+        u_form = UserUpdateForm(instance=request.user)
+        p_form = ProfileUpdteForm(instance=request.user.profile)
+    context = {'u_form': u_form, 'p_form': p_form}
+    return render(request, 'posts/settings.html', context)
 class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Comment
     template_name = 'posts/comments_delete.html'
@@ -148,7 +157,7 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return False
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
-    fields = ['content', 'image']
+    fields = ['content']
     def form_valid(self, form):
         form.instance.author = self.request.user
         form.instance.save()
@@ -246,70 +255,6 @@ class AddCommentDislike(LoginRequiredMixin, View):
             comment.dislikes.remove(request.user)
         next = request.POST.get("next", '/')
         return HttpResponseRedirect(next)            
-class CommentReply(LoginRequiredMixin, View):
-    def post(self, request, post_pk, pk, *args, **kwargs):
-        post = Post.objects.get(pk=post_pk)
-        parent_comment = Comment.objects.get(pk=pk)
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            new_comment = form.save(commit=False)
-            new_comment.author = request.user
-            new_comment.post = post
-            new_comment.parent = parent_comment
-            new_comment.save()
-        notification = Notification.objects.create(notification_type=2, from_user=request.user, to_user=parent_comment.author, comment=new_comment)
-        return redirect('post-detail', pk=post_pk)
-@ login_required
-def AddDislike(request):
-    if request.POST.get('action') == 'post':
-        result = ''
-        id = int(request.POST.get('postid'))
-        post = get_object_or_404(Post, id=id)
-        is_like = False
-        for like in post.likes.all():
-            if like == request.user:
-                is_like = True
-                break
-        if is_like:
-            post.likes.remove(request.user)
-        is_dislike = False
-        if post.dislikes.filter(id=request.user.id).exists():
-            post.dislikes.remove(request.user)
-            post.like_count += 1
-            result = post.like_count
-            post.save()
-        else:
-            post.dislikes.add(request.user)
-            post.like_count -= 1
-            result = post.like_count
-            post.save()
-        return JsonResponse({'result': result, })
-@login_required
-def AddLike(request):
-    if request.POST.get('action') == 'post':
-        result = ''
-        id = int(request.POST.get('postid'))
-        post = get_object_or_404(Post, id=id)
-        is_dislike = False
-        for dislike in post.dislikes.all():
-            if dislike == request.user:
-                is_dislike = True
-                break
-        if is_dislike:
-            post.dislikes.remove(request.user)   
-        is_like = False
-        if post.likes.filter(id=request.user.id).exists():
-            post.likes.remove(request.user)
-            post.like_count -= 1
-            result = post.like_count
-            post.save()
-        else:
-            post.likes.add(request.user)
-            post.like_count += 1
-            result = post.like_count
-            post.save()
-            notification = Notification.objects.create(notification_type=1, from_user=request.user, to_user=post.author, post=post)
-        return JsonResponse({'result': result, })
 @login_required
 def FavouritesList(request):
     new = Post.newmanager.filter(favourites=request.user)
@@ -324,12 +269,6 @@ def AddFavourites(request, id):
         post.favourites.add(request.user)
         messages.success(request, f'Post Is MarkaLised! Amazing :D')
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
-def get_profile_view_by_username(request, username):
-    if request.method == 'GET':
-        users = User.objects.filter(username=username)
-        if users:
-            return redirect('profile', pk=users[0].id)
-        return redirect('profile', pk=0)
 class PostNotification(View):
     def get(self, request, notification_pk, post_pk, *args, **kwargs):
         notification = Notification.objects.get(pk=notification_pk)
@@ -338,9 +277,10 @@ class PostNotification(View):
         notification.save()
         return redirect('post-detail', pk=post_pk)
 class FollowNotification(View):
-    def get(self, request, notification_pk, profile_pk, *args, **kwargs):
+    def get(self, request, notification_pk, username, *args, **kwargs):
         notification = Notification.objects.get(pk=notification_pk)
-        profile = Profile.objects.get(pk=profile_pk)
+        user = User.objects.get(username=username)
+        profile = user.profile
         notification.user_has_seen = True
         notification.save()
         return redirect('profile', pk=profile_pk)

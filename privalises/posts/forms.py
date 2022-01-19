@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 class ProfileUpdteForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ['name', 'bio', 'public_key', 'image']
+        fields = ['name', 'bio', 'monero', 'public_key', 'image', 'xmppusername', 'xmppserver']
 
 class CommentForm(forms.ModelForm):
     class Meta:
