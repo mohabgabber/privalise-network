@@ -2,10 +2,9 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.urls import reverse
-from ckeditor.fields import RichTextField
 class Post(models.Model):
     image = models.ImageField(blank=True, null=True, upload_to='post_image')
-    content = RichTextField()
+    content = models.TextField()
     date_posted = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     dislikes = models.ManyToManyField(User, blank=True, default=None, related_name='dislikes')
@@ -19,7 +18,7 @@ class Post(models.Model):
     mentions = models.ManyToManyField(User, related_name='mentions', blank=True)
     def create_tags(self):
         for word in self.content.split():
-            if (word[0] == '#'):
+            if (word[0] == '$'):
                 tag = Tag.objects.filter(name=word[1:]).first()
                 if tag:
                     self.tags.add(tag.pk)
@@ -55,7 +54,7 @@ class Comment(models.Model):
     parent = models.ForeignKey('self', blank=True, on_delete=models.CASCADE, null=True, related_name='+')
     def create_tags(self):
         for word in self.content.split():
-            if (word[0] == '#'):
+            if (word[0] == '$'):
                 tag = Tag.objects.get(name=word[1:])
                 if tag:
                     self.tags.add(tag.pk)
@@ -83,6 +82,8 @@ class Profile(models.Model):
     public_key = models.TextField(blank=True, null=True)
     name = models.CharField(max_length=30, blank=True, null=True)
     monero = models.CharField(max_length=95, blank=True, null=True)
+    xmppusername = models.CharField(max_length=20, blank=True, null=True)
+    xmppserver = models.CharField(max_length=62, blank=True, null=True)
     followers = models.ManyToManyField(User, blank=True, related_name='followers')
     verified = models.BooleanField(default=False)
     followers_count = models.BigIntegerField(default='0')

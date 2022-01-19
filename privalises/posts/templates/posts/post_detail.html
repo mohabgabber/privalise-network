@@ -1,5 +1,6 @@
 {% extends 'posts/base.html' %}
 {% load static %}
+{% load post_extras %}
 {% load crispy_forms_tags %}
 {% block title %}{{post.author}}'s Post On Privalise!, Where Everything Is Awesome{% endblock title %}
 {% block content %}
@@ -27,7 +28,7 @@
             </div>
           </div>
           <div class="post-text tags-id mentions-id">
-            <p>{{ post.content|safe }}</p>
+            <p>{{ post.content|convert_markdown|safe }}</p>
           </div>
         </div>  
       </div>
@@ -57,7 +58,7 @@
               </div>
             </div>
             <div class="post-text" style="text-align: left;">
-              <p>{{ comment.content }}</p>
+              <p>{{ comment.content|convert_markdown|safe }}</p>
             </div>
           </div>  
         </div>

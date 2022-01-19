@@ -70,7 +70,6 @@ class PostDetailView(LoginRequiredMixin, View):
             new_comment.author = request.user
             new_comment.post = post
             new_comment.save()
-            new_comment.create_tags()
         comments = Comment.objects.filter(post=post)
         commentcount = 0
         for comment in comments:
@@ -110,7 +109,7 @@ class PostCreateView(LoginRequiredMixin, View):
             new_post.save()
             new_post.create_tags()
         context = {'form': form,}
-        return render(request, 'posts/post_form.html', context)
+        return redirect('post-detail', pk=new_post.pk)
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     context_object_name = 'post'
@@ -130,6 +129,8 @@ def settings(request):
             profileform = p_form.save(commit=False)
             u_form.username = request.POST.get('username')
             p_form.name = request.POST.get('name')
+            p_form.xmppusername = request.POST.get('xmppusername')
+            p_form.xmppserver = request.POST.get('xmppserver')
             p_form.monero = request.POST.get('monero')
             p_form.bio = request.POST.get('bio')
             p_form.public_key = request.POST.get('public_key')

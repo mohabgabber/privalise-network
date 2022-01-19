@@ -43,9 +43,9 @@
     
     <div class="input-group mb-3">
       <span class="input-group-text"><i class="fas fa-comments"></i></span>
-      <input type="text" class="form-control" placeholder="Your Xmpp Username" aria-label="Username">
+      <input type="text" name="xmppusername" value="{{ request.user.profile.xmppusername }}" class="form-control" placeholder="Your Xmpp Username" aria-label="Username">
       <span class="input-group-text">@</span>
-      <input type="text" class="form-control" placeholder="Server.domain" aria-label="Server">
+      <input type="text" name="xmppserver" class="form-control" value="{{ request.user.profile.xmppserver }}" placeholder="Server.domain" aria-label="Server">
     </div>
     
     <div class="input-group">
