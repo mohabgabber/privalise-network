@@ -17,7 +17,7 @@ it's also perfect as an onion service, bc the website doesn't have any js in it,
 ## Main Features:
    * Sign IN/UP/OUT
    * Can Run On Tor With Safest Mode Enabled
-   * Post CRUD
+   * Post CRUD With MD Rendering
    * Update Username / Profile Pic
    * Notifications
    * Paginating For Posts
