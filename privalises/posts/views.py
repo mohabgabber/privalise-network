@@ -14,7 +14,6 @@ from django.urls import reverse_lazy
 from django.http import JsonResponse, HttpResponse
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from .service import process_mentions_from_post_content
-import json
 class PostListView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         logged_in_user = request.user
@@ -70,6 +69,7 @@ class PostDetailView(LoginRequiredMixin, View):
             new_comment.author = request.user
             new_comment.post = post
             new_comment.save()
+            new_comment.create_tags()
         comments = Comment.objects.filter(post=post)
         commentcount = 0
         for comment in comments:
@@ -180,7 +180,7 @@ class ProfileView(LoginRequiredMixin, View):
         posts = Post.objects.filter(author=user).order_by('-date_posted')
         followers = profile.followers.all()    
         page = request.GET.get('page', 1)
-        paginator = Paginator(posts, 1)
+        paginator = Paginator(posts, 3)
         try:
             post_list = paginator.page(page)
         except PageNotAnInteger:
@@ -289,12 +289,12 @@ class FollowNotification(View):
         profile = user.profile
         notification.user_has_seen = True
         notification.save()
-        return redirect('profile', pk=profile_pk)
+        return redirect('profile', username=username)
 class RemoveNotification(View):
-    def delete(self, request, notification_pk, *args, **kwargs):
+    def get(self, request, notification_pk, *args, **kwargs):
         notification = Notification.objects.get(pk=notification_pk)
-        notification.user_has_seen = True
-        notification.save()
+        if notification.to_user == request.user:
+            notification.delete()
         return redirect('notifications-list')
 class ListNotifications(View):
     def get(self, request, *args, **kwargs):

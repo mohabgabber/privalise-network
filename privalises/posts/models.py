@@ -29,7 +29,7 @@ class Post(models.Model):
                 self.save()
         if self.shared_body:
             for word in self.shared_body.split():
-                if (word[0] == '#'):
+                if (word[0] == '$'):
                     tag = Tag.objects.filter(name=word[1:]).first()
                     if tag:
                         self.tags.add(tag.pk)
