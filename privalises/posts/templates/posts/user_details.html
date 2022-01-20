@@ -1,0 +1,62 @@
+{% extends 'posts/base.html' %}
+{% load post_extras %}
+{% block title %}@{{ user.username }} Profile, On Privalise!{% endblock title %}
+{% block content %}
+	<main class="w-100 container-fluid mx-auto content">
+	  {% if messages %}
+	     {% for message in messages %}
+	        <div class="alert alert-{{ message.tags }} content">{{ message }}</div>
+	     {% endfor %}
+	  {% endif %}
+		<section class="profile">
+			<div class="picture-container">
+				<img class="profile-picture" src="{{ user.profile.image.url }}">
+			</div>
+			<h2 class="account-heading">@{{ user.username }}</h2>
+			{% if request.user == user %}
+	            <a href="{% url 'profile-update' %}">
+	           	<button type="button" style="margin-left: 11px;" class="btn btn-outline-info">
+		           Settings
+	            </button></a>
+	            <br/><br/>
+            {% else %}
+	            {% if is_following == False %}
+			        <form method="POST" action='{% url "add-follower" user.username %}'>
+			            {% csrf_token %}
+				        <button type="submit" style="margin-left: 21px;" class="btn btn-outline-danger">Follow</button>
+			        </form>
+			        <br/><br/>
+	            {% else %}
+		            <form method="POST" action='{% url "remove-follower" user.username %}'>
+			            {% csrf_token %}
+		                <button type="submit" style="margin-left: 21px;"  class="btn btn-outline-danger">UnFollow</button>
+		            </form>
+		            <br/><br/>
+	            {% endif %}
+            {% endif %}
+            <a href="#hashLink" style="margin-left: 8px; margin-right: 8px;" class="btn btn-outline-danger"><i class="fas fa-user-secret"></i></a> 
+		</section>
+		            <div>
+			    <p id="hashLink">
+			        Name: {{user.profile.name}}<br>
+			        Monero: {{user.profile.monero}}<br>
+			        XMPP: {{user.profile.xmppusername}}@{{user.profile.xmppserver}}<br><br>
+			        <a class="btn-primary btn-lg" style="text-decoration: inherit; color: inherit;" href="#">collapse</a>    
+			    </p>
+			</div>
+		<center>
+		<div class="w-100">
+			<div class="post container-fluid" style="text-align: center;">
+						<div class="post-text tags-id mentions-id">
+							Name: {{user.profile.name}}<br>
+					        XMPP: {{user.profile.xmppusername}}@{{user.profile.xmppserver}}<br><br>
+					        <p style="word-break: break-all;">Monero: {{user.profile.monero}}</p>
+					        <textarea class="form-control" cols="55" rows="30">{{user.profile.public_key}}</textarea>
+						</div>
+				   </a>
+				</div>
+			</div>
+		</div>
+		</center>
+	</main>
+{% endblock content %}
