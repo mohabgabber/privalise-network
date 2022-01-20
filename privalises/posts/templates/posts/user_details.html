@@ -39,51 +39,24 @@
 		            <div>
 			    <p id="hashLink">
 			        Name: {{user.profile.name}}<br>
-			        
-			        Monero: {% if user.profile.monero == None %}NO ADDRESS{% else %} <a href="{% url 'user-details' user.username %}">Show Full Address{% endif %}</a><br>
-			        XMPP: {{user.profile.xmppusername}}@{{user.profile.xmppserver}}<br>
-
-			        PGP: {% if user.profile.public_key == '' %}NO Key{% else %} <a href="{% url 'user-details' user.username %}">Show Full Key{% endif %}</a><br><br>
-
+			        Monero: {{user.profile.monero}}<br>
+			        XMPP: {{user.profile.xmppusername}}@{{user.profile.xmppserver}}<br><br>
 			        <a class="btn-primary btn-lg" style="text-decoration: inherit; color: inherit;" href="#">collapse</a>    
 			    </p>
 			</div>
+		<center>
 		<div class="w-100">
-			{% for post in posts %}
-			<div class="post" style="text-align: left; margin: 0 auto;">
-				<div class="profile-container">
-		        <img class="profile-picture post-img" src="{{ post.author.profile.image.url }}">
-		    </div>
-
-				<div class="post-content">
-					<div class="post-info">
-						<div class="post-info1">
-							<a class="username" href="{% url 'profile' post.author %}">@{{ post.author }}</a>
-							<p class="date">{{ post.date_posted }}</p>
-
-						</div>
-    			</div>
-
-					<a style="text-decoration: inherit; color: inherit;" href="{% url 'post-detail' post.pk %}">
+			<div class="post container-fluid" style="text-align: center;">
 						<div class="post-text tags-id mentions-id">
-							<p>{{ post.content|convert_markdown|safe }}</p>
-							<a style="width: 40%; height: 35%;" href="{% url 'post-detail' post.pk %}" class="btn btn-outline-info">Open Post</a>
+							Name: {{user.profile.name}}<br>
+					        XMPP: {{user.profile.xmppusername}}@{{user.profile.xmppserver}}<br><br>
+					        <p style="word-break: break-all;">Monero: {{user.profile.monero}}</p>
+					        <textarea class="form-control" cols="55" rows="30">{{user.profile.public_key}}</textarea>
 						</div>
 				   </a>
 				</div>
 			</div>
-			{% endfor %}
 		</div>
-		<br>
-		<center><br/>
-	        {% if posts.has_previous %}
-	            <a href="?page={{posts.previous_page_number}}" class="btn btn-outline-info"><</a>
-	        {% endif %}
-	        <span class="btn btn-primary">{{posts.number}}</span>
-	        
-	        {% if posts.has_next %}
-	            <a href="?page={{posts.next_page_number}}" class="btn btn-outline-info">></a>
-	        {% endif %}
-	    </center>
+		</center>
 	</main>
 {% endblock content %}

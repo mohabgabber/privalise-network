@@ -144,6 +144,11 @@ def settings(request):
         p_form = ProfileUpdteForm(instance=request.user.profile)
     context = {'u_form': u_form, 'p_form': p_form}
     return render(request, 'posts/settings.html', context)
+class UserDetails(LoginRequiredMixin, View):
+    def get(self, request, username, *args, **kwargs):
+        user = User.objects.get(username=username)
+        context = {'user': user,}
+        return render(request, 'posts/user_details.html', context)
 class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Comment
     template_name = 'posts/comments_delete.html'
@@ -208,9 +213,10 @@ class RemoveFollower(LoginRequiredMixin, View):
         return redirect('profile', username=user.username)
 class Search(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        query = self.request.GET.get('query')
+        query = self.request.POST.get('query')
         profile_list = Profile.objects.filter(Q(user__username__icontains=query))
-        context = {'profiles': profile_list,}
+        posts_list = Posts.objects.filter(Q(user__username__icontains=query))
+        context = {'profiles': profile_list, 'posts': posts_list}
         return render(request, 'posts/search.html', context)
 class AddCommentLike(LoginRequiredMixin, View):
     def post(self, request, pk, *args, **kwargs):
@@ -289,7 +295,7 @@ class RemoveNotification(View):
         notification = Notification.objects.get(pk=notification_pk)
         notification.user_has_seen = True
         notification.save()
-        return HttpResponse('Success', content_type='text/plain')
+        return redirect('notifications-list')
 class ListNotifications(View):
     def get(self, request, *args, **kwargs):
         notifications = Notification.objects.filter(to_user=request.user)
