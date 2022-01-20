@@ -8,20 +8,11 @@
 	        <div class="alert alert-{{ message.tags }} content">{{ message }}</div>
 	     {% endfor %}
 	  {% endif %}
-
 		<section class="profile">
 			<div class="picture-container">
 				<img class="profile-picture" src="{{ user.profile.image.url }}">
 			</div>
-
 			<h2 class="account-heading">@{{ user.username }}</h2>
-
-			{% if user.profile.verified %}
-			  <i style='color: blue; width: 100;' class="fas fa-passport"></i>
-	    	{% endif %}
-
-	        <br/><br/>
-
 			{% if request.user == user %}
 	            <a href="{% url 'profile-update' %}">
 	           	<button type="button" style="margin-left: 11px;" class="btn btn-outline-info">
@@ -43,11 +34,23 @@
 		            <br/><br/>
 	            {% endif %}
             {% endif %}
-
+            <a href="#hashLink" style="margin-left: 8px; margin-right: 8px;" class="btn btn-outline-danger"><i class="fas fa-user-secret"></i></a> 
 		</section>
-		<div class="infinite-container w-50">
+		            <div>
+			    <p id="hashLink">
+			        Name: {{user.profile.name}}<br>
+			        
+			        Monero: {% if user.profile.monero == None %}NO ADDRESS{% else %} <a href="{% url 'user-details' user.username %}">Show Full Address{% endif %}</a><br>
+			        XMPP: {{user.profile.xmppusername}}@{{user.profile.xmppserver}}<br>
+
+			        PGP: {% if user.profile.public_key == '' %}NO Key{% else %} <a href="{% url 'user-details' user.username %}">Show Full Key{% endif %}</a><br><br>
+
+			        <a class="btn-primary btn-lg" style="text-decoration: inherit; color: inherit;" href="#">collapse</a>    
+			    </p>
+			</div>
+		<div class="w-100">
 			{% for post in posts %}
-			<div class="post infinite-item" style="text-align: left;">
+			<div class="post" style="text-align: left; margin: 0 auto;">
 				<div class="profile-container">
 		        <img class="profile-picture post-img" src="{{ post.author.profile.image.url }}">
 		    </div>
@@ -71,7 +74,8 @@
 			</div>
 			{% endfor %}
 		</div>
-		<center>
+		<br>
+		<center><br/>
 	        {% if posts.has_previous %}
 	            <a href="?page={{posts.previous_page_number}}" class="btn btn-outline-info"><</a>
 	        {% endif %}

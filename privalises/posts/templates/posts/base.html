@@ -21,6 +21,15 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/home/content.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/profile/page.css' %}">
     <title>{% block title %}{% endblock title %}</title>
+    <style type="text/css">
+      #hashLink {
+   display: none;
+}
+
+#hashLink:target {
+   display: block;
+}
+    </style>
   </head>
   <body id="body" class="dark">
     <nav id="navbar" class="navbar dark">
