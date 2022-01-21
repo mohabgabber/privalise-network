@@ -57,11 +57,6 @@
 			    </div>
 		    {% endif %}
 	    {% else %}
-	        <div class="dropdown-item-parent" style="margin-bottom: 40px; margin-top: 20px;">
-				<a class="alert alert-danger content" href="{% url 'follow-notification' notification.pk notification.from_user.username %}">@{{ notification.from_user }} has started following you</a>
-				<a class="dropdown-item-close" href="{% url 'notification-delete' notification.pk %}">&times;</a>
-		    </div>
-           
            <div class="container">
 					<a style="text-decoration: inherit;" href="{% url 'post-notification' notification.pk notification.from_user.username %}">
 						<div class="post container-fluid" style="text-align: center;">

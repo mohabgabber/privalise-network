@@ -11,19 +11,14 @@ class ProfileUpdteForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['name', 'bio', 'monero', 'public_key', 'image', 'xmppusername', 'xmppserver']
-
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ('content',)
-
 class UserUpdateForm(forms.ModelForm):
-    email = forms.EmailField(required=False)
-
     class Meta:
         model = User
         fields = ['username']
-
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
