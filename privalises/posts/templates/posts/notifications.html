@@ -11,22 +11,22 @@
 		{% if notification.post %}
 			{% if notification.notification_type == 1 %}
 			<div class="container">
-				<a style="text-decoration: inherit;" href="{% url 'post-notification' notification.pk notification.post.pk %}">
+				<a style="text-decoration: inherit;" href="{% url 'post-notification' notification.id notification.post.id %}">
 					<div class="post container-fluid" style="text-align: center;">
 						<div class="post-text tags-id mentions-id">
 							@{{ notification.from_user }} liked your post
-							<a class="btn btn-outline-danger" style="margin-left: 18px;" href="{% url 'notification-delete' notification.pk %}">DELETE</a>
+							<a class="btn btn-outline-danger" style="margin-left: 18px;" href="{% url 'notification-delete' notification.id %}">DELETE</a>
 						</div>
 					</div>
 			    </a>	
 			</div>
 			{% elif notification.notification_type == 2 %}
 				<div class="container">
-				<a style="text-decoration: inherit;" href="{% url 'post-notification' notification.pk notification.post.pk %}">
+				<a style="text-decoration: inherit;" href="{% url 'post-notification' notification.id notification.post.id %}">
 					<div class="post container-fluid" style="text-align: center;">
 						<div class="post-text tags-id mentions-id">
 							@{{ notification.from_user }} Commented On your post
-							<a class="btn btn-outline-danger" style="margin-left: 18px;" href="{% url 'notification-delete' notification.pk %}">DELETE</a>
+							<a class="btn btn-outline-danger" style="margin-left: 18px;" href="{% url 'notification-delete' notification.id %}">DELETE</a>
 						</div>
 					</div>
 			    </a>	
@@ -35,22 +35,22 @@
 		{% elif notification.comment %}
 			{% if notification.notification_type == 1 %}
 				<div class="container">
-					<a style="text-decoration: inherit;" href="{% url 'post-notification' notification.pk notification.comment.post.pk %}">
+					<a style="text-decoration: inherit;" href="{% url 'post-notification' notification.id notification.comment.post.id %}">
 						<div class="post container-fluid" style="text-align: center;">
 							<div class="post-text tags-id mentions-id">
 								@{{ notification.from_user }} liked your comment
-								<a class="btn btn-outline-danger" style="margin-left: 18px;" href="{% url 'notification-delete' notification.pk %}">DELETE</a>
+								<a class="btn btn-outline-danger" style="margin-left: 18px;" href="{% url 'notification-delete' notification.id %}">DELETE</a>
 							</div>
 						</div>
 				    </a>	
 			    </div>
 			{% elif notification.notification_type == 2 %}
 				<div class="container">
-					<a style="text-decoration: inherit;" href="{% url 'post-notification' notification.pk notification.comment.post.pk %}">
+					<a style="text-decoration: inherit;" href="{% url 'post-notification' notification.id notification.comment.post.id %}">
 						<div class="post container-fluid" style="text-align: center;">
 							<div class="post-text tags-id mentions-id">
 								@{{ notification.from_user }} Replied To your comment
-								<a class="btn btn-outline-danger" style="margin-left: 18px;" href="{% url 'notification-delete' notification.pk %}">DELETE</a>
+								<a class="btn btn-outline-danger" style="margin-left: 18px;" href="{% url 'notification-delete' notification.id %}">DELETE</a>
 							</div>
 						</div>
 				    </a>	
@@ -58,10 +58,10 @@
 		    {% endif %}
 	    {% else %}
            <div class="container">
-					<a style="text-decoration: inherit;" href="{% url 'post-notification' notification.pk notification.from_user.username %}">
+					<a style="text-decoration: inherit;" href="{% url 'post-notification' notification.id notification.from_user.username %}">
 						<div class="post container-fluid" style="text-align: center;">
 							<div class="post-text tags-id mentions-id">
-								@{{ notification.from_user }} Has Started Following You								<a class="btn btn-outline-danger" style="margin-left: 18px;" href="{% url 'notification-delete' notification.pk %}">DELETE</a>
+								@{{ notification.from_user }} Has Started Following You								<a class="btn btn-outline-danger" style="margin-left: 18px;" href="{% url 'notification-delete' notification.id %}">DELETE</a>
 							</div>
 						</div>
 				    </a>	
