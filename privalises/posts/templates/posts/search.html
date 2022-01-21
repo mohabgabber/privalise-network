@@ -1,12 +1,17 @@
 {% extends 'posts/base.html' %}
+{% block title %}Search Posts And Users On Privalise!, Where Everything Is Awesome{% endblock title %}
 {% block content %}
-{% for profile in profiles %}
-<a href="{% url 'profile' profile.user %}">
-<div class='profile'>
+   <main class="w-100 container-fluid mx-auto content">
+        <center>
+            <div class='post-creation'>
+            <br/>
+            <form method='POST'>
+                {% csrf_token %}
+                <input name="query" class="form-control" style="width: 100%;" placeholder="Type Your Search!"></input><br/>
+                <button class="btn btn-primary">Post</button>
+            </form>
+    </div></center>
+   </main>
 
-        <img class='profile-image' id="imgbox"  src="{{ user.profile.image.url }}"><br>
-        <h2 class='account-heading'>@{{ profile.user.username }}</h2>
-</div>
-</a>
-{% endfor %}
+
 {% endblock %}

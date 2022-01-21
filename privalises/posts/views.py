@@ -14,7 +14,6 @@ from django.urls import reverse_lazy
 from django.http import JsonResponse, HttpResponse
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from .service import process_mentions_from_post_content
-import json
 class PostListView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         logged_in_user = request.user
@@ -70,6 +69,7 @@ class PostDetailView(LoginRequiredMixin, View):
             new_comment.author = request.user
             new_comment.post = post
             new_comment.save()
+            new_comment.create_tags()
         comments = Comment.objects.filter(post=post)
         commentcount = 0
         for comment in comments:
@@ -180,7 +180,7 @@ class ProfileView(LoginRequiredMixin, View):
         posts = Post.objects.filter(author=user).order_by('-date_posted')
         followers = profile.followers.all()    
         page = request.GET.get('page', 1)
-        paginator = Paginator(posts, 1)
+        paginator = Paginator(posts, 3)
         try:
             post_list = paginator.page(page)
         except PageNotAnInteger:
@@ -210,14 +210,45 @@ class RemoveFollower(LoginRequiredMixin, View):
         user = User.objects.get(username=username)
         profile = user.profile
         profile.followers.remove(request.user)
-        return redirect('profile', username=user.username)
+        return redirect('profile', username=user.username)    
 class Search(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
+        return render(request, 'posts/search.html')
+    def post(self, request, *args, **kwargs):
         query = self.request.POST.get('query')
-        profile_list = Profile.objects.filter(Q(user__username__icontains=query))
-        posts_list = Posts.objects.filter(Q(user__username__icontains=query))
-        context = {'profiles': profile_list, 'posts': posts_list}
-        return render(request, 'posts/search.html', context)
+        profiles = Profile.objects.filter(Q(user__username__icontains=query))
+        posts = Post.objects.filter(Q(content__icontains=query))
+        comments = Comment.objects.filter(Q(content__icontains=query))
+        '''
+        postspage = request.GET.get('posts', 1)
+        postspaginator = Paginator(posts, 3)
+        try:
+            post_list = postspaginator.page(postspage)
+        except PageNotAnInteger:
+            post_list = postspaginator.page(1)
+        except EmptyPage:
+            post_list = postspaginator.page(postspaginator.num_pages)
+        
+        commentspage = request.GET.get('comments', 1)
+        commentspaginator = Paginator(comments, 10)
+        try:
+            comments = commentspaginator.page(commentspage)
+        except PageNotAnInteger:
+            comments = commentspaginator.page(1)
+        except EmptyPage:
+            comments = commentspaginator.page(commentspaginator.num_pages)
+        
+        profilespage = request.GET.get('profile_list', 1)
+        profilepaginator = Paginator(profiles, 10)
+        try:
+            profile_list = profilepaginator.page(profilespage)
+        except PageNotAnInteger:
+            profile_list = profilepaginator.page(1)
+        except EmptyPage:
+            profile_list = profilepaginator.page(profilepaginator.num_pages)
+        '''
+        context = {'profiles': profiles, 'posts': posts, 'comments': comments,}
+        return render(request, 'posts/search_results.html', context)
 class AddCommentLike(LoginRequiredMixin, View):
     def post(self, request, pk, *args, **kwargs):
         comment = Comment.objects.get(pk=pk)
@@ -289,12 +320,12 @@ class FollowNotification(View):
         profile = user.profile
         notification.user_has_seen = True
         notification.save()
-        return redirect('profile', pk=profile_pk)
+        return redirect('profile', username=username)
 class RemoveNotification(View):
-    def delete(self, request, notification_pk, *args, **kwargs):
+    def get(self, request, notification_pk, *args, **kwargs):
         notification = Notification.objects.get(pk=notification_pk)
-        notification.user_has_seen = True
-        notification.save()
+        if notification.to_user == request.user:
+            notification.delete()
         return redirect('notifications-list')
 class ListNotifications(View):
     def get(self, request, *args, **kwargs):

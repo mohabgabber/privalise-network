@@ -1,44 +1,73 @@
 {% extends 'posts/base.html' %}
 {% block title %}@{{ user.username }} Latest Notifications, On Privalise{% endblock title %}
 {% block content %}
-<main>
-	<div class="mx-auto logo-text">
+<main class="w-100 container-fluid mx-auto content">
+	<div class="logo-text">
 	  <div>Priva<span>Lise</span></div>
 	</div>
-	<section class="posts">
-            you have {{ notifications.count }} Notification{{ notifications.count|pluralize }}
-			{% for notification in notifications %}
-			{% if notification.post %}
-				{% if notification.notification_type == 1 %}
-				<div class="dropdown-item-parent">
-					<a href="{% url 'post-notification' notification.pk notification.post.pk %}" class="alert alert-succ content">@{{ notification.from_user }} liked your post</a> 
-				</div>
-				{% elif notification.notification_type == 2 %}
-				<div class="dropdown-item-parent">
-					<a class="alert alert-success content" href="{% url 'post-notification' notification.pk notification.post.pk %}">@{{ notification.from_user }} commented on your post</a>
-					<a class="dropdown-item-close" href="{% url 'notification-delete' notification.pk %}">&times;</a>
-				</div>
-				{% endif %}
-			{% elif notification.comment %}
-				{% if notification.notification_type == 1 %}
-				<div class="dropdown-item-parent">
-					<a class="alert alert-success content" href="{% url 'post-notification' notification.pk notification.comment.post.pk %}">@{{ notification.from_user }} liked your comment</a>
-					<a class="dropdown-item-close" href="{% url 'notification-delete' notification.pk %}">&times;</a>
-				</div>
-				{% elif notification.notification_type == 2 %}
-				<div class="dropdown-item-parent">
-					<a class="alert alert-success content" href="{% url 'post-notification' notification.pk notification.comment.post.pk %}">@{{ notification.from_user }} replied to your comment</a>
-					<a class="dropdown-item-close" href="{% url 'notification-delete' notification.pk %}">&times;</a>
-				</div>
-				{% endif %}
-			{% else %}
-			<div class="dropdown-item-parent">
-					<a class="alert alert-success content" href="{% url 'follow-notification' notification.pk notification.from_user.profile.pk %}">@{{ notification.from_user }} has started following you</a>
-					<a class="dropdown-item-close" href="{% url 'notification-delete' notification.pk %}">&times;</a>
-				</div>
-			{% endif %}
-			{% endfor %}
+	<strong style="margin-bottom: 12px;" >YOU HAVE {{ notifications.count }} NOTIFICATION{{ notifications.count|pluralize }}<br/></strong>
+	<section class="post w-auto">
+		{% for notification in notifications %}
+		{% if notification.post %}
+			{% if notification.notification_type == 1 %}
+			<div class="container">
+				<a style="text-decoration: inherit;" href="{% url 'post-notification' notification.pk notification.post.pk %}">
+					<div class="post container-fluid" style="text-align: center;">
+						<div class="post-text tags-id mentions-id">
+							@{{ notification.from_user }} liked your post
+							<a class="btn btn-outline-danger" style="margin-left: 18px;" href="{% url 'notification-delete' notification.pk %}">DELETE</a>
+						</div>
+					</div>
+			    </a>	
 			</div>
+			{% elif notification.notification_type == 2 %}
+				<div class="container">
+				<a style="text-decoration: inherit;" href="{% url 'post-notification' notification.pk notification.post.pk %}">
+					<div class="post container-fluid" style="text-align: center;">
+						<div class="post-text tags-id mentions-id">
+							@{{ notification.from_user }} Commented On your post
+							<a class="btn btn-outline-danger" style="margin-left: 18px;" href="{% url 'notification-delete' notification.pk %}">DELETE</a>
+						</div>
+					</div>
+			    </a>	
+			</div>
+			{% endif %}
+		{% elif notification.comment %}
+			{% if notification.notification_type == 1 %}
+				<div class="container">
+					<a style="text-decoration: inherit;" href="{% url 'post-notification' notification.pk notification.comment.post.pk %}">
+						<div class="post container-fluid" style="text-align: center;">
+							<div class="post-text tags-id mentions-id">
+								@{{ notification.from_user }} liked your comment
+								<a class="btn btn-outline-danger" style="margin-left: 18px;" href="{% url 'notification-delete' notification.pk %}">DELETE</a>
+							</div>
+						</div>
+				    </a>	
+			    </div>
+			{% elif notification.notification_type == 2 %}
+				<div class="container">
+					<a style="text-decoration: inherit;" href="{% url 'post-notification' notification.pk notification.comment.post.pk %}">
+						<div class="post container-fluid" style="text-align: center;">
+							<div class="post-text tags-id mentions-id">
+								@{{ notification.from_user }} Replied To your comment
+								<a class="btn btn-outline-danger" style="margin-left: 18px;" href="{% url 'notification-delete' notification.pk %}">DELETE</a>
+							</div>
+						</div>
+				    </a>	
+			    </div>
+		    {% endif %}
+	    {% else %}
+           <div class="container">
+					<a style="text-decoration: inherit;" href="{% url 'post-notification' notification.pk notification.from_user.username %}">
+						<div class="post container-fluid" style="text-align: center;">
+							<div class="post-text tags-id mentions-id">
+								@{{ notification.from_user }} Has Started Following You								<a class="btn btn-outline-danger" style="margin-left: 18px;" href="{% url 'notification-delete' notification.pk %}">DELETE</a>
+							</div>
+						</div>
+				    </a>	
+			    </div>
+		{% endif %}
+		{% endfor %}
 	</section>
 </main>
 {% endblock content %}

@@ -47,13 +47,11 @@
 		<center>
 		<div class="w-100">
 			<div class="post container-fluid" style="text-align: center;">
-						<div class="post-text tags-id mentions-id">
-							Name: {{user.profile.name}}<br>
-					        XMPP: {{user.profile.xmppusername}}@{{user.profile.xmppserver}}<br><br>
-					        <p style="word-break: break-all;">Monero: {{user.profile.monero}}</p>
-					        <textarea class="form-control" cols="55" rows="30">{{user.profile.public_key}}</textarea>
-						</div>
-				   </a>
+				<div class="post-text tags-id mentions-id">
+					Name: {{user.profile.name}}<br>
+			        XMPP: {{user.profile.xmppusername}}@{{user.profile.xmppserver}}<br><br>
+			        <p style="word-break: break-all;">Monero: {{user.profile.monero}}</p>
+			        <textarea class="form-control" cols="70" rows="25">{{user.profile.public_key}}</textarea>
 				</div>
 			</div>
 		</div>

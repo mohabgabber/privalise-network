@@ -38,6 +38,12 @@
       <label class="input-group-text" for="inputGroupFile01">Profile Pic</label>
       <input type="file" class="form-control" id="inputGroupFile01" name="image">
     </div>
+
+    <div class="input-group">
+      <span class="input-group-text">BIO</span>
+      <textarea class="form-control" rows="10" aria-label="With textarea" name="bio" placeholder="Your bio">{{ request.user.profile.bio }}</textarea>
+    </div>
+    <br/>
     
     <label for="basic-url" class="form-label">Additional Settings</label>
     

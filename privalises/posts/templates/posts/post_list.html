@@ -11,24 +11,21 @@
 	        <div class="alert alert-{{ message.tags }} content">{{ message }}</div>
 	     {% endfor %}
 	  {% endif %}
-	  <center>
 	  	<br/>
-	  <div class="container">
+	    <div class="container w-100">
 			{% for post in posts %}
-			<div class="col-sm-8">
-				<div class="post" style="text-align: left;">
+				<div class="post" style="text-align: left;  margin: 0 auto; margin-bottom: 8px;">
 					<div class="profile-container">
-			        <img class="profile-picture post-img" src="{{ post.author.profile.image.url }}">
-			    </div>
+				        <img class="profile-picture post-img" src="{{ post.author.profile.image.url }}">
+				    </div>
 
 					<div class="post-content">
 						<div class="post-info">
 							<div class="post-info1">
 								<a class="username" href="{% url 'profile' post.author %}">@{{ post.author }}</a>
 								<p class="date">{{ post.date_posted }}</p>
-
 							</div>
-	    			</div>
+	    			    </div>
 
 						<a style="text-decoration: inherit; color: inherit;" href="{% url 'post-detail' post.pk %}">
 							<div class="post-text tags-id mentions-id">
@@ -38,16 +35,15 @@
 					   </a>
 					</div>
 				</div>
-				</div>
 			{% endfor %}
 		</div>
-				<center>
-					{% if posts.has_previous %}
-			      <a href="?page={{posts.previous_page_number}}" class="btn btn-outline-info"><</a>
-			    {% endif %}
-			    <span class="btn btn-primary">{{posts.number}}</span>  
-			    {% if posts.has_next %}
-			      <a href="?page={{posts.next_page_number}}" class="btn btn-outline-info">></a>
-			    {% endif %}
-		    </center>
+		<center>
+			{% if posts.has_previous %}
+			    <a href="?page={{posts.previous_page_number}}" class="btn btn-outline-info"><</a>
+			{% endif %}
+			<span class="btn btn-primary">{{posts.number}}</span>  
+			{% if posts.has_next %}
+			    <a href="?page={{posts.next_page_number}}" class="btn btn-outline-info">></a>
+			{% endif %}
+		</center>
 {% endblock content %}
