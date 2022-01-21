@@ -46,8 +46,8 @@ class PostListView(LoginRequiredMixin, View):
     return render(request, 'posts/post_list.html', context)
     '''
 class PostDetailView(LoginRequiredMixin, View):
-    def get(self, request, pk, *args, **kwargs):
-        post = Post.objects.get(pk=pk)
+    def get(self, request, id, *args, **kwargs):
+        post = Post.objects.get(id=id)
         form = CommentForm()
         comments = Comment.objects.filter(post=post)
         commentcount = 0
@@ -60,8 +60,8 @@ class PostDetailView(LoginRequiredMixin, View):
             'comments': comments,
         }
         return render(request, 'posts/post_detail.html', context)
-    def post(self, request, pk, *args, **kwargs):
-        post = Post.objects.get(pk=pk)
+    def post(self, request, id, *args, **kwargs):
+        post = Post.objects.get(id=id)
         form = CommentForm(request.POST)
         if form.is_valid():
             new_comment = form.save(commit=False)
@@ -83,9 +83,9 @@ class PostDetailView(LoginRequiredMixin, View):
         }
         return render(request, 'posts/post_detail.html', context)
 class CommentReplyView(LoginRequiredMixin, View):
-    def post(self, request, post_pk, pk, *args, **kwargs):
-        post = Post.objects.get(pk=post_pk)
-        parent_comment = Comment.objects.get(pk=pk)
+    def post(self, request, post_id, id, *args, **kwargs):
+        post = Post.objects.get(id=post_id)
+        parent_comment = Comment.objects.get(id=id)
         form = CommentForm(request.POST)
         if form.is_valid():
             new_comment = form.save(commit=False)
@@ -94,7 +94,7 @@ class CommentReplyView(LoginRequiredMixin, View):
             new_comment.parent = parent_comment
             new_comment.save()
         notification = Notification.objects.create(notification_type=2, from_user=request.user, to_user=parent_comment.author, comment=new_comment)
-        return redirect('post-detail', pk=post_pk)
+        return redirect('post-detail', id=post_id)
 class PostCreateView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         form = PostForm()
@@ -109,7 +109,7 @@ class PostCreateView(LoginRequiredMixin, View):
             new_post.save()
             new_post.create_tags()
         context = {'form': form,}
-        return redirect('post-detail', pk=new_post.pk)
+        return redirect('post-detail', id=new_post.id)
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     context_object_name = 'post'
@@ -153,8 +153,8 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Comment
     template_name = 'posts/comments_delete.html'
     def get_success_url(self):
-        pk = self.kwargs['post_pk']
-        return reverse_lazy('post-detail', kwargs={'pk': pk})
+        id = self.kwargs['post_id']
+        return reverse_lazy('post-detail', kwargs={'id': id})
     def test_func(self):
         comment = self.get_object()
         if self.request.user == comment.author:
@@ -214,14 +214,16 @@ class RemoveFollower(LoginRequiredMixin, View):
 class Search(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         return render(request, 'posts/search.html')
-    def post(self, request, *args, **kwargs):
-        query = self.request.POST.get('query')
+    
+class SearchResults(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        query = self.request.GET.get('query')
         profiles = Profile.objects.filter(Q(user__username__icontains=query))
         posts = Post.objects.filter(Q(content__icontains=query))
         comments = Comment.objects.filter(Q(content__icontains=query))
-        '''
+        
         postspage = request.GET.get('posts', 1)
-        postspaginator = Paginator(posts, 3)
+        postspaginator = Paginator(posts, 10)
         try:
             post_list = postspaginator.page(postspage)
         except PageNotAnInteger:
@@ -232,13 +234,13 @@ class Search(LoginRequiredMixin, View):
         commentspage = request.GET.get('comments', 1)
         commentspaginator = Paginator(comments, 10)
         try:
-            comments = commentspaginator.page(commentspage)
+            comment_list = commentspaginator.page(commentspage)
         except PageNotAnInteger:
-            comments = commentspaginator.page(1)
+            comment_list = commentspaginator.page(1)
         except EmptyPage:
-            comments = commentspaginator.page(commentspaginator.num_pages)
+            comment_list = commentspaginator.page(commentspaginator.num_pages)
         
-        profilespage = request.GET.get('profile_list', 1)
+        profilespage = request.GET.get('profiles', 1)
         profilepaginator = Paginator(profiles, 10)
         try:
             profile_list = profilepaginator.page(profilespage)
@@ -246,12 +248,11 @@ class Search(LoginRequiredMixin, View):
             profile_list = profilepaginator.page(1)
         except EmptyPage:
             profile_list = profilepaginator.page(profilepaginator.num_pages)
-        '''
-        context = {'profiles': profiles, 'posts': posts, 'comments': comments,}
-        return render(request, 'posts/search_results.html', context)
+        context = {'profiles': profile_list, 'posts': post_list, 'comments': comment_list,}
+        return render(request, 'posts/search_results.html', context)    
 class AddCommentLike(LoginRequiredMixin, View):
-    def post(self, request, pk, *args, **kwargs):
-        comment = Comment.objects.get(pk=pk)
+    def post(self, request, id, *args, **kwargs):
+        comment = Comment.objects.get(id=id)
         is_dislike = False
         for dislike in comment.dislikes.all():
             if dislike == request.user:
@@ -272,8 +273,8 @@ class AddCommentLike(LoginRequiredMixin, View):
         next = request.POST.get("next", '/')
         return HttpResponseRedirect(next)
 class AddCommentDislike(LoginRequiredMixin, View):
-    def post(self, request, pk, *args, **kwargs):
-        comment = Comment.objects.get(pk=pk)
+    def post(self, request, id, *args, **kwargs):
+        comment = Comment.objects.get(id=id)
         is_like = False
         for like in comment.likes.all():
             if like == request.user:
@@ -307,23 +308,23 @@ def AddFavourites(request, id):
         messages.success(request, f'Post Is MarkaLised! Amazing :D')
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 class PostNotification(View):
-    def get(self, request, notification_pk, post_pk, *args, **kwargs):
-        notification = Notification.objects.get(pk=notification_pk)
-        post = Post.objects.get(pk=post_pk)
+    def get(self, request, notification_id, post_id, *args, **kwargs):
+        notification = Notification.objects.get(id=notification_id)
+        post = Post.objects.get(id=post_id)
         notification.user_has_seen = True
         notification.save()
-        return redirect('post-detail', pk=post_pk)
+        return redirect('post-detail', id=post_id)
 class FollowNotification(View):
-    def get(self, request, notification_pk, username, *args, **kwargs):
-        notification = Notification.objects.get(pk=notification_pk)
+    def get(self, request, notification_id, username, *args, **kwargs):
+        notification = Notification.objects.get(id=notification_id)
         user = User.objects.get(username=username)
         profile = user.profile
         notification.user_has_seen = True
         notification.save()
         return redirect('profile', username=username)
 class RemoveNotification(View):
-    def get(self, request, notification_pk, *args, **kwargs):
-        notification = Notification.objects.get(pk=notification_pk)
+    def get(self, request, notification_id, *args, **kwargs):
+        notification = Notification.objects.get(id=notification_id)
         if notification.to_user == request.user:
             notification.delete()
         return redirect('notifications-list')

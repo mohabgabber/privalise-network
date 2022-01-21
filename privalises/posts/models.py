@@ -2,7 +2,9 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.urls import reverse
+import uuid
 class Post(models.Model):
+    id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     image = models.ImageField(blank=True, null=True, upload_to='post_image')
     content = models.TextField()
     date_posted = models.DateTimeField(auto_now_add=True)
@@ -43,8 +45,9 @@ class Post(models.Model):
     def __str__(self):
         return self.content
     def get_absolute_url(self):
-        return reverse("post-detail", kwargs={"pk": self.pk})
+        return reverse("post-detail", kwargs={"id": self.id})
 class Comment(models.Model):
+    id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     post = models.ForeignKey(Post,on_delete=models.CASCADE,related_name='comments')
     content = models.TextField()
     author = models.ForeignKey(User, on_delete=models.CASCADE,related_name='author')
@@ -76,6 +79,7 @@ class Comment(models.Model):
             return True
         return False
 class Profile(models.Model):
+    id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     image = models.ImageField(default='default.jpg', upload_to='profile_pics')
     bio = models.TextField(max_length=500, blank=True, null=True)
@@ -94,6 +98,7 @@ class Tag(models.Model):
     name = models.CharField(max_length=255)
 class Notification(models.Model):
     # 1 = Like, 2 = Comment, 3 = Follow, #4 = Mention
+    id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     notification_type = models.IntegerField()
     to_user = models.ForeignKey(User, related_name='notification_to', on_delete=models.CASCADE, null=True)
     from_user = models.ForeignKey(User, related_name='notification_from', on_delete=models.CASCADE, null=True)
