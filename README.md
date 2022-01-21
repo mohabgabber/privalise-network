@@ -26,7 +26,7 @@ it's also perfect as an onion service, bc the website doesn't have any js in it,
    * Commenting And Replying To Comments
    * Hashtags And Mentions
    * Public Profile For Each User With a profle pic
-   * 2 factor authentication
+   * 2 factor authentication (coming soon)
 
 ## The front-end
 The frontend is mostly made (like 90%) by [margual56](https://github.com/margual56)
