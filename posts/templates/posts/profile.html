@@ -51,10 +51,8 @@
 		<div class="w-100">
 			{% for post in posts %}
 			<div class="post" style="text-align: left; margin: 0 auto; margin-bottom: 8px;">
-				<div class="picture-containers">
-					<img class="profile-picture" src="{{ user.profile.image.url }}">
-				</div>
-				<div class="profile-container">	
+				<div class="profile-container">
+			        <img class="profile-picture post-img" src="{{ post.author.profile.image.url }}">
 		    </div>
 
 				<div class="post-content">

@@ -119,15 +119,36 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         if self.request.user == post.author:
             return True
         return False    
+
+def monero(address):
+    a = str(address)
+    length = len(a)
+    valid = False
+    not_base58 = False
+    if length == 95 or length == 106:
+        if a[0] == '4' or a[0] == '8':
+            for i in a:
+                if i == 'O' or i == '0' or i == 'I' or i == 'l':
+                    not_base58 = True
+                    break
+            if not_base58 == True:
+                return valid 
+            else:
+                valid = True
+                return valid
+        else:
+            return valid
+    elif a == 'None' or a == '':
+        valid = True
+        return valid
+    else:
+        return valid
 @login_required
 def settings(request):
     if request.method == 'POST':
-        u_form = UserUpdateForm(request.POST, instance=request.user)
         p_form = ProfileUpdteForm(request.POST, request.FILES, instance=request.user.profile)
-        if u_form.is_valid() and p_form.is_valid():
-            userform = u_form.save(commit=False)
+        if p_form.is_valid():
             profileform = p_form.save(commit=False)
-            u_form.username = request.POST.get('username')
             p_form.name = request.POST.get('name')
             p_form.xmppusername = request.POST.get('xmppusername')
             p_form.xmppserver = request.POST.get('xmppserver')
@@ -135,14 +156,16 @@ def settings(request):
             p_form.bio = request.POST.get('bio')
             p_form.public_key = request.POST.get('public_key')
             p_form.image = request.POST.get('image')
-            u_form.save()
-            p_form.save()
-            messages.success(request, f'your account has been updated')
-            return redirect('profile', username=request.user)
+            if monero(p_form.monero):
+                p_form.save()
+                messages.success(request, f'your account has been updated')
+                return redirect('profile', username=request.user)
+            elif not monero(p_form.monero):
+                messages.success(request, f'monero address isn\'t correct')
+                return redirect('profile-update')
     else:
-        u_form = UserUpdateForm(instance=request.user)
         p_form = ProfileUpdteForm(instance=request.user.profile)
-    context = {'u_form': u_form, 'p_form': p_form}
+    context = {'p_form': p_form,}
     return render(request, 'posts/settings.html', context)
 class UserDetails(LoginRequiredMixin, View):
     def get(self, request, username, *args, **kwargs):

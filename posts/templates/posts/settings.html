@@ -4,8 +4,13 @@
 {% block content %}
 <br><br>
 <main class="container-fluid content mx-auto">
+  {% if messages %}
+       {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} content">{{ message }}</div>
+       {% endfor %}
+    {% endif %}
     <div class='profile'>
-      <div class="picture-container">
+      <div class="picture-container" style="border-radius: ;">
         <img class="profile-picture" src="{{ user.profile.image.url }}">
       </div>
       <h2 class='account-heading'>{{ user.username }}</h2>
@@ -19,11 +24,6 @@
 
     <label for="basic-url" class="form-label">User Settings</label>
 
-    <div class="input-group mb-3">
-      <span class="input-group-text" id="basic-addon1">@</span>
-      <input type="text" name="username" value="{{ request.user.username }}" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
-    </div>
-    
     <div class="input-group mb-3">
       <span class="input-group-text" id="basic-addon2">Your Name</span>
       <input type="text" value="{{ request.user.profile.name }}" class="form-control" name="name" placeholder="Your Name!" aria-label="Recipient's username" aria-describedby="basic-addon2">
