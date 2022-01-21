@@ -33,7 +33,8 @@ The frontend is mostly made (like 90%) by [margual56](https://github.com/margual
 
  ## Set Up: 
   * Clone The Repository `git clone https://github.com/privalise-network.git && cd privalise-network`
-  * Install Requirements `pip install -r requirements.txt && cd privalises`
+  * Install Requirements `pip install -r requirements.txt`
+  * you'll to create a .env file in the root directory of the app, and specify `debug` and `secret_key`
   * Let's Make Migrations And Migrate  `python manage.py makemigrations && python manage.py migrate`
   * Now Finally We Will Run The Server `python manage.py runserver`
 
