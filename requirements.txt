@@ -6,4 +6,5 @@ django-js-asset==1.2.2
 Markdown==3.3.6
 Pillow==9.0.0
 python-decouple==3.5
+python-dotenv==0.19.2
 sqlparse==0.4.2

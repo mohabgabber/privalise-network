@@ -18,10 +18,12 @@ Contact: mohabgabber1@protonmail.com
 '''
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = 'djkmjgbkjbgmoirejoibjgboikejrgkjstojmsvoiigormjoiysmdfvmg'
-DEBUG = True
-ALLOWED_HOSTS = ['privalise.herokuapp.com']
+SECRET_KEY = os.getenv('secret_key')
+DEBUG = os.getenv('debug')
+ALLOWED_HOSTS = ['privalise.herokuapp.com', '127.0.0.1']
 INSTALLED_APPS = [
     'posts.apps.PostsConfig',
     'users.apps.UsersConfig',
