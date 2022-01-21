@@ -1,1 +1,1 @@
-web: gunicorn privalise.wsgi
+web: gunicorn privalises.wsgi
