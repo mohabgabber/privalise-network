@@ -23,7 +23,7 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('secret_key')
 DEBUG = os.getenv('debug')
-ALLOWED_HOSTS = ['privalise.herokuapp.com', '127.0.0.1']
+ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'posts.apps.PostsConfig',
     'users.apps.UsersConfig',
