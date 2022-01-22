@@ -104,21 +104,27 @@ class PostCreateView(LoginRequiredMixin, View):
         form = PostForm(request.POST)
         if form.is_valid():
             new_post = form.save(commit=False)
-            new_post.content = request.POST.get('content')
+            new_post.content = request.POST.get('content').strip()
             new_post.author = request.user
             new_post.save()
             new_post.create_tags()
         context = {'form': form,}
         return redirect('post-detail', id=new_post.id)
-class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-    model = Post
-    context_object_name = 'post'
-    success_url = '/'
-    def test_func(self):
-        post = self.get_object()
-        if self.request.user == post.author:
-            return True
-        return False    
+class PostDeleteView(LoginRequiredMixin, View):
+    def get(self, request, id, *args, **kwargs):
+        post = Post.objects.get(id=id)
+        if request.user == post.author:
+            return render(request, 'posts/post_confirm_delete.html', {'post': post})
+        else:
+            return redirect('home')
+    def post(self, request, id, *args, **kwargs):
+        post = Post.objects.get(id=id)
+        if request.user == post.author:
+            post.delete()
+            messages.success(request, 'Post Deleted!')
+            return redirect('home')
+        else:
+            return redirect('home')
 
 def monero(address):
     a = str(address)
@@ -183,19 +189,31 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         if self.request.user == comment.author:
             return True
         return False
-class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = Post
-    fields = ['content']
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        form.instance.save()
-        process_mentions_from_post_content(form.instance)
-        return super().form_valid(form)
-    def test_func(self):
-        post = self.get_object()
-        if self.request.user == post.author:
-            return True
-        return False
+class PostUpdateView(LoginRequiredMixin, View):
+    def get(self, request, id, *args, **kwargs):
+        post = Post.objects.get(id=id)
+        if post:
+            if request.user == post.author:
+                content = post.content
+                return render(request, 'posts/post_form.html', {'post': post, 'content': content})
+            else:
+                return redirect('home')
+        else:
+            return redirect('home')
+    def post(self, request, id, *args, **kwargs):
+        post = Post.objects.get(id=id)
+        if post:
+            if request.user == post.author:
+                post.content = request.POST.get('content')
+                post.save()
+                messages.success(request, 'Post Updated Succesfully')
+                return redirect('post-detail', id=id)
+            else:
+                return redirect('home')
+        else:
+            return redirect('home')
+
+
 class ProfileView(LoginRequiredMixin, View):
     def get(self, request, username, *args, **kwargs):
         user = User.objects.get(username=username)

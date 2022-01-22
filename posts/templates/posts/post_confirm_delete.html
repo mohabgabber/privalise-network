@@ -1,12 +1,24 @@
 {% extends 'posts/base.html' %}
-{% block title %} Delete Post ! {% endblock %}
+{% block title %} Delete Your Post, On Privalise, Where Everything Is Awesome {% endblock %}
 {% block content %}
-    <form method="POST">
-        {% csrf_token %}
-        <br><br>
-        <h2>Are You Sure you Wanna Delete This Post?</h2>
-        <br/>
-        <button type="submit" class="btn btn-outline-danger">Yes, Delete</button>
-         <a href="{% url 'post-detail' post.id %}" class="btn btn-outline-info">Cancel</a>
-   </form>
+    <main class="w-100 container-fluid mx-auto content">
+        <div class="mx-auto logo-text">
+          <div>Priva<span>Lise</span></div>
+        </div>
+        {% if messages %}
+           {% for message in messages %}
+              <div class="alert alert-{{ message.tags }} content">{{ message }}</div>
+           {% endfor %}
+        {% endif %}
+        <center><br>
+            <form method="POST">
+                <div class="input-group" style="margin: 0 auto;">
+                    {% csrf_token %}
+                    <label>Are You Sure You Wanna Delete This Post!</label>
+                    <button class="btn btn-primary" type="submit"><i class="fal fa-sad-tear"></i> Yes!</button>
+                    <a class="btn btn-primary" href="{% url 'post-detail' post.id %}"><i class="fal fa-sad-tear"></i> No!, Safe My Post</a>
+                </div>
+            </form>
+        </center>
+    </main>
 {% endblock %} 
