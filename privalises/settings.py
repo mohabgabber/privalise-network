@@ -18,11 +18,9 @@ Contact: mohabgabber1@protonmail.com
 '''
 import os
 from pathlib import Path
-from dotenv import load_dotenv
-load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = os.getenv('secret_key')
-DEBUG = os.getenv('debug')
+SECRET_KEY = 'djkmjgbkjbgmoirejoibjgboikejrgkjstojmsvoiigormjoiysmdfvmg'
+DEBUG = True
 ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'posts.apps.PostsConfig',

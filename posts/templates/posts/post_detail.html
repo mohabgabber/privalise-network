@@ -29,8 +29,17 @@
               <p class="date">{{ post.date_posted }}</p>
             </div>
           </div>
+
           <div class="post-text">
             <p>{{ post.content|convert_markdown|safe }}</p>
+            {% if request.user == post.author %}
+              <a style="width: 40%; height: 35%;" href="{% url 'post-update' post.id %}" class="btn btn-outline-info">Edit Post</a>
+              <a style="width: 40%; height: 35%;" href="{% url 'post-delete' post.id %}" class="btn btn-outline-info">Delete Post</a>
+            {% else %}
+              <a style="width: 40%; height: 35%;" href="{% url 'add-like' post.id %}" class="btn btn-primary"><i class="fas fa-kiss-wink-heart"></i></a>
+              <button class="btn btn-outline-info" style="margin: 5px;">{{post.likes.count}}</button>
+              <a style="width: 40%; height: 35%;" href="{% url 'add-dislike' post.id %}" class="btn btn-danger"><i class="fas fa-hand-middle-finger"></i></a>
+            {% endif %}
           </div>
         </div>  
       </div>
@@ -48,8 +57,10 @@
       </div>
       {% for comment in comments %}
         <div  class="post">
-          <div class="profile-container">
+          <div class="picture-containers">
             <img class="profile-picture post-img" src="{{ comment.author.profile.image.url }}">
+          </div>
+          <div class="profile-container">
           </div>
 
           <div class="post-content">
@@ -61,6 +72,14 @@
             </div>
             <div class="post-text" style="text-align: left;">
               <p>{{ comment.content|convert_markdown|safe }}</p>
+              {% if request.user == comment.author %}
+              <a style="width: 40%; height: 35%;" href="{% url 'post-update' post.id %}" class="btn btn-outline-info">Edit Post</a>
+              <a style="width: 40%; height: 35%;" href="{% url 'comment-delete' post.id comment.id %}" class="btn btn-outline-info">Delete Post</a>
+              {% else %}
+                <a style="width: 40%; height: 35%;" href="{% url 'add-comment-like' post.id comment.id %}" class="btn btn-primary"><i class="fas fa-kiss-wink-heart"></i></a>
+                <button class="btn btn-outline-info" style="margin: 5px;">{{post.likes.count}}</button>
+                <a style="width: 40%; height: 35%;" href="{% url 'add-comment-dislike' post.id comment.id %}" class="btn btn-danger"><i class="fas fa-hand-middle-finger"></i></a>
+              {% endif %}
             </div>
           </div>  
         </div>

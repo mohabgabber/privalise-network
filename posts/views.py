@@ -104,30 +104,57 @@ class PostCreateView(LoginRequiredMixin, View):
         form = PostForm(request.POST)
         if form.is_valid():
             new_post = form.save(commit=False)
-            new_post.content = request.POST.get('content')
+            new_post.content = request.POST.get('content').strip()
             new_post.author = request.user
             new_post.save()
             new_post.create_tags()
         context = {'form': form,}
         return redirect('post-detail', id=new_post.id)
-class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-    model = Post
-    context_object_name = 'post'
-    success_url = '/'
-    def test_func(self):
-        post = self.get_object()
-        if self.request.user == post.author:
-            return True
-        return False    
+class PostDeleteView(LoginRequiredMixin, View):
+    def get(self, request, id, *args, **kwargs):
+        post = Post.objects.get(id=id)
+        if request.user == post.author:
+            return render(request, 'posts/post_confirm_delete.html', {'post': post})
+        else:
+            return redirect('home')
+    def post(self, request, id, *args, **kwargs):
+        post = Post.objects.get(id=id)
+        if request.user == post.author:
+            post.delete()
+            messages.success(request, 'Post Deleted!')
+            return redirect('home')
+        else:
+            return redirect('home')
+
+def monero(address):
+    a = str(address)
+    length = len(a)
+    valid = False
+    not_base58 = False
+    if length == 95 or length == 106:
+        if a[0] == '4' or a[0] == '8':
+            for i in a:
+                if i == 'O' or i == '0' or i == 'I' or i == 'l':
+                    not_base58 = True
+                    break
+            if not_base58 == True:
+                return valid 
+            else:
+                valid = True
+                return valid
+        else:
+            return valid
+    elif a == 'None' or a == '':
+        valid = True
+        return valid
+    else:
+        return valid
 @login_required
 def settings(request):
     if request.method == 'POST':
-        u_form = UserUpdateForm(request.POST, instance=request.user)
         p_form = ProfileUpdteForm(request.POST, request.FILES, instance=request.user.profile)
-        if u_form.is_valid() and p_form.is_valid():
-            userform = u_form.save(commit=False)
+        if p_form.is_valid():
             profileform = p_form.save(commit=False)
-            u_form.username = request.POST.get('username')
             p_form.name = request.POST.get('name')
             p_form.xmppusername = request.POST.get('xmppusername')
             p_form.xmppserver = request.POST.get('xmppserver')
@@ -135,14 +162,16 @@ def settings(request):
             p_form.bio = request.POST.get('bio')
             p_form.public_key = request.POST.get('public_key')
             p_form.image = request.POST.get('image')
-            u_form.save()
-            p_form.save()
-            messages.success(request, f'your account has been updated')
-            return redirect('profile', username=request.user)
+            if monero(p_form.monero):
+                p_form.save()
+                messages.success(request, f'your account has been updated')
+                return redirect('profile', username=request.user)
+            elif not monero(p_form.monero):
+                messages.success(request, f'monero address isn\'t correct')
+                return redirect('profile-update')
     else:
-        u_form = UserUpdateForm(instance=request.user)
         p_form = ProfileUpdteForm(instance=request.user.profile)
-    context = {'u_form': u_form, 'p_form': p_form}
+    context = {'p_form': p_form,}
     return render(request, 'posts/settings.html', context)
 class UserDetails(LoginRequiredMixin, View):
     def get(self, request, username, *args, **kwargs):
@@ -160,19 +189,29 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         if self.request.user == comment.author:
             return True
         return False
-class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = Post
-    fields = ['content']
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        form.instance.save()
-        process_mentions_from_post_content(form.instance)
-        return super().form_valid(form)
-    def test_func(self):
-        post = self.get_object()
-        if self.request.user == post.author:
-            return True
-        return False
+class PostUpdateView(LoginRequiredMixin, View):
+    def get(self, request, id, *args, **kwargs):
+        post = Post.objects.get(id=id)
+        if post:
+            if request.user == post.author:
+                content = post.content
+                return render(request, 'posts/post_form.html', {'post': post, 'content': content})
+            else:
+                return redirect('home')
+        else:
+            return redirect('home')
+    def post(self, request, id, *args, **kwargs):
+        post = Post.objects.get(id=id)
+        if post:
+            if request.user == post.author:
+                post.content = request.POST.get('content')
+                post.save()
+                messages.success(request, 'Post Updated Succesfully')
+                return redirect('post-detail', id=id)
+            else:
+                return redirect('home')
+        else:
+            return redirect('home')
 class ProfileView(LoginRequiredMixin, View):
     def get(self, request, username, *args, **kwargs):
         user = User.objects.get(username=username)
@@ -214,7 +253,6 @@ class RemoveFollower(LoginRequiredMixin, View):
 class Search(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         return render(request, 'posts/search.html')
-    
 class SearchResults(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         query = self.request.GET.get('query')
@@ -292,7 +330,50 @@ class AddCommentDislike(LoginRequiredMixin, View):
         if is_dislike:
             comment.dislikes.remove(request.user)
         next = request.POST.get("next", '/')
-        return HttpResponseRedirect(next)            
+        return HttpResponseRedirect(next)
+class AddLike(LoginRequiredMixin, View):
+    def get(self, request, id, *args, **kwargs):
+        post = Post.objects.get(id=id)
+        is_dislike = False
+        for dislike in post.dislikes.all():
+            if dislike == request.user:
+                is_dislike = True
+                break
+        if is_dislike:
+            post.dislikes.remove(request.user)  
+        is_like = False
+        for like in post.likes.all():
+            if like == request.user:
+                is_like = True
+                break
+        if not is_like:
+            post.likes.add(request.user)
+            post.like_count += 1
+            notification = Notification.objects.create(notification_type=1, from_user=request.user, to_user=post.author, post=post)
+        if is_like:
+            post.likes.remove(request.user)
+        return redirect('post-detail', id=id)
+class AddDislike(LoginRequiredMixin, View):
+    def get(self, request, id, *args, **kwargs):
+        post = Post.objects.get(id=id)
+        is_like = False
+        for like in post.likes.all():
+            if like == request.user:
+                is_like = True
+                break
+        if is_like:
+            post.likes.remove(request.user)
+        is_dislike = False
+        for dislike in post.dislikes.all():
+            if dislike == request.user:
+                is_dislike = True
+                break
+        if not is_dislike:
+            post.dislikes.add(request.user)
+            post.like_count -= 1
+        if is_dislike:
+            post.dislikes.remove(request.user)
+        return redirect('post-detail', id=id)        
 @login_required
 def FavouritesList(request):
     new = Post.newmanager.filter(favourites=request.user)

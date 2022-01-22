@@ -1,23 +1,23 @@
 from django.urls import path
 #from django.conf import settings
 #from django.conf.urls.static import static
-from .views import SearchResults, UserDetails, AddFavourites, RemoveNotification, ListNotifications, PostNotification, FollowNotification,  Search, AddCommentLike, AddCommentDislike, ProfileView, settings, AddFollower, RemoveFollower, PostListView, PostCreateView, PostDetailView, PostUpdateView, PostDeleteView, CommentDeleteView
+from .views import AddLike, AddDislike, SearchResults, UserDetails, AddFavourites, RemoveNotification, ListNotifications, PostNotification, FollowNotification,  Search, AddCommentLike, AddCommentDislike, ProfileView, settings, AddFollower, RemoveFollower, PostListView, PostCreateView, PostDetailView, PostUpdateView, PostDeleteView, CommentDeleteView
 urlpatterns = [
     path('', PostListView.as_view(), name='home'),
     path('profile/details/<str:username>/', UserDetails.as_view(), name='user-details'),
     path('post/<str:id>/', PostDetailView.as_view(), name='post-detail'),
     path('post/<str:id>/update/', PostUpdateView.as_view(), name='post-update'),
     path('profile/settings/', settings, name='profile-update'),
-    path('post/<str:id>/delete/', PostDeleteView.as_view(), name='post-delete'),
+    path('post/delete/<str:id>/', PostDeleteView.as_view(), name='post-delete'),
     path('post/<str:post_id>/comment/delete/<str:id>/', CommentDeleteView.as_view(), name='comment-delete'),
     path('profile/<str:username>/', ProfileView.as_view(), name='profile'),
     path('profile/remove/follower/<str:username>/', RemoveFollower.as_view(), name='remove-follower'),
     path('profile/add/follower/<str:username>/', AddFollower.as_view(), name='add-follower'),
-    #path('post/add/like/', AddLike, name='add-like'),
+    path('post/add/like/<str:id>', AddLike.as_view(), name='add-like'),
     path('post/remove/comment/like/<str:post_id>/<str:comment_id>/', AddCommentLike.as_view(), name='add-comment-like'),
     path('post/add/comment/like/<str:post_id>/<str:id>/', AddCommentDislike.as_view(), name='add-comment-dislike'),
     #path('post/add/comment/reply/<int:post_pk>/<int:pk>/', CommentReply.as_view(), name='add-comment-reply'),
-    #path('post/remove/like/', AddDislike, name='add-dislike'),
+    path('post/remove/like/<str:id>', AddDislike.as_view(), name='add-dislike'),
     path('search/', Search.as_view(), name='search'),
     path('search/results', SearchResults.as_view(), name='search-results'),
     path('fav/add/<str:id>/', AddFavourites, name='add-fav'),
