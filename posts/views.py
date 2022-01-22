@@ -330,7 +330,50 @@ class AddCommentDislike(LoginRequiredMixin, View):
         if is_dislike:
             comment.dislikes.remove(request.user)
         next = request.POST.get("next", '/')
-        return HttpResponseRedirect(next)            
+        return HttpResponseRedirect(next)
+class AddLike(LoginRequiredMixin, View):
+    def get(self, request, id, *args, **kwargs):
+        post = Post.objects.get(id=id)
+        is_dislike = False
+        for dislike in post.dislikes.all():
+            if dislike == request.user:
+                is_dislike = True
+                break
+        if is_dislike:
+            post.dislikes.remove(request.user)  
+        is_like = False
+        for like in post.likes.all():
+            if like == request.user:
+                is_like = True
+                break
+        if not is_like:
+            post.likes.add(request.user)
+            post.like_count += 1
+            notification = Notification.objects.create(notification_type=1, from_user=request.user, to_user=post.author, post=post)
+        if is_like:
+            post.likes.remove(request.user)
+        return redirect('post-detail', id=id)
+class AddDislike(LoginRequiredMixin, View):
+    def get(self, request, id, *args, **kwargs):
+        post = Post.objects.get(id=id)
+        is_like = False
+        for like in post.likes.all():
+            if like == request.user:
+                is_like = True
+                break
+        if is_like:
+            post.likes.remove(request.user)
+        is_dislike = False
+        for dislike in post.dislikes.all():
+            if dislike == request.user:
+                is_dislike = True
+                break
+        if not is_dislike:
+            post.dislikes.add(request.user)
+            post.like_count -= 1
+        if is_dislike:
+            post.dislikes.remove(request.user)
+        return redirect('post-detail', id=id)        
 @login_required
 def FavouritesList(request):
     new = Post.newmanager.filter(favourites=request.user)
