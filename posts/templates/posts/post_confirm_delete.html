@@ -12,11 +12,11 @@
         {% endif %}
         <center><br>
             <form method="POST">
-                <div class="input-group" style="margin: 0 auto;">
+                <div class="mb-3" style="margin: 0 auto;">
                     {% csrf_token %}
-                    <label>Are You Sure You Wanna Delete This Post!</label>
-                    <button class="btn btn-primary" type="submit"><i class="fal fa-sad-tear"></i> Yes!</button>
-                    <a class="btn btn-primary" href="{% url 'post-detail' post.id %}"><i class="fal fa-sad-tear"></i> No!, Safe My Post</a>
+                    <h3 class="form-label">Are You Sure You Wanna Delete This Post!</h3>
+                    <button class="btn btn-danger btn-lg" type="submit"><i class="fa fa-sad-tear"></i> Yes!<br></button>
+                    <a class="btn btn-primary btn-lg" href="{% url 'post-detail' post.id %}"><i class="fas fa-smile-beam"></i> No!, Safe My Post</a>
                 </div>
             </form>
         </center>

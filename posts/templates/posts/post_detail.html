@@ -55,8 +55,10 @@
       </div>
       {% for comment in comments %}
         <div  class="post">
-          <div class="profile-container">
+          <div class="picture-containers">
             <img class="profile-picture post-img" src="{{ comment.author.profile.image.url }}">
+          </div>
+          <div class="profile-container">
           </div>
 
           <div class="post-content">

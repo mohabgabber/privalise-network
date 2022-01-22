@@ -212,8 +212,6 @@ class PostUpdateView(LoginRequiredMixin, View):
                 return redirect('home')
         else:
             return redirect('home')
-
-
 class ProfileView(LoginRequiredMixin, View):
     def get(self, request, username, *args, **kwargs):
         user = User.objects.get(username=username)
@@ -255,7 +253,6 @@ class RemoveFollower(LoginRequiredMixin, View):
 class Search(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         return render(request, 'posts/search.html')
-    
 class SearchResults(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         query = self.request.GET.get('query')

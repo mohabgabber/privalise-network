@@ -12,8 +12,11 @@
         <br/>
         <form method='POST'>
           {% csrf_token %}
-          <textarea name="content" class="form-control" style="width: 100%;" cols="100" rows="7" placeholder="Post Human!">{% if post %}{{ content }}{% endif %}
-          </textarea><br/>
+          {% if post %}
+          <textarea name="content" class="form-control" style="width: 100%;" cols="100" rows="7" placeholder="Post Human!">{{ content }}</textarea><br/>
+          {% else %}
+          <textarea name="content" class="form-control" style="width: 100%;" cols="100" rows="7" placeholder="Post Human!"></textarea><br/>
+          {% endif %}
           <button class="btn btn-primary">Post</button>
         </form><br/>
     </div></center>
