@@ -38,3 +38,24 @@ main {
 
 	object-fit: inherit;
 }
+.picture-containers {
+	width: 100px;
+	height: 100px;
+
+	position: relative;
+	overflow: hidden;
+
+	border-radius: 50%;
+
+	margin-right: -75px;
+}
+
+.picture-containers > img.profile-picture {
+	margin: auto;
+
+	display: inline;
+	height: 100%;
+	width: 100%;
+
+	object-fit: inherit;
+}

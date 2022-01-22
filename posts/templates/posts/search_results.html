@@ -25,8 +25,10 @@
                     <center><h2>Posts</h2></center>
                     {% for post in posts %}
                         <div class="post" style="text-align: left;  margin: 0 auto; margin-bottom: 8px;">
+                            <div class="picture-containers">
+                              <img class="profile-picture post-img" src="{{ post.author.profile.image.url }}">  
+                            </div>
                             <div class="profile-container">
-                                <img class="profile-picture post-img" src="{{ post.author.profile.image.url }}">
                             </div>
                             <div class="post-content">
                                 <div class="post-info">
@@ -60,8 +62,10 @@
                     <center><h2>Comments</h2></center>
                     {% for comment in comments %}
                         <div  class="post">
+                            <div class="picture-containers">
+                              <img class="profile-picture post-img" src="{{ comment.author.profile.image.url }}">  
+                            </div>
                             <div class="profile-container">
-                                <img class="profile-picture post-img" src="{{ comment.author.profile.image.url }}">
                             </div>
                             <div class="post-content">
                                 <div class="post-info">
@@ -93,8 +97,10 @@
                     <center><h2>Profiles</h2></center>
                     {% for profile in profiles %}
                         <div  class="post">
+                            <div class="picture-containers">
+                              <img class="profile-picture post-img" src="{{ profile.image.url }}">  
+                            </div>
                             <div class="profile-container">
-                                <img class="profile-picture post-img" src="{{ profile.image.url }}">
                             </div>
                             <div class="post-content">
                                 <div class="post-info">
