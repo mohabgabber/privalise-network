@@ -54,12 +54,21 @@ class PostDetailView(LoginRequiredMixin, View):
         for comment in comments:
             commentcount += 1
         likes = post.likes.count() - post.dislikes.count()
+        page = request.GET.get('page', 1)
+        paginator = Paginator(comments, 5)
+        try:
+            comments_list = paginator.page(page)
+        except PageNotAnInteger:
+            comments_list = paginator.page(1)
+        except EmptyPage:
+            comments_list = paginator.page(paginator.num_pages)
+
         context = {
             'likes': likes,
             'post': post,
             'form': form,
             'commentcount': commentcount,
-            'comments': comments,
+            'comments': comments_list,
         }
         return render(request, 'posts/post_detail.html', context)
     def post(self, request, id, *args, **kwargs):
