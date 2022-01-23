@@ -293,7 +293,7 @@ class SearchResults(LoginRequiredMixin, View):
         context = {'profiles': profile_list, 'posts': post_list, 'comments': comment_list,}
         return render(request, 'posts/search_results.html', context)    
 class AddCommentLike(LoginRequiredMixin, View):
-    def post(self, request, id, *args, **kwargs):
+    def get(self, request, id, *args, **kwargs):
         comment = Comment.objects.get(id=id)
         is_dislike = False
         for dislike in comment.dislikes.all():
@@ -312,10 +312,9 @@ class AddCommentLike(LoginRequiredMixin, View):
             notification = Notification.objects.create(notification_type=1, from_user=request.user, to_user=comment.author, comment=comment)
         if is_like:
             comment.likes.remove(request.user)
-        next = request.POST.get("next", '/')
-        return HttpResponseRedirect(next)
+        return redirect('post-detail', id=comment.post.id)
 class AddCommentDislike(LoginRequiredMixin, View):
-    def post(self, request, id, *args, **kwargs):
+    def get(self, request, id, *args, **kwargs):
         comment = Comment.objects.get(id=id)
         is_like = False
         for like in comment.likes.all():
@@ -333,8 +332,7 @@ class AddCommentDislike(LoginRequiredMixin, View):
             comment.dislikes.add(request.user)
         if is_dislike:
             comment.dislikes.remove(request.user)
-        next = request.POST.get("next", '/')
-        return HttpResponseRedirect(next)
+        return redirect('post-detail', id=comment.post.id)
 class AddLike(LoginRequiredMixin, View):
     def get(self, request, id, *args, **kwargs):
         post = Post.objects.get(id=id)
