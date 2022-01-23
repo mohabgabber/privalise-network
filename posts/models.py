@@ -15,7 +15,6 @@ class Post(models.Model):
     shared_user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name='+')
     favourites = models.ManyToManyField(User, related_name='favourite', default=None, blank=True)
     likes = models.ManyToManyField(User, related_name='like', default=None, blank=True)
-    like_count = models.BigIntegerField(default='0')
     tags = models.ManyToManyField('Tag', blank=True)
     mentions = models.ManyToManyField(User, related_name='mentions', blank=True)
     def create_tags(self):

@@ -53,7 +53,9 @@ class PostDetailView(LoginRequiredMixin, View):
         commentcount = 0
         for comment in comments:
             commentcount += 1
+        likes = post.likes.count() - post.dislikes.count()
         context = {
+            'likes': likes,
             'post': post,
             'form': form,
             'commentcount': commentcount,
@@ -74,8 +76,10 @@ class PostDetailView(LoginRequiredMixin, View):
         commentcount = 0
         for comment in comments:
             commentcount += 1
+        likes = post.likes.count() - post.dislikes.count()
         notification = Notification.objects.create(notification_type=2, from_user=request.user, to_user=post.author, post=post)
         context = {
+            'likes': likes,
             'post': post,
             'form': form,
             'commentcount': commentcount,
@@ -313,6 +317,9 @@ class AddCommentLike(LoginRequiredMixin, View):
         if is_like:
             comment.likes.remove(request.user)
         return redirect('post-detail', id=comment.post.id)
+
+
+
 class AddCommentDislike(LoginRequiredMixin, View):
     def get(self, request, id, *args, **kwargs):
         comment = Comment.objects.get(id=id)
@@ -350,7 +357,6 @@ class AddLike(LoginRequiredMixin, View):
                 break
         if not is_like:
             post.likes.add(request.user)
-            post.like_count += 1
             notification = Notification.objects.create(notification_type=1, from_user=request.user, to_user=post.author, post=post)
         if is_like:
             post.likes.remove(request.user)
@@ -372,7 +378,6 @@ class AddDislike(LoginRequiredMixin, View):
                 break
         if not is_dislike:
             post.dislikes.add(request.user)
-            post.like_count -= 1
         if is_dislike:
             post.dislikes.remove(request.user)
         return redirect('post-detail', id=id)        

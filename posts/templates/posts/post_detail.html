@@ -36,9 +36,9 @@
               <a style="width: 40%; height: 35%;" href="{% url 'post-update' post.id %}" class="btn btn-outline-info">Edit Post</a>
               <a style="width: 40%; height: 35%;" href="{% url 'post-delete' post.id %}" class="btn btn-outline-info">Delete Post</a>
             {% else %}
-              <a style="width: 60px; height: 35%;" href="{% url 'add-like' post.id %}" class="btn btn-primary"><i class="fas fa-kiss-wink-heart"></i></a>
-              <button class="btn btn-outline-info" style="margin: 5px;">{{post.likes.count}}</button>
-              <a style="width: 60px; height: 35%;" href="{% url 'add-dislike' post.id %}" class="btn btn-danger"><i class="fas fa-hand-middle-finger"></i></a>
+                <a style="width: 60px; height: 35%;" href="{% url 'add-like' post.id %}" class="btn btn-primary"><img src="{% static 'img/grin-stars.svg' %}"></a>
+                <button class="btn btn-outline-info" style="margin: 5px;">{{ likes }}</button>
+                <a style="width: 60px; height: 35%;" href="{% url 'add-dislike' post.id %}" class="btn btn-danger"><img src="{% static 'img/angry.svg' %}"></a>
             {% endif %}
           </div>
         </div>  
