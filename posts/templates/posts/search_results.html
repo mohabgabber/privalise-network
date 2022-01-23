@@ -74,7 +74,7 @@
                                         <p class="date">{{ comment.date_created }}</p>
                                     </div>
                                 </div>
-                                <a style="text-decoration: inherit; color: inherit;" href="{% url 'post-detail' comment.post.id %}">
+                                <a style="text-decoration: inherit; color: inherit;" href="{% url 'post-detail' comment.post.id %}#{{comment.id}}">
                                     <div class="post-text" style="text-align: left;">
                                         <p>{{ comment.content|convert_markdown|safe }}</p>
                                         <a style="width: 40%; height: 35%;" href="{% url 'post-detail' comment.post.pk %}" class="btn btn-outline-info">Open Comment</a>

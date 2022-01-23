@@ -178,17 +178,21 @@ class UserDetails(LoginRequiredMixin, View):
         user = User.objects.get(username=username)
         context = {'user': user,}
         return render(request, 'posts/user_details.html', context)
-class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-    model = Comment
-    template_name = 'posts/comments_delete.html'
-    def get_success_url(self):
-        id = self.kwargs['post_id']
-        return reverse_lazy('post-detail', kwargs={'id': id})
-    def test_func(self):
-        comment = self.get_object()
-        if self.request.user == comment.author:
-            return True
-        return False
+class CommentDeleteView(LoginRequiredMixin, View):
+    def get(self, request, id, *args, **kwargs):
+        comment = Comment.objects.get(id=id)
+        post = comment.post
+        if request.user == comment.author:
+            comment.delete()
+        return redirect('post-detail', id=post.id)
+class CommentEditView(LoginRequiredMixin, View):
+    def post(self, request, id, *args, **kwargs):
+        comment = Comment.objects.get(id=id)
+        post = comment.post
+        if request.user == comment.author:
+            comment.content = request.POST.get('content')
+            comment.save()
+        return redirect('post-detail', id=post.id)
 class PostUpdateView(LoginRequiredMixin, View):
     def get(self, request, id, *args, **kwargs):
         post = Post.objects.get(id=id)
