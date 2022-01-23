@@ -73,19 +73,43 @@
             <div class="post-text" style="text-align: left;">
               <p>{{ comment.content|convert_markdown|safe }}</p>
               {% if request.user == comment.author %}
+                 <style type="text/css">
+                    #editcomment{{comment.id}}:target 
+                    {
+                      display: block;
+                    }
+                    #editcomment{{comment.id}} 
+                    {
+                     display: none;
+                    }
+                    #confirmdeletecomment{{comment.id}} 
+                    {
+                     display: none;
+                    }
+                    #confirmdeletecomment{{comment.id}}:target 
+                    {
+                     display: block;
+                    }
+                    #sharecomment{{comment.id}} 
+                    {
+                     display: none;
+                    }
 
+                    #sharecomment{{comment.id}}:target 
+                    {
+                     display: block;
+                    }
+                 </style>
                 <button class="btn btn-primary">{{comment.likes.count}} Upvotes</button>
                 <div class="dropdown" style="margin-bottom: 6px;">
                   <button class="btn btn-outline-info">Actions</button>
                   <div class="dropdown-content">
-                    <a href="#confirmdeletecomment">Delete</a>
-                    <a href="#editcomment">Edit</a>
-                    <a href="#sharecomment">Share</a>
+                    <a href="#confirmdeletecomment{{comment.id}}">Delete</a>
+                    <a href="#editcomment{{comment.id}}">Edit</a>
+                    <a href="#sharecomment{{comment.id}}">Share</a>
                   </div><br>
                 </div>
-
-
-              <p id="confirmdeletecomment">
+              <p id="confirmdeletecomment{{comment.id}}">
                 <a style="margin-top: 5px;" href="{% url 'comment-delete' comment.id %}" class="btn btn-danger">
                   Confirm Delete
                 </a>
@@ -93,13 +117,11 @@
                   Safe My Post
                 </a>
               </p>
-
-              <p id="sharecomment">
+              <p id="sharecomment{{comment.id}}">
                 <a class="btn btn-outline-info" href="{% url 'post-detail' comment.post.id %}#{{comment.id}}">Copy This</a>
                 <a class="btn btn-outline-danger" href="#">Done</a>
               </p>
-
-              <div id="editcomment">
+              <div id="editcomment{{comment.id}}">
                 <form method="POST" action="{% url 'comment-edit' comment.id %}">
                   {% csrf_token %}
                   <textarea name="content" class="form-control" style="width: 100%; margin-bottom: 6px;" cols="10" rows="7" placeholder="Post Human!">{{ comment.content }}</textarea>
@@ -111,11 +133,10 @@
                   </a>
                 </form>
               </div>
-              
               {% else %}
-                <a style="width: 40%; height: 35%;" href="{% url 'add-comment-like' post.id comment.id %}" class="btn btn-primary"><i class="fas fa-kiss-wink-heart"></i></a>
+                <a style="width: 60px; height: 35%;" href="{% url 'add-comment-like' comment.id %}" class="btn btn-primary"><i class="fas fa-kiss-wink-heart"></i></a>
                 <button class="btn btn-outline-info" style="margin: 5px;">{{comment.likes.count}}</button>
-                <a style="width: 40%; height: 35%;" href="{% url 'add-comment-dislike' post.id comment.id %}" class="btn btn-danger"><i class="fas fa-hand-middle-finger"></i></a>
+                <a style="width: 60px; height: 35%;" href="{% url 'add-comment-dislike' comment.id %}" class="btn btn-danger"><i class="fas fa-hand-middle-finger"></i></a>
               {% endif %}
             </div>
           </div>  
