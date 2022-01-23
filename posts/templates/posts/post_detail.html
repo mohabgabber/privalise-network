@@ -142,6 +142,13 @@
           </div>  
         </div>
       {% endfor %}
+      {% if comments.has_previous %}
+          <a href="?page={{comments.previous_page_number}}" class="btn btn-outline-info"><</a>
+      {% endif %}
+      <span class="btn btn-primary">{{comments.number}}</span>  
+      {% if comments.has_next %}
+          <a href="?page={{comments.next_page_number}}" class="btn btn-outline-info">></a>
+      {% endif %}
     </center>
   </main>
 {% endblock content %}
