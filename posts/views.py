@@ -13,7 +13,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.http import JsonResponse, HttpResponse
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from .service import process_mentions_from_post_content
 class PostListView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         logged_in_user = request.user
@@ -138,7 +137,6 @@ class PostDeleteView(LoginRequiredMixin, View):
             return redirect('home')
         else:
             return redirect('home')
-
 def monero(address):
     a = str(address)
     length = len(a)
@@ -326,9 +324,6 @@ class AddCommentLike(LoginRequiredMixin, View):
         if is_like:
             comment.likes.remove(request.user)
         return redirect('post-detail', id=comment.post.id)
-
-
-
 class AddCommentDislike(LoginRequiredMixin, View):
     def get(self, request, id, *args, **kwargs):
         comment = Comment.objects.get(id=id)
