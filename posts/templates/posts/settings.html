@@ -1,5 +1,6 @@
 {% extends 'posts/base.html' %}
 {% load crispy_forms_tags %}
+{% load static %}
 {% block title %}Edit Your Settings On Privalise!, Where Everything Is Awesome{% endblock title %}
 {% block content %}
 <br><br>
@@ -26,7 +27,7 @@
 
     <div class="input-group mb-3">
       <span class="input-group-text" id="basic-addon2">Your Name</span>
-      <input type="text" value="{{ request.user.profile.name }}" class="form-control" name="name" placeholder="Your Name!" aria-label="Recipient's username" aria-describedby="basic-addon2">
+      <input type="text" value="{{request.user.profile.name}}" class="form-control" name="name" placeholder="Your Name!" aria-label="Recipient's username" aria-describedby="basic-addon2">
     </div>
 
     <div class="input-group mb-3">
@@ -36,12 +37,12 @@
 
     <small>Square Images Recomended</small>
     <div class="input-group mb-3">
-      <label class="input-group-text" for="inputGroupFile01">Profile Pic</label>
+      <label class="input-group-text" for="inputGroupFile01"><i class="fas fa-portrait"></i></label>
       <input type="file" class="form-control" id="inputGroupFile01" name="image">
     </div>
 
     <div class="input-group">
-      <span class="input-group-text">BIO</span>
+      <span class="input-group-text"><i class="fas fa-info"></i></span>
       <textarea class="form-control" rows="10" aria-label="With textarea" name="bio" placeholder="Your bio">{{ request.user.profile.bio }}</textarea>
     </div>
     <br/>
@@ -56,8 +57,8 @@
     </div>
     
     <div class="input-group">
-      <span class="input-group-text">PGP</span>
-      <textarea class="form-control" cols="11" rows="22" aria-label="With textarea" name="public_key" placeholder="Your Public Key">{{ request.user.profile.public_key }}</textarea>
+      <span class="input-group-text"><i class="fab fa-keycdn"></i></span>
+      <textarea class="form-control" cols="8" rows="12" aria-label="With textarea" name="public_key" placeholder="Your Public Key">{{ request.user.profile.public_key }}</textarea>
     </div>
     <br/>
     <center>

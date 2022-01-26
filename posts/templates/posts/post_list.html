@@ -40,6 +40,9 @@
 			{% endfor %}
 		</div>
 		<center>
+		{% if postscount == 0 %}
+		<h2>I'm So Lonely Right Now!!, Just Follow Someone Already, Damn it.</h2>
+		{% else %}
 			{% if posts.has_previous %}
 			    <a href="?page={{posts.previous_page_number}}" class="btn btn-outline-info"><</a>
 			{% endif %}
@@ -47,5 +50,6 @@
 			{% if posts.has_next %}
 			    <a href="?page={{posts.next_page_number}}" class="btn btn-outline-info">></a>
 			{% endif %}
+		{% endif %}
 		</center>
 {% endblock content %}

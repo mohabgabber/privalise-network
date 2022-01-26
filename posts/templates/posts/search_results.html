@@ -49,6 +49,9 @@
                         </div>
                     {% endfor %}
                     <center>
+                    {% if postscount == 0 %}
+                    <h2>That's Unfortunate :(</h2>
+                    {% else %}
                         {% if posts.has_previous %}
                             <a href="?posts={{posts.previous_page_number}}&query={{request.GET.query}}" class="btn btn-outline-info"><</a>
                         {% endif %}
@@ -56,6 +59,7 @@
                         {% if posts.has_next %}
                             <a href="?posts={{posts.next_page_number}}&query={{request.GET.query}}" class="btn btn-outline-info">></a>
                         {% endif %}
+                    {% endif %}
                     </center><br/>
                 </div>
                 <div class="col-sm">
@@ -84,6 +88,9 @@
                         </div>
                     {% endfor %}
                     <center>
+                    {% if commentscount == 0 %}
+                    <h2>What Is Life?</h2>
+                    {% else %}
                         {% if comments.has_previous %}
                             <a href="?comments={{comments.previous_page_number}}&query={{request.GET.query}}" class="btn btn-outline-info"><</a>
                         {% endif %}
@@ -91,6 +98,7 @@
                         {% if comments.has_next %}
                             <a href="?query={{request.GET.query}}&comments={{comments.next_page_number}}" class="btn btn-outline-info">></a>
                         {% endif %}
+                    {% endif %}
                     </center><br/>
                 </div>
                 <div class="col-sm">
@@ -118,6 +126,9 @@
                         </div>
                     {% endfor %}
                     <center>
+                    {% if profilescount == 0 %}
+                    <h2>HELLO!</h2>
+                    {% else %}
                         {% if profiles.has_previous %}
                             <a href="?profiles={{profiles.previous_page_number}}&query={{request.GET.query}}" class="btn btn-outline-info"><</a>
                         {% endif %}
@@ -125,6 +136,7 @@
                         {% if profiles.has_next %}
                             <a href="?profiles={{profiles.next_page_number}}&query={{request.GET.query}}" class="btn btn-outline-info">></a>
                         {% endif %}
+                    {% endif %}
                     </center>
                 </div>
             </div>

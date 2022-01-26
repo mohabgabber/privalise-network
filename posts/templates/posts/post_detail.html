@@ -9,9 +9,9 @@
       <div>Priva<span>Lise</span></div>
     </div>
     {% if messages %}
-       {% for message in messages %}
-          <div class="alert alert-{{ message.tags }} content">{{ message }}</div>
-       {% endfor %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} content">{{ message }}</div>
+      {% endfor %}
     {% endif %}
     <center>
       <br/>
@@ -33,12 +33,44 @@
           <div class="post-text">
             <p>{{ post.content|convert_markdown|safe }}</p>
             {% if request.user == post.author %}
-              <a style="width: 40%; height: 35%;" href="{% url 'post-update' post.id %}" class="btn btn-outline-info">Edit Post</a>
-              <a style="width: 40%; height: 35%;" href="{% url 'post-delete' post.id %}" class="btn btn-outline-info">Delete Post</a>
+              <button class="btn btn-primary">{{post.likes.count}} Upvotes</button>
+                <div class="dropdown" style="margin-bottom: 6px;">
+                  <button class="btn btn-outline-info">Actions</button>
+                  <div class="dropdown-content">
+                    <a href="#confirmdeletepost">Delete</a>
+                    <a href="#editpost">Edit</a>
+                    <a href="#sharepost">Share</a>
+                  </div><br>
+                </div>
+                <p id="confirmdeletepost">
+                <a style="margin-top: 5px;" href="{% url 'post-delete' post.id %}" class="btn btn-danger">
+                  Confirm Delete
+                </a>
+                <a href="#" style="margin-left: 5px; margin-top: 5px;"  class="btn btn-primary">
+                  Safe My Post
+                </a>
+              </p>
+              <p id="sharepost">
+                <a class="btn btn-outline-info" href="{% url 'post-detail' post.id %}">Copy This</a>
+                <a class="btn btn-outline-danger" href="#">Done</a>
+              </p>
+              <div id="editpost">
+                <form method="POST" action="{% url 'post-update' post.id %}">
+                  {% csrf_token %}
+                  <textarea name="content" class="form-control" style="width: 100%; margin-bottom: 6px;" cols="10" rows="7" placeholder="Post Human!">{{post.content}}</textarea>
+                  <button type="submit" class="btn btn-primary">
+                    Publish
+                  </button>
+                  <a href="#" style="margin-left: 5px;"  class="btn btn-primary">
+                    Cancel
+                  </a>
+                </form>
+              </div>
+
             {% else %}
-                <a style="width: 60px; height: 35%;" href="{% url 'add-like' post.id %}" class="btn btn-primary"><img src="{% static 'img/grin-stars.svg' %}"></a>
+                <a style="width: 60px; height: 35%;" href="{% url 'add-like' post.id %}" class="btn btn-primary"><i class="fas fa-kiss-wink-heart"></i></a>
                 <button class="btn btn-outline-info" style="margin: 5px;">{{ likes }}</button>
-                <a style="width: 60px; height: 35%;" href="{% url 'add-dislike' post.id %}" class="btn btn-danger"><img src="{% static 'img/angry.svg' %}"></a>
+                <a style="width: 60px; height: 35%;" href="{% url 'add-dislike' post.id %}" class="btn btn-danger"><i class="fas fa-hand-middle-finger"></i></a>
             {% endif %}
           </div>
         </div>  
@@ -135,13 +167,16 @@
               </div>
               {% else %}
                 <a style="width: 60px; height: 35%;" href="{% url 'add-comment-like' comment.id %}" class="btn btn-primary"><i class="fas fa-kiss-wink-heart"></i></a>
-                <button class="btn btn-outline-info" style="margin: 5px;">{{comment.likes.count}}</button>
+                <button class="btn btn-outline-info" style="margin: 5px;">{{comment.likescount}}</button>
                 <a style="width: 60px; height: 35%;" href="{% url 'add-comment-dislike' comment.id %}" class="btn btn-danger"><i class="fas fa-hand-middle-finger"></i></a>
               {% endif %}
             </div>
           </div>  
         </div>
       {% endfor %}
+    {% if post.comments.count == 0 %}
+    <h2>Oooh Come Oon!, you have nothing to say at all?</h2>
+    {% else %}
       {% if comments.has_previous %}
           <a href="?page={{comments.previous_page_number}}" class="btn btn-outline-info"><</a>
       {% endif %}
@@ -149,6 +184,7 @@
       {% if comments.has_next %}
           <a href="?page={{comments.next_page_number}}" class="btn btn-outline-info">></a>
       {% endif %}
+    {% endif %}
     </center>
   </main>
 {% endblock content %}

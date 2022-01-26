@@ -4,7 +4,7 @@ from .models import Post, Comment, Profile, Notification, Tag
 from django.views import View
 from django.http import HttpResponseRedirect
 from django.contrib.auth.forms import UserCreationForm
-from .forms import ProfileUpdteForm, UserUpdateForm, CommentForm, PostForm
+from .forms import ProfileUpdteForm, CommentForm, PostForm
 from django.contrib import messages
 from django.db.models import Q
 from django.contrib.auth.models import User
@@ -26,9 +26,9 @@ class PostListView(LoginRequiredMixin, View):
             post_list = paginator.page(1)
         except EmptyPage:
             post_list = paginator.page(paginator.num_pages)
-
+        postscount = posts.count()
         #form = PostForm()
-        context = {'posts': post_list,}
+        context = {'posts': post_list, 'postscount': postscount,}
         return render(request, 'posts/post_list.html', context)
     '''
     def post(self, request, *args, **kwargs):
@@ -85,13 +85,24 @@ class PostDetailView(LoginRequiredMixin, View):
         for comment in comments:
             commentcount += 1
         likes = post.likes.count() - post.dislikes.count()
-        notification = Notification.objects.create(notification_type=2, from_user=request.user, to_user=post.author, post=post)
+        page = request.GET.get('page', 1)
+        paginator = Paginator(comments, 5)
+        try:
+            comments_list = paginator.page(page)
+        except PageNotAnInteger:
+            comments_list = paginator.page(1)
+        except EmptyPage:
+            comments_list = paginator.page(paginator.num_pages)
+        if new_comment.author == new_comment.post.author:
+            pass
+        else:
+            notification = Notification.objects.create(notification_type=2, from_user=request.user, to_user=post.author, post=post)
         context = {
             'likes': likes,
             'post': post,
             'form': form,
             'commentcount': commentcount,
-            'comments': comments,
+            'comments': comments_list,
         }
         return render(request, 'posts/post_detail.html', context)
 class CommentReplyView(LoginRequiredMixin, View):
@@ -105,7 +116,10 @@ class CommentReplyView(LoginRequiredMixin, View):
             new_comment.post = post
             new_comment.parent = parent_comment
             new_comment.save()
-        notification = Notification.objects.create(notification_type=2, from_user=request.user, to_user=parent_comment.author, comment=new_comment)
+        if new_comment.author == new_comment.post.author or new_comment.author == parent_comment.author:
+            pass
+        else:
+            notification = Notification.objects.create(notification_type=2, from_user=request.user, to_user=parent_comment.author, comment=new_comment)
         return redirect('post-detail', id=post_id)
 class PostCreateView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
@@ -125,16 +139,13 @@ class PostCreateView(LoginRequiredMixin, View):
 class PostDeleteView(LoginRequiredMixin, View):
     def get(self, request, id, *args, **kwargs):
         post = Post.objects.get(id=id)
-        if request.user == post.author:
-            return render(request, 'posts/post_confirm_delete.html', {'post': post})
-        else:
-            return redirect('home')
-    def post(self, request, id, *args, **kwargs):
-        post = Post.objects.get(id=id)
-        if request.user == post.author:
-            post.delete()
-            messages.success(request, 'Post Deleted!')
-            return redirect('home')
+        if post:
+            if request.user == post.author:
+                post.delete()
+                messages.success(request, 'Post Deleted!')
+                return redirect('home')
+            else:
+                return redirect('home')
         else:
             return redirect('home')
 def monero(address):
@@ -173,6 +184,8 @@ def settings(request):
             p_form.bio = request.POST.get('bio')
             p_form.public_key = request.POST.get('public_key')
             p_form.image = request.POST.get('image')
+            if p_form.name == 'None' or p_form.name == '':
+                p_form.name == ''
             if monero(p_form.monero):
                 p_form.save()
                 messages.success(request, f'your account has been updated')
@@ -205,16 +218,6 @@ class CommentEditView(LoginRequiredMixin, View):
             comment.save()
         return redirect('post-detail', id=post.id)
 class PostUpdateView(LoginRequiredMixin, View):
-    def get(self, request, id, *args, **kwargs):
-        post = Post.objects.get(id=id)
-        if post:
-            if request.user == post.author:
-                content = post.content
-                return render(request, 'posts/post_form.html', {'post': post, 'content': content})
-            else:
-                return redirect('home')
-        else:
-            return redirect('home')
     def post(self, request, id, *args, **kwargs):
         post = Post.objects.get(id=id)
         if post:
@@ -249,8 +252,9 @@ class ProfileView(LoginRequiredMixin, View):
                 break
             else:
                 is_following = False
+        postscount = posts.count()
         followers_num = len(followers)
-        context = {'user': user, 'profile': profile, 'posts': post_list, 'followers_num': followers_num, 'is_following': is_following,}
+        context = {'user': user, 'postscount': postscount, 'profile': profile, 'posts': post_list, 'followers_num': followers_num, 'is_following': is_following,}
         return render(request, 'posts/profile.html', context)
 class AddFollower(LoginRequiredMixin, View):
     def post(self, request, username, *args, **kwargs):
@@ -301,7 +305,10 @@ class SearchResults(LoginRequiredMixin, View):
             profile_list = profilepaginator.page(1)
         except EmptyPage:
             profile_list = profilepaginator.page(profilepaginator.num_pages)
-        context = {'profiles': profile_list, 'posts': post_list, 'comments': comment_list,}
+        commentscount = comments.count()
+        postscount = posts.count()
+        profilescount = profiles.count()
+        context = {'profilescount': profilescount, 'postscount': postscount, 'commentscount': commentscount,'profiles': profile_list, 'posts': post_list, 'comments': comment_list,}
         return render(request, 'posts/search_results.html', context)    
 class AddCommentLike(LoginRequiredMixin, View):
     def get(self, request, id, *args, **kwargs):
@@ -312,7 +319,7 @@ class AddCommentLike(LoginRequiredMixin, View):
                 is_dislike = True
                 break
         if is_dislike:
-            comment.dislikes.remove(request.user)  
+            comment.dislikes.remove(request.user)
         is_like = False
         for like in comment.likes.all():
             if like == request.user:
@@ -323,6 +330,7 @@ class AddCommentLike(LoginRequiredMixin, View):
             notification = Notification.objects.create(notification_type=1, from_user=request.user, to_user=comment.author, comment=comment)
         if is_like:
             comment.likes.remove(request.user)
+        comment.likescount = comment.likes.count() - comment.dislikes.count()
         return redirect('post-detail', id=comment.post.id)
 class AddCommentDislike(LoginRequiredMixin, View):
     def get(self, request, id, *args, **kwargs):
@@ -343,6 +351,7 @@ class AddCommentDislike(LoginRequiredMixin, View):
             comment.dislikes.add(request.user)
         if is_dislike:
             comment.dislikes.remove(request.user)
+        comment.likescount = comment.likes.count() - comment.dislikes.count()
         return redirect('post-detail', id=comment.post.id)
 class AddLike(LoginRequiredMixin, View):
     def get(self, request, id, *args, **kwargs):
@@ -423,4 +432,16 @@ class RemoveNotification(View):
 class ListNotifications(View):
     def get(self, request, *args, **kwargs):
         notifications = Notification.objects.filter(to_user=request.user)
-        return render(request, "posts/notifications.html", {'notifications': notifications})
+        page = request.GET.get('page', 1)
+        paginator = Paginator(notifications, 3)
+        try:
+            notifications_list = paginator.page(page)
+        except PageNotAnInteger:
+            notifications_list = paginator.page(1)
+        except EmptyPage:
+            notifications_list = paginator.page(paginator.num_pages)
+        notificationscount = notifications.count()
+        return render(request, "posts/notifications.html", {'notifications': notifications_list, 'notificationscount': notificationscount,})
+class AboutView(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'posts/about.html')

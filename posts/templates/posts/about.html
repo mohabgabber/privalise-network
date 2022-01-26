@@ -1,0 +1,17 @@
+{% extends 'posts/base.html' %}
+{% load post_extras %}
+{% block title %}About Us. Privalise!, Where Everything Is Awesome{% endblock title %}
+{% block content %}
+	<main class="w-100 container-fluid mx-auto content">
+		<div class="mx-auto logo-text">
+		  <div>Priva<span>Lise</span></div>
+		</div>
+	  {% if messages %}
+	     {% for message in messages %}
+	        <div class="alert alert-{{ message.tags }} content">{{ message }}</div>
+	     {% endfor %}
+	  {% endif %}
+	  	<br/>
+	    <h2></h2>
+	</main>
+{% endblock content %}
