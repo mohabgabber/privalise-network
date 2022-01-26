@@ -54,6 +54,7 @@ class Comment(models.Model):
     likes = models.ManyToManyField(User, blank=True, related_name='comment_likes')
     dislikes = models.ManyToManyField(User, blank=True, related_name='comment_dislikes')
     parent = models.ForeignKey('self', blank=True, on_delete=models.CASCADE, null=True, related_name='+')
+    likescount = models.IntegerField(default=0)
     def create_tags(self):
         for word in self.content.split():
             if (word[0] == '$'):
@@ -81,12 +82,12 @@ class Profile(models.Model):
     id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     image = models.ImageField(default='default.jpg', upload_to='profile_pics')
-    bio = models.TextField(max_length=500, blank=True, null=True)
-    public_key = models.TextField(blank=True, null=True)
-    name = models.CharField(max_length=30, blank=True, null=True)
-    monero = models.CharField(max_length=95, blank=True, null=True)
-    xmppusername = models.CharField(max_length=20, blank=True, null=True)
-    xmppserver = models.CharField(max_length=62, blank=True, null=True)
+    bio = models.TextField(max_length=500, blank=True, default='')
+    public_key = models.TextField(blank=True, default='')
+    name = models.CharField(max_length=30, blank=True, default='')
+    monero = models.CharField(max_length=95, blank=True, default='')
+    xmppusername = models.CharField(max_length=20, blank=True, default='')
+    xmppserver = models.CharField(max_length=62, blank=True, default='')
     followers = models.ManyToManyField(User, blank=True, related_name='followers')
     verified = models.BooleanField(default=False)
     followers_count = models.BigIntegerField(default='0')
@@ -95,6 +96,8 @@ class Profile(models.Model):
         return f'{self.user.username} Profile'
 class Tag(models.Model):
     name = models.CharField(max_length=255)
+class About(models.Model):
+    content = models.TextField()
 class Notification(models.Model):
     # 1 = Like, 2 = Comment, 3 = Follow, #4 = Mention
     id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)

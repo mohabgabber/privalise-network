@@ -1,36 +1,38 @@
-{% load static %}
-<!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title> Login Now </title>
-		<link rel="stylesheet" href="{% static 'css/main.css' %}">
-		<link rel="stylesheet" href="{% static 'css/logo.css' %}">
-		<link rel="stylesheet" href="{% static 'css/register/page.css' %}">
-	</head>
-	<body class="dark">
-		<main>
-			<div class="logo-text" style="margin-right: 10vw;">
-				<div>Priva<span>Lise</span></div>
-			</div>
-			<div class="login">
-				<h2 class="title">Log in to Privalise</h2>
-
-				<form method="POST" class="form-inputs">
-					{% csrf_token %}
-					<input id="id_username" class="textinput textInput form-control"
-					placeholder="Username"
-					type="text" name="username" autofocus="" autocapitalize="none" autocomplete="username" 
-					maxlength="150" required=""/>
-					<input id="id_password" class="textinput textInput form-control" 
-					placeholder="Password"
-					type="password" name="password" autocomplete="current-password" required="" />
-					<button type="submit" class="btn btn-outline-info">Log in now</button>
+{% extends 'users/base.html' %}
+{% block title %}Register On Privalise{% endblock title %}
+{% block content %}
+	<main class="w-100 content container mx-auto container-fluid">
+		<div class="row">
+			<div class="col-sm">
+				<div class="logo-text" style="text-align: center;">
+					<center>
+						<div style="color: white;">Priva<span>Lise</span></div>
+				    </center>
+				</div>
+	        </div>
+			<div class="col-sm">
+				{% if messages %}
+			        {% for message in messages %}
+			            <div class="alert alert-{{ message.tags }} content">{{ message }}</div>
+			        {% endfor %}
+			    {% endif %}
+				<form method="POST" class="form-inputs" style="margin: 0">
+					<div class="container" style="color:white;">
+						<div class="row">	
+							{% csrf_token %}
+								
+							<input id="id_username" style="color: white;" class="textinput textInput form-control" placeholder="Username" type="text" name="username" autofocus="" autocapitalize="none" maxlength="150" required />
+								
+							<input id="id_password" style="color: white;" class="textinput textInput form-control" placeholder="Password" type="password" name="password" required />
+								
+							<button type="submit" class="btn btn-outline-info">Log In</button>
+						</div><br>
+						<div class="row">
+							<h3>  Don't Have An Account? <a href="{% url 'register' %}" style="color: cyan;">Register</a></h3>
+						</div>
+					</div>
 				</form>
-				<div class="spacer" style="margin-top: 3rem; margin-bottom: 3rem;"></div>
-				<h3>Don`t Have An Account? <a href="/auth/register/" style="color: cyan;">Sign Up!</a></h3>
 			</div>
-		</main>
-	</body>
-</html>
+		</div>
+	</main>
+{% endblock content %}

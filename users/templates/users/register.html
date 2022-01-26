@@ -1,89 +1,40 @@
-<!DOCTYPE html>
-{% load static %}
-<html>
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-		<title> Register Now </title>
-		<link rel="stylesheet" href="{% static 'css/main.css' %}">
-		<link rel="stylesheet" href="{% static 'css/logo.css' %}">
-		<link rel="stylesheet" href="{% static 'css/login/page.css' %}">
-		<link rel="stylesheet" href="{% static 'css/register/page.css' %}">
-	</head>
-
-	<body>
-		<main class="dark">
-			<div class="logo-text">
-				<div>Priva<span>Lise</span></div>
+{% extends 'users/base.html' %}
+{% block title %}Register On Privalise{% endblock title %}
+{% block content %}
+	<main class="w-100 content container mx-auto container-fluid">
+		<div class="row">
+			<div class="col-sm">
+				<div class="logo-text" style="text-align: center;">
+					<center>
+						<div style="color: white;">Priva<span>Lise</span></div>
+				    </center>
+				</div>
+	        </div>
+			<div class="col-sm">
+				{% if messages %}
+			        {% for message in messages %}
+			            <div class="alert alert-{{ message.tags }} content">{{ message }}</div>
+			        {% endfor %}
+			    {% endif %}
+				<form method="POST" class="form-inputs" style="margin: 0">
+					<div class="container" style="color:white;">
+						<div class="row">	
+							{% csrf_token %}
+								
+							<input id="id_username" style="color: white;" class="textinput textInput form-control" placeholder="Username" type="text" name="username" autofocus="" autocapitalize="none" maxlength="150" required=""/>
+								
+							<input id="id_password" style="color: white;" class="textinput textInput form-control" placeholder="Choose A Password" type="password" name="password1" required />
+								
+							<input id="id_password" style="color: white;" class="textinput textInput form-control" placeholder="Confirm Password" type="password" name="password2" required />
+								
+							<button type="submit" class="btn btn-outline-info">Register</button>
+						</div><br>
+						<div class="row">
+							<h3>  Already Have An Account? <a href="{% url 'login' %}" style="color: cyan;">Login</a></h3>
+						</div>
+					</div>
+				</form>
 			</div>
-		
-			<form method="POST" style="margin: 0">
-				<table class="login form-inputs">
-						{% csrf_token %}
-						<tr>
-							<td id="div_id_username">
-								<input id="id_username" class="textinput textInput form-control" 
-								placeholder="Username"
-								type="text" name="username" maxlength="40" 
-								autofocus="" required 
-								style="margin-top:auto;margin-bottom:auto;">	
-							</td>
-
-							<td>
-								<small id="hint_id_username" class="form-text text-muted">
-									<ul>
-										<li>
-											Required.
-										</li>
-										<li>
-											150 characters or fewer.
-										</li>
-										<li>
-											Letters, digits and only <code>.</code>, <code>-</code> or <code>_</code>.
-										</li>
-									</ul>
-								</small>
-							</td>
-						</tr>
-
-						<tr>
-							<td id="div_id_password1" rowspan="2"> 
-								<div class="multiple-inputs" style="margin-top: 2rem;">
-									<input id="id_password1" class="textinput textInput form-control"
-									placeholder="Password" minlength="8"
-									type="password" name="password1" autocomplete="new-password" required>
-
-									<input class="textinput textInput form-control" id="id_password2"
-									placeholder="Repeat your password" minlength="8"
-									type="password" name="password2" autocomplete="new-password" required>
-								</div>
-
-								<p id="passwderror" class="error" style="display: none;">The passwords do not match</p>
-							</td>
-
-							<td>
-								<small id="hint_id_password1" class="form-text text-muted">
-									<ul>
-										<li>Your password can’t be too similar to your other personal information.</li>
-										<li>Your password must contain at least 8 characters.</li>
-										<li>Your password can’t be a commonly used password.</li>
-										<li>Your password can’t be entirely numeric.</li>
-									</ul>
-								</small>
-							</td>
-						</tr>
-
-						<tr></tr>
-						<tr>
-							<td colspan="2">
-								<button type="submit" class="btn btn-outline-info">Join Now</button>
-							</td>
-						</tr>
-
-				</table>
-			</form>
-		</main>
-		<h3>Already Have An Account? <a href="{% url 'login' %}" style="color: cyan;">Login !</a></h3>
-	</body>
-</html>
+		</div>
+	</main>
+{% endblock content %}

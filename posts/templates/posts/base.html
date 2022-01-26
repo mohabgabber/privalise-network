@@ -5,9 +5,6 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&family=Ubuntu:wght@300&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="stylesheet" href="{% static 'css/logo.css' %}">
@@ -20,64 +17,93 @@
     <title>{% block title %}{% endblock title %}</title>
     <style type="text/css">
     
-    #hashLink
-    {
-     display: none;
-    }
+      #hashLink
+      {
+       display: none;
+      }
 
-    #hashLink:target 
-    {
-     display: block;
-    }
+      #hashLink:target 
+      {
+       display: block;
+      }
 
-    .dropdown 
-    {
-      position: relative;
-      display: inline-block;
-    }
+      #sharepost
+      {
+       display: none;
+      }
 
-    .dropdown-content 
-    {
-      display: none;
-      position: absolute;
-      background-color: #f9f9f9;
-      min-width: 160px;
-      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-      z-index: 1;
-    }
+      #sharepost:target 
+      {
+       display: block;
+      }
 
-    .dropdown-content a 
-    {
-      color: black;
-      padding: 12px 16px;
-      text-decoration: none;
-      display: block;
-    }
+      #editpost
+      {
+       display: none;
+      }
 
-    .dropdown-content a:hover 
-    {
-      background-color: #f1f1f1
-    }
+      #editpost:target 
+      {
+       display: block;
+      }
 
-    .dropdown:hover .dropdown-content 
-    {
-      display: block;
-    }
+      #confirmdeletepost
+      {
+       display: none;
+      }
 
-    .dropdown:hover .dropbtn 
-    {
-      background-color: #3e8e41;
-    }
-    
+      #confirmdeletepost:target 
+      {
+       display: block;
+      }
+
+      .dropdown 
+      {
+        position: relative;
+        display: inline-block;
+      }
+
+      .dropdown-content 
+      {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+      }
+
+      .dropdown-content a 
+      {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+      }
+
+      .dropdown-content a:hover 
+      {
+        background-color: #f1f1f1
+      }
+
+      .dropdown:hover .dropdown-content 
+      {
+        display: block;
+      }
+
+      .dropdown:hover .dropbtn 
+      {
+        background-color: #3e8e41;
+      }
     </style>
   </head>
   <body id="body" class="dark">
     <nav id="navbar" class="navbar dark">
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a href="{% url 'home' %}" class="nav-link">
+          <a href="{% url 'about' %}" class="nav-link">
             <img id="logo" class="icon" src="{% static 'img/placeholder.png' %}">
-            <span class="link-text">Privalise!</span>
+            <span class="link-text">About Privalise!</span>
           </a>
         </li>
         <li class="nav-item">

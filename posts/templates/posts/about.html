@@ -1,0 +1,37 @@
+{% extends 'posts/base.html' %}
+{% block title %}About Us. Privalise!, Where Everything Is Awesome{% endblock title %}
+{% block content %}
+	<main class="w-100 container-fluid mx-auto content">
+		<div class="mx-auto logo-text">
+		  <div>Priva<span>Lise</span></div>
+		</div>
+	    {% if messages %}
+	        {% for message in messages %}
+	            <div class="alert alert-{{ message.tags }} content">{{ message }}</div>
+	        {% endfor %}
+	    {% endif %}
+	  	<br/>
+	    <div class="post">
+			<div class="post-text">
+				<h1 style="color: azure;">What Is Privalise?</h1>
+				<p style="font-size: large;">-> Privalise is an <a href="https://github.com/mohabgabber/privalise-network" target="_blank">Open-Source</a> Social Media network that focuses on privacy and security of it's users. it's made by and for the community with no profits Or ads at all</p>
+				<h2 style="color: azure;">What Do You Mean Privacy And Security?</h2>
+				<p style="font-size: large;">-> Well, Privalise doesn't record any data at all about it's users (No ips, no emails/phone numbers, no tracking or any fingerprinting). So the only data we have on you is what you actually post, comment, etc... hence even if our database was leaked no one would be able to identify you.</p>
+				<h2 style="color: azure;">What Are The Technologies Behind Privalise?</h2>
+				<p style="font-size: large;">-> Everything Privalise uses is Open-Source. We do not use an y api or remote resources, meaning that any framework we use like bootstrap, fontawesome, django, etc... is stored locally to terminate any possibilty of user-tracking on the website.
+                What we specifically use:
+                <ul style="font-size: large;">
+                	<li>Python 3</li>
+                	<li>Bootstrap 5</li>
+                	<li>Django 4</li>
+                	<li>Html/Css</li>
+                	<li>FontAwesome 5</li>
+                </ul>
+                <p style="font-size: large;">you shouldn't believe us!, open the <a href="https://github.com/mohabgabber/privalise-network" target="_blank">source code</a> and check yourself</p>
+		  		</p>
+                <h2 style="color: azure;">How Can You Help Us</h2>
+                <p style="font-size: large;">You can support us by using privalise and caring about privacy, sharing privalise across the internet or becoming a <a href="https://patreon.com/mohabgabber" target="_blank">patreon</a> ;)</p>
+			</div>
+		</div>
+	</main>
+{% endblock content %}

@@ -5,6 +5,12 @@
 	<div class="logo-text">
 	  <div>Priva<span>Lise</span></div>
 	</div>
+	{% if messages %}
+	     {% for message in messages %}
+	        <div class="alert alert-{{ message.tags }} content">{{ message }}</div>
+	     {% endfor %}
+	  {% endif %}
+	  	<br/>
 	<strong style="margin-bottom: 12px;" >YOU HAVE {{ notifications.count }} NOTIFICATION{{ notifications.count|pluralize }}<br/></strong>
 	<section class="post w-auto">
 		{% for notification in notifications %}
@@ -68,6 +74,19 @@
 			    </div>
 		{% endif %}
 		{% endfor %}
+		<center>
+		{% if notificationscount == 0 %}
+		<h2>Uhmm, Try To Be More Interesting!</h2>
+		{% else %}
+			{% if notifications.has_previous %}
+			    <a href="?page={{notifications.previous_page_number}}" class="btn btn-outline-info"><</a>
+			{% endif %}
+			<span class="btn btn-primary">{{notifications.number}}</span>  
+			{% if notifications.has_next %}
+			    <a href="?page={{notifications.next_page_number}}" class="btn btn-outline-info">></a>
+			{% endif %}
+		{% endif %}
+		</center>
 	</section>
 </main>
 {% endblock content %}

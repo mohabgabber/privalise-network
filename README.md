@@ -12,26 +12,26 @@ it's also perfect as an onion service, bc the website doesn't have any js in it,
 ## The Technology Behind It:
    * Python 3.10
    * Django 4
-   * Pure HTML/CSS/JS
+   * Pure HTML/CSS
 
 ## Main Features:
    * Sign IN/UP/OUT
    * Can Run On Tor With Safest Mode Enabled
    * Post CRUD With MD Rendering
-   * Update Username / Profile Pic
+   * Settings
    * Notifications
-   * Paginating For Posts
+   * Paginating For Objects
    * Password Change
    * Follow/Unfollow users
    * Commenting And Replying To Comments
-   * Hashtags And Mentions
+   * Hashtags And Mentions (coming soon)
    * Public Profile For Each User With a profle pic
    * 2 factor authentication (coming soon)
 
 ## The front-end
 The frontend is mostly made (like 90%) by [margual56](https://github.com/margual56)
 
- ## Set Up: 
+## Set Up: 
   * Clone The Repository `git clone https://github.com/privalise-network.git && cd privalise-network`
   * Install Requirements `pip install -r requirements.txt`
   * you'll to create a .env file in the root directory of the app, and specify `debug` and `secret_key`

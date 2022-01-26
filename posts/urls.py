@@ -1,9 +1,10 @@
 from django.urls import path
 #from django.conf import settings
 #from django.conf.urls.static import static
-from .views import CommentEditView, AddLike, AddDislike, SearchResults, UserDetails, AddFavourites, RemoveNotification, ListNotifications, PostNotification, FollowNotification,  Search, AddCommentLike, AddCommentDislike, ProfileView, settings, AddFollower, RemoveFollower, PostListView, PostCreateView, PostDetailView, PostUpdateView, PostDeleteView, CommentDeleteView
+from .views import AboutView, CommentEditView, AddLike, AddDislike, SearchResults, UserDetails, AddFavourites, RemoveNotification, ListNotifications, PostNotification, FollowNotification,  Search, AddCommentLike, AddCommentDislike, ProfileView, settings, AddFollower, RemoveFollower, PostListView, PostCreateView, PostDetailView, PostUpdateView, PostDeleteView, CommentDeleteView
 urlpatterns = [
     path('', PostListView.as_view(), name='home'),
+    path('about/', AboutView.as_view(), name='about'),
     path('profile/details/<str:username>/', UserDetails.as_view(), name='user-details'),
     path('post/<str:id>/', PostDetailView.as_view(), name='post-detail'),
     path('post/<str:id>/update/', PostUpdateView.as_view(), name='post-update'),
