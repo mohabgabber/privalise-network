@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Post, Comment, Profile, Notification, Tag
+from .models import Post, Comment, Profile, Notification, Tag, About
 from django.views import View
 from django.http import HttpResponseRedirect
 from django.contrib.auth.forms import UserCreationForm
@@ -444,4 +444,5 @@ class ListNotifications(View):
         return render(request, "posts/notifications.html", {'notifications': notifications_list, 'notificationscount': notificationscount,})
 class AboutView(View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'posts/about.html')
+        about = About.objects.get(id=1)
+        return render(request, 'posts/about.html', {'about': about,})

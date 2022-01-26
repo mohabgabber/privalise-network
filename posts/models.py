@@ -96,6 +96,8 @@ class Profile(models.Model):
         return f'{self.user.username} Profile'
 class Tag(models.Model):
     name = models.CharField(max_length=255)
+class About(models.Model):
+    content = models.TextField()
 class Notification(models.Model):
     # 1 = Like, 2 = Comment, 3 = Follow, #4 = Mention
     id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
