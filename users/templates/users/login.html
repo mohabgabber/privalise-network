@@ -16,15 +16,12 @@
 			            <div class="alert alert-{{ message.tags }} content">{{ message }}</div>
 			        {% endfor %}
 			    {% endif %}
-				<form method="POST" class="form-inputs" style="margin: 0">
+				<form method="GET" action="{% url 'login-two' %}" class="form-inputs" style="margin: 0">
 					<div class="container" style="color:white;">
 						<div class="row">	
-							{% csrf_token %}
 								
 							<input id="id_username" style="color: white;" class="textinput textInput form-control" placeholder="Username" type="text" name="username" autofocus="" autocapitalize="none" maxlength="150" required />
-								
-							<input id="id_password" style="color: white;" class="textinput textInput form-control" placeholder="Password" type="password" name="password" required />
-								
+							
 							<button type="submit" class="btn btn-outline-info">Log In</button>
 						</div><br>
 						<div class="row">

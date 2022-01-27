@@ -1,0 +1,41 @@
+{% extends 'users/base.html' %}
+{% block title %}Register On Privalise{% endblock title %}
+{% block content %}
+    <main class="w-100 content container mx-auto container-fluid">
+        <div class="row">
+            <div class="col-sm">
+                <div class="logo-text" style="text-align: center;">
+                    <center>
+                        <div style="color: white;">Priva<span>Lise</span></div>
+                    </center>
+                </div>
+            </div>
+            <div class="col-sm">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} content">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+                <form method="POST" class="form-inputs" style="margin: 0">
+                    <div class="container" style="color:white;">
+                        <div class="row">   
+                            {% csrf_token %}
+                            {% if 2fa %}
+                            Decrypt This Message:
+                            <textarea style="color: black;" class="textinput textInput form-control" placeholder="PGP Message" rows="11" name="2fa" autofocus required>{{msg}}</textarea><br>
+                            <input id="id_password" style="color: white;" class="textinput textInput form-control" placeholder="2FA Code" type="number" name="2facode" required />
+                            {% endif %}
+
+                            <input id="id_password" style="color: white;" class="textinput textInput form-control" placeholder="Password" type="password" name="password" required />
+                                
+                            <button type="submit" class="btn btn-outline-info">Log In</button>
+                        </div><br>
+                        <div class="row">
+                            <h3>  Don't Have An Account? <a href="{% url 'register' %}" style="color: cyan;">Register</a></h3>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+{% endblock content %}

@@ -40,7 +40,7 @@
 			    <p id="hashLink">
 			        Name: {{user.profile.name}}<br>
 			        Monero: {{user.profile.monero}}<br>
-			        XMPP: {{user.profile.xmppusername}}@{{user.profile.xmppserver}}<br><br>
+			        XMPP: {% if user.profile.xmppusername == ''  or user.profile.xmppserver == '' %}NO XMPP{% else %}{{user.profile.xmppusername}}@{{user.profile.xmppserver}}{% endif %}<br><br>
 			        <a class="btn-primary btn-lg" style="text-decoration: inherit; color: inherit;" href="#">collapse</a>    
 			    </p>
 			</div>
