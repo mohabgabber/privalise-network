@@ -185,6 +185,7 @@ def settings(request):
             p_form.bio = request.POST.get('bio')
             p_form.public_key = request.POST.get('public_key')
             p_form.image = request.POST.get('image')
+            p_form.fingerprint = request.POST.get('fingerprint')
             if p_form.public_key != '':
                 f = open(f'keys/{request.user.username}+{request.user.id}.txt', 'w')
                 key = f'''
