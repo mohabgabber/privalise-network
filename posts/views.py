@@ -186,6 +186,12 @@ def settings(request):
             p_form.public_key = request.POST.get('public_key')
             p_form.image = request.POST.get('image')
             p_form.fingerprint = request.POST.get('fingerprint')
+            if p_form.public_key != '' and p_form.fingerprint == '':
+                messages.success(request, f'You Can\'t Add Public Key Without It\'s FingerPrint')
+                return redirect('profile-update')
+            elif p_form.public_key == '' and p_form.fingerprint != '':
+                messages.success(request, f'You Can\'t Add FingerPrint Without It\'s Public Key')
+                return redirect('profile-update')
             if p_form.public_key != '':
                 f = open(f'keys/{request.user.username}+{request.user.id}.txt', 'w')
                 key = f'''
