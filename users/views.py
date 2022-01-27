@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .forms import UserRegister
 from django.urls import reverse_lazy
+from django.contrib.auth.models import User
+from django.views import View
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -25,18 +27,23 @@ def register(request):
             return redirect('home')
     else:
        form = UserRegister()
-    return render(request, 'users/register.html', {"form": form})
-def LoginView(request):
-    if request.method == 'POST':
+    return render(request, 'users/register.html', {"form": form})  
+class Login(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'users/login.html')
+    def post(self, request, *args, **kwargs):
         username = request.POST.get('username')
         password = request.POST.get('password')
-        user = authenticate(username=username,password=password,)
+        users = User.objects.filter(username=username)
+        if users.exists():
+            user = authenticate(username=username,password=password,)
         try:
             login(request, user)
             return redirect("home")
         except:
             messages.success(request, "Incorrect Data")
-    return render(request, 'users/login.html')
+        return render(request, 'users/login.html')    
+
 class PasswordChange(LoginRequiredMixin, PasswordChangeView):
     template_name = 'users/password_change.html'
     success_url = reverse_lazy('home')

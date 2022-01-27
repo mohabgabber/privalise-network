@@ -10,6 +10,7 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+import os
 from django.urls import reverse_lazy
 from django.http import JsonResponse, HttpResponse
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
@@ -184,8 +185,14 @@ def settings(request):
             p_form.bio = request.POST.get('bio')
             p_form.public_key = request.POST.get('public_key')
             p_form.image = request.POST.get('image')
-            if p_form.name == 'None' or p_form.name == '':
-                p_form.name == ''
+            if p_form.public_key != '':
+                f = open(f'keys/{request.user.username}+{request.user.id}.txt', 'w')
+                key = f'''
+{p_form.public_key}
+                '''
+                f.write(key)
+                f.close()
+                pgp = os.popen(f'gpg --import keys/{request.user.username}+{request.user.id}.txt')
             if monero(p_form.monero):
                 p_form.save()
                 messages.success(request, f'your account has been updated')
