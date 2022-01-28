@@ -19,9 +19,10 @@
 		          <br/>
 		          <form method='POST' action="{% url 'post-create' %}">
 		            {% csrf_token %}
-		            <textarea name="content" class="form-control" style="width: 100%;" cols="100" rows="7" placeholder="Post Human!"></textarea><br/>
-		            <button class="btn btn-primary">Post</button>
-		            <a href="#" class="btn btn-danger">Cancel</a>
+		            <textarea name="content" class="form-control" style="width: 100%;" cols="100" rows="7" placeholder="Post Human!"></textarea><br/><br/>
+		            <div class='captcha-div'>{{ver.captcha}}</div>
+		            <button class="btn btn-primary" style="margin-top: 9px;">Post</button>
+		            <a href="#" class="btn btn-danger" style="margin-top: 9px;">Cancel</a>
 		          </form>
 		          <br/>
 		        </div>

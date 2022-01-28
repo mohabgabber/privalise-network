@@ -23,7 +23,15 @@ html, body {
 	margin: 0;
 	padding: 0;
 }
-
+#id_captcha_1 {
+	width: 20%;
+}
+.captcha-div {
+	display: block;
+}
+.captcha {
+	width: 300px;
+}
 body {
 	font-family: sans-serif;
 	background-color: var(--light-bg);
