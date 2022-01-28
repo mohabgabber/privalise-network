@@ -11,12 +11,14 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 import os
+from users.forms import verification
 from django.urls import reverse_lazy
 from django.http import JsonResponse, HttpResponse
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 class PostListView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         logged_in_user = request.user
+        ver = verification()
         posts = Post.objects.filter(author__profile__followers__in=[logged_in_user.id]).order_by('-date_posted')
         page = request.GET.get('page', 1)
         paginator = Paginator(posts, 20)
@@ -28,12 +30,13 @@ class PostListView(LoginRequiredMixin, View):
             post_list = paginator.page(paginator.num_pages)
         postscount = posts.count()
         #form = PostForm()
-        context = {'posts': post_list, 'postscount': postscount,}
+        context = {'posts': post_list, 'postscount': postscount, 'ver': ver,}
         return render(request, 'posts/post_list.html', context)
 class PostDetailView(LoginRequiredMixin, View):
     def get(self, request, id, *args, **kwargs):
         post = Post.objects.get(id=id)
         form = CommentForm()
+        ver = verification()
         comments = Comment.objects.filter(post=post)
         commentcount = 0
         for comment in comments:
@@ -52,6 +55,7 @@ class PostDetailView(LoginRequiredMixin, View):
             'likes': likes,
             'post': post,
             'form': form,
+            'ver': ver,
             'commentcount': commentcount,
             'comments': comments_list,
         }
@@ -59,13 +63,25 @@ class PostDetailView(LoginRequiredMixin, View):
     def post(self, request, id, *args, **kwargs):
         post = Post.objects.get(id=id)
         form = CommentForm(request.POST)
-        if form.is_valid():
+        valid = True
+        ver = verification(request.POST)
+        if form.is_valid() and ver.is_valid():
             new_comment = form.save(commit=False)
             new_comment.content = request.POST.get('content')
             new_comment.author = request.user
             new_comment.post = post
             new_comment.save()
             new_comment.create_tags()
+
+            if new_comment.author == new_comment.post.author:
+                pass
+            else:
+                notification = Notification.objects.create(notification_type=2, from_user=request.user, to_user=post.author, post=post)
+        else:
+            ver = verification()
+            valid = False
+            comment_content = request.POST.get('content')
+            messages.warning(request, 'Wrong Captcha!')
         comments = Comment.objects.filter(post=post)
         commentcount = 0
         for comment in comments:
@@ -79,17 +95,25 @@ class PostDetailView(LoginRequiredMixin, View):
             comments_list = paginator.page(1)
         except EmptyPage:
             comments_list = paginator.page(paginator.num_pages)
-        if new_comment.author == new_comment.post.author:
-            pass
+        if not valid:
+            context = {
+                'likes': likes,
+                'post': post,
+                'ver': ver,
+                'form': form,
+                'comment_content': comment_content,
+                'commentcount': commentcount,
+                'comments': comments_list,
+            }
         else:
-            notification = Notification.objects.create(notification_type=2, from_user=request.user, to_user=post.author, post=post)
-        context = {
-            'likes': likes,
-            'post': post,
-            'form': form,
-            'commentcount': commentcount,
-            'comments': comments_list,
-        }
+            context = {
+                'likes': likes,
+                'post': post,
+                'ver': ver,
+                'form': form,
+                'commentcount': commentcount,
+                'comments': comments_list,
+            }
         return render(request, 'posts/post_detail.html', context)
 class CommentReply(LoginRequiredMixin, View):
     def post(self, request, post_id, id, *args, **kwargs):
@@ -109,18 +133,25 @@ class CommentReply(LoginRequiredMixin, View):
         return redirect('post-detail', id=post_id)
 class PostCreateView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
+        ver = verification()
         form = PostForm()
-        context = {'form': form,}
+        context = {'form': form, 'ver': ver,}
         return render(request, 'posts/post_form.html', context)
     def post(self, request, *args, **kwargs):
         form = PostForm(request.POST)
-        if form.is_valid():
+        ver = verification(request.POST)
+        if form.is_valid() and ver.is_valid():
             new_post = form.save(commit=False)
             new_post.content = request.POST.get('content').strip()
             new_post.author = request.user
             new_post.save()
             new_post.create_tags()
-        context = {'form': form,}
+        else:
+            ver = verification()
+            content = request.POST.get('content')
+            messages.warning(request, 'Wrong Captcha!')
+            return render(request, 'posts/post_form.html', {'content': content, 'ver': ver,})
+        context = {'form': form, 'ver': ver,}
         return redirect('post-detail', id=new_post.id)
 class PostDeleteView(LoginRequiredMixin, View):
     def get(self, request, id, *args, **kwargs):

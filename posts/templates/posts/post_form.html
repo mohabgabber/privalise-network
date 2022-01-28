@@ -4,6 +4,11 @@
 
 {% block content %}
 <main class="content mx-auto container-fluid">
+  {% if messages %}
+       {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} content">{{ message }}</div>
+       {% endfor %}
+    {% endif %}
   <div class="container">
     <div class="row">
       <div class="col-sm-8">
@@ -12,11 +17,12 @@
           <br/>
           <form method='POST'>
             {% csrf_token %}
-            {% if post %}
+            {% if post or content %}
             <textarea name="content" class="form-control" style="width: 95%;" cols="100" rows="7" placeholder="Post Human!">{{ content }}</textarea><br/>
             {% else %}
             <textarea name="content" class="form-control" style="width: 95%;" cols="100" rows="7" placeholder="Post Human!"></textarea><br/>
             {% endif %}
+            {{ver.captcha}}
             <button class="btn btn-primary">Post</button>
           </form>
           <br/>
