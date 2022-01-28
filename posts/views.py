@@ -18,9 +18,8 @@ class PostListView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         logged_in_user = request.user
         posts = Post.objects.filter(author__profile__followers__in=[logged_in_user.id]).order_by('-date_posted')
-        #posts = Post.objects.all().order_by('-date_posted') 
         page = request.GET.get('page', 1)
-        paginator = Paginator(posts, 5)
+        paginator = Paginator(posts, 20)
         try:
             post_list = paginator.page(page)
         except PageNotAnInteger:
@@ -31,20 +30,6 @@ class PostListView(LoginRequiredMixin, View):
         #form = PostForm()
         context = {'posts': post_list, 'postscount': postscount,}
         return render(request, 'posts/post_list.html', context)
-    '''
-    def post(self, request, *args, **kwargs):
-        logged_in_user = request.user
-        posts = Post.objects.filter(author__profile__followers__in=[logged_in_user.id]).order_by('-date_posted')
-        form = PostForm(request.POST, request.FILES)
-        if form.is_valid():
-            new_post = form.save(commit=False)
-            new_post.author = request.user
-            new_post.save()
-            new_post.create_tags()
-            process_mentions_from_post_content(new_post)
-    context = {'posts': posts,}
-    return render(request, 'posts/post_list.html', context)
-    '''
 class PostDetailView(LoginRequiredMixin, View):
     def get(self, request, id, *args, **kwargs):
         post = Post.objects.get(id=id)
@@ -55,7 +40,7 @@ class PostDetailView(LoginRequiredMixin, View):
             commentcount += 1
         likes = post.likes.count() - post.dislikes.count()
         page = request.GET.get('page', 1)
-        paginator = Paginator(comments, 5)
+        paginator = Paginator(comments, 20)
         try:
             comments_list = paginator.page(page)
         except PageNotAnInteger:
@@ -87,7 +72,7 @@ class PostDetailView(LoginRequiredMixin, View):
             commentcount += 1
         likes = post.likes.count() - post.dislikes.count()
         page = request.GET.get('page', 1)
-        paginator = Paginator(comments, 5)
+        paginator = Paginator(comments, 20)
         try:
             comments_list = paginator.page(page)
         except PageNotAnInteger:
@@ -106,7 +91,7 @@ class PostDetailView(LoginRequiredMixin, View):
             'comments': comments_list,
         }
         return render(request, 'posts/post_detail.html', context)
-class CommentReplyView(LoginRequiredMixin, View):
+class CommentReply(LoginRequiredMixin, View):
     def post(self, request, post_id, id, *args, **kwargs):
         post = Post.objects.get(id=post_id)
         parent_comment = Comment.objects.get(id=id)
@@ -187,10 +172,10 @@ def settings(request):
             p_form.image = request.POST.get('image')
             p_form.fingerprint = request.POST.get('fingerprint')
             if p_form.public_key != '' and p_form.fingerprint == '':
-                messages.success(request, f'You Can\'t Add Public Key Without It\'s FingerPrint')
+                messages.warning(request, f'You Can\'t Add Public Key Without It\'s FingerPrint')
                 return redirect('profile-update')
             elif p_form.public_key == '' and p_form.fingerprint != '':
-                messages.success(request, f'You Can\'t Add FingerPrint Without It\'s Public Key')
+                messages.warning(request, f'You Can\'t Add FingerPrint Without It\'s Public Key')
                 return redirect('profile-update')
             if p_form.public_key != '':
                 f = open(f'keys/{request.user.username}+{request.user.id}.txt', 'w')
@@ -205,7 +190,7 @@ def settings(request):
                 messages.success(request, f'your account has been updated')
                 return redirect('profile', username=request.user)
             elif not monero(p_form.monero):
-                messages.success(request, f'monero address isn\'t correct')
+                messages.warning(request, f'monero address isn\'t correct')
                 return redirect('profile-update')
     else:
         p_form = ProfileUpdteForm(instance=request.user.profile)
@@ -251,7 +236,7 @@ class ProfileView(LoginRequiredMixin, View):
         posts = Post.objects.filter(author=user).order_by('-date_posted')
         followers = profile.followers.all()    
         page = request.GET.get('page', 1)
-        paginator = Paginator(posts, 3)
+        paginator = Paginator(posts, 20)
         try:
             post_list = paginator.page(page)
         except PageNotAnInteger:
@@ -294,7 +279,7 @@ class SearchResults(LoginRequiredMixin, View):
         comments = Comment.objects.filter(Q(content__icontains=query))
         
         postspage = request.GET.get('posts', 1)
-        postspaginator = Paginator(posts, 10)
+        postspaginator = Paginator(posts, 20)
         try:
             post_list = postspaginator.page(postspage)
         except PageNotAnInteger:
@@ -303,7 +288,7 @@ class SearchResults(LoginRequiredMixin, View):
             post_list = postspaginator.page(postspaginator.num_pages)
         
         commentspage = request.GET.get('comments', 1)
-        commentspaginator = Paginator(comments, 10)
+        commentspaginator = Paginator(comments, 20)
         try:
             comment_list = commentspaginator.page(commentspage)
         except PageNotAnInteger:
@@ -312,7 +297,7 @@ class SearchResults(LoginRequiredMixin, View):
             comment_list = commentspaginator.page(commentspaginator.num_pages)
         
         profilespage = request.GET.get('profiles', 1)
-        profilepaginator = Paginator(profiles, 10)
+        profilepaginator = Paginator(profiles, 20)
         try:
             profile_list = profilepaginator.page(profilespage)
         except PageNotAnInteger:
@@ -447,7 +432,7 @@ class ListNotifications(View):
     def get(self, request, *args, **kwargs):
         notifications = Notification.objects.filter(to_user=request.user)
         page = request.GET.get('page', 1)
-        paginator = Paginator(notifications, 3)
+        paginator = Paginator(notifications, 10)
         try:
             notifications_list = paginator.page(page)
         except PageNotAnInteger:
@@ -460,3 +445,22 @@ class AboutView(View):
     def get(self, request, *args, **kwargs):
         about = About.objects.get(id=1)
         return render(request, 'posts/about.html', {'about': about,})
+class factor_conf(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'posts/2fa_conf.html')
+class factor_done(View):
+    def get(self, request, username, *args, **kwargs):
+        user = User.objects.get(username=username)
+        if request.user == user:
+            user.profile.factor_auth = True
+            user.save()
+            messages.success(request, "2FA Is Now Enabled")
+        return redirect('home')
+class factor_cancel(View):
+    def get(self, request, username, *args, **kwargs):
+        user = User.objects.get(username=username)
+        if request.user == user:
+            user.profile.factor_auth = False
+            user.save()
+            messages.success(request, "2FA Is Disabled")
+        return redirect('home')

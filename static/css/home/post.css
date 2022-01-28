@@ -18,6 +18,7 @@ div.post {
 	transition: background-color 0.2s;
 }
 
+}
 div.post:not(.reply) {
 	margin-bottom: 2em;
 }
@@ -244,6 +245,15 @@ body.dark .post-content .info{
 		cursor: pointer;
 		text-decoration: underline;
 	}
+    
+    .post-list {
+    	width: 50%;
+    }
+
+    .child-comment{
+    	width:  95%;
+    	margin-top: 2px;
+    }
 
 	.accordion_button:hover::before {
 		transform: scale(2);

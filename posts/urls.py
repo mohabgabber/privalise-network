@@ -1,7 +1,7 @@
 from django.urls import path
 #from django.conf import settings
 #from django.conf.urls.static import static
-from .views import AboutView, CommentEditView, AddLike, AddDislike, SearchResults, UserDetails, AddFavourites, RemoveNotification, ListNotifications, PostNotification, FollowNotification,  Search, AddCommentLike, AddCommentDislike, ProfileView, settings, AddFollower, RemoveFollower, PostListView, PostCreateView, PostDetailView, PostUpdateView, PostDeleteView, CommentDeleteView
+from .views import factor_conf, factor_cancel, factor_done, CommentReply, AboutView, CommentEditView, AddLike, AddDislike, SearchResults, UserDetails, AddFavourites, RemoveNotification, ListNotifications, PostNotification, FollowNotification,  Search, AddCommentLike, AddCommentDislike, ProfileView, settings, AddFollower, RemoveFollower, PostListView, PostCreateView, PostDetailView, PostUpdateView, PostDeleteView, CommentDeleteView
 urlpatterns = [
     path('', PostListView.as_view(), name='home'),
     path('about/', AboutView.as_view(), name='about'),
@@ -18,9 +18,12 @@ urlpatterns = [
     path('post/add/like/<str:id>', AddLike.as_view(), name='add-like'),
     path('post/add/comment/like/<str:id>/', AddCommentLike.as_view(), name='add-comment-like'),
     path('post/remove/comment/like/<str:id>/', AddCommentDislike.as_view(), name='add-comment-dislike'),
-    #path('post/add/comment/reply/<int:post_pk>/<int:pk>/', CommentReply.as_view(), name='add-comment-reply'),
+    path('post/add/comment/reply/<str:post_id>/<str:id>/', CommentReply.as_view(), name='comment-reply'),
     path('post/remove/like/<str:id>', AddDislike.as_view(), name='add-dislike'),
     path('search/', Search.as_view(), name='search'),
+    path('2fa/conf/', factor_conf.as_view(), name='2fa-conf'),
+    path('2fa/conf/done/<str:username>', factor_done.as_view(), name='2fa-done'),
+    path('2fa/conf/cancel/<str:username>', factor_cancel.as_view(), name='2fa-cancel'),
     path('search/results', SearchResults.as_view(), name='search-results'),
     path('fav/add/<str:id>/', AddFavourites, name='add-fav'),
     path('post/create', PostCreateView.as_view(), name='post-create'),

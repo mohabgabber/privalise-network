@@ -88,6 +88,18 @@
         <h2 style="color: black;">{{ commentcount }} Comments!</h2>
       </div>
       {% for comment in comments %}
+      {% if comment.is_parent %}
+      <div>
+        <style type="text/css">
+          #replieslist{{comment.id}}:target 
+          {
+            display: block;
+          }
+          #replieslist{{comment.id}} 
+          {
+           display: none;
+          }
+        </style>
         <div  class="post" id="{{comment.id}}">
           <div class="picture-containers">
             <img class="profile-picture post-img" src="{{ comment.author.profile.image.url }}">
@@ -145,13 +157,13 @@
                 <a style="margin-top: 5px;" href="{% url 'comment-delete' comment.id %}" class="btn btn-danger">
                   Confirm Delete
                 </a>
-                <a href="#" style="margin-left: 5px; margin-top: 5px;"  class="btn btn-primary">
-                  Safe My Post
+                <a href="#{{comment.id}}" style="margin-left: 5px; margin-top: 5px;"  class="btn btn-primary">
+                  Safe My Comment
                 </a>
               </p>
               <p id="sharecomment{{comment.id}}">
                 <a class="btn btn-outline-info" href="{% url 'post-detail' comment.post.id %}#{{comment.id}}">Copy This</a>
-                <a class="btn btn-outline-danger" href="#">Done</a>
+                <a class="btn btn-outline-danger" href="#{{comment.id}}">Done</a>
               </p>
               <div id="editcomment{{comment.id}}">
                 <form method="POST" action="{% url 'comment-edit' comment.id %}">
@@ -160,27 +172,168 @@
                   <button type="submit" class="btn btn-primary">
                     Publish
                   </button>
-                  <a href="#" style="margin-left: 5px;"  class="btn btn-primary">
+                  <a href="#{{comment.id}}" style="margin-left: 5px;"  class="btn btn-primary">
                     Cancel
                   </a>
                 </form>
               </div>
               {% else %}
+                <style>
+                  #reply{{comment.id}} 
+                  {
+                   display: none;
+                  }
+
+                  #reply{{comment.id}}:target 
+                  {
+                   display: block;
+                  }
+                </style>
                 <a style="width: 60px; height: 35%;" href="{% url 'add-comment-like' comment.id %}" class="btn btn-primary"><i class="fas fa-kiss-wink-heart"></i></a>
-                <button class="btn btn-outline-info" style="margin: 5px;">{{comment.likescount}}</button>
+                <button class="btn btn-outline-info" style="margin: 5px;">{{comment.likes.count}}</button>
                 <a style="width: 60px; height: 35%;" href="{% url 'add-comment-dislike' comment.id %}" class="btn btn-danger"><i class="fas fa-hand-middle-finger"></i></a>
+                <a style="width: 60px; height: 35%;" href="#reply{{comment.id}}" class="btn btn-danger">Reply</a>
+                <div id="reply{{comment.id}}">
+                  <form method="POST" action="{% url 'comment-reply' post.id comment.id %}">
+                    {% csrf_token %}
+                    <textarea name="content" class="form-control" style="width: 100%; margin-bottom: 6px;" cols="10" rows="7" placeholder="Post Human!"></textarea>
+                    <button type="submit" class="btn btn-primary">
+                      Publish
+                    </button>
+                    <a href="#{{comment.id}}" style="margin-left: 5px;"  class="btn btn-primary">
+                      Cancel
+                    </a>
+                  </form>
+                </div>
               {% endif %}
             </div>
           </div>  
         </div>
+        {% for child in comment.children %}
+          <div class="child-comment row"  style="margin-left: 1rem;">
+            <div class="post" id="{{child.id}}">
+              <div class="picture-containers">
+                <img class="profile-picture post-img" src="{{ child.author.profile.image.url }}">
+              </div>
+              <div class="post-content" style="margin-left: 100px;">
+                <div class="post-info">
+                  <div class="post-info1">
+                    <p><a class='username' href="{% url 'profile' child.author.username %}">@{{child.author}}</a> Replied To <a class='username' href="{% url 'profile' child.parent.author.username %}">@{{child.parent.author}}</a><br></p>
+                    <p class="date">{{ child.date_created }}</p>
+                  </div>
+                </div>
+                <div class="post-text" style="text-align: left;">
+                  <p>{{ child.content|convert_markdown|safe }}</p>
+                  {% if request.user == child.author %}
+                 <style type="text/css">
+                    #editcomment{{child.id}}:target 
+                    {
+                      display: block;
+                    }
+                    #editcomment{{child.id}} 
+                    {
+                     display: none;
+                    }
+                    #confirmdeletecomment{{child.id}} 
+                    {
+                     display: none;
+                    }
+                    #confirmdeletecomment{{child.id}}:target 
+                    {
+                     display: block;
+                    }
+                    #sharecomment{{child.id}} 
+                    {
+                     display: none;
+                    }
+
+                    #sharecomment{{child.id}}:target 
+                    {
+                     display: block;
+                    }
+                 </style>
+                <button class="btn btn-primary">{{child.likes.count}} Upvotes</button>
+                <div class="dropdown" style="margin-bottom: 6px;">
+                  <button class="btn btn-outline-info">Actions</button>
+                  <div class="dropdown-content">
+                    <a href="#confirmdeletecomment{{child.id}}">Delete</a>
+                    <a href="#editcomment{{child.id}}">Edit</a>
+                    <a href="#sharecomment{{child.id}}">Share</a>
+                  </div><br>
+                </div>
+              <p id="confirmdeletecomment{{child.id}}">
+                <a style="margin-top: 5px;" href="{% url 'comment-delete' child.id %}" class="btn btn-danger">
+                  Confirm Delete
+                </a>
+                <a href="#{{child.id}}" style="margin-left: 5px; margin-top: 5px;"  class="btn btn-primary">
+                  Safe My Comment
+                </a>
+              </p>
+              <p id="sharecomment{{child.id}}">
+                <a class="btn btn-outline-info" href="{% url 'post-detail' child.post.id %}#{{child.id}}">Copy This</a>
+                <a class="btn btn-outline-danger" href="#{{child.id}}">Done</a>
+              </p>
+              <div id="editcomment{{child.id}}">
+                <form method="POST" action="{% url 'comment-edit' child.id %}">
+                  {% csrf_token %}
+                  <textarea name="content" class="form-control" style="width: 100%; margin-bottom: 6px;" cols="10" rows="7" placeholder="Post Human!">{{ child.content }}</textarea>
+                  <button type="submit" class="btn btn-primary">
+                    Publish
+                  </button>
+                  <a href="#{{child.id}}" style="margin-left: 5px;"  class="btn btn-primary">
+                    Cancel
+                  </a>
+                </form>
+              </div>
+              {% else %}
+                <style>
+                  #reply{{child.id}} 
+                  {
+                   display: none;
+                  }
+
+                  #reply{{child.id}}:target 
+                  {
+                   display: block;
+                  }
+                </style>
+                <a style="width: 60px; height: 35%;" href="{% url 'add-comment-like' child.id %}" class="btn btn-primary"><i class="fas fa-kiss-wink-heart"></i></a>
+                <button class="btn btn-outline-info" style="margin: 5px;">{{child.likes.count}}</button>
+                <a style="width: 60px; height: 35%;" href="{% url 'add-comment-dislike' child.id %}" class="btn btn-danger"><i class="fas fa-hand-middle-finger"></i></a>
+                <a style="width: 60px; height: 35%;" href="#reply{{child.id}}" class="btn btn-danger">Reply</a>
+                <div id="reply{{child.id}}">
+                  <form method="POST" action="{% url 'comment-reply' post.id child.id %}">
+                    {% csrf_token %}
+                    <textarea name="content" class="form-control" style="width: 100%; margin-bottom: 6px;" cols="10" rows="7" placeholder="Post Human!"></textarea>
+                    <button type="submit" class="btn btn-primary">
+                      Publish
+                    </button>
+                    <a href="#{{child.id}}" style="margin-left: 5px;"  class="btn btn-primary">
+                      Cancel
+                    </a>
+                  </form>
+                </div>
+              {% endif %}
+                </div>
+              </div>
+            </div>
+          </div> 
+        {% endfor %}
+       
+        </div>
+      {% endif %}
       {% endfor %}
+
     {% if post.comments.count == 0 %}
     <h2>Oooh Come Oon!, you have nothing to say at all?</h2>
     {% else %}
       {% if comments.has_previous %}
           <a href="?page={{comments.previous_page_number}}" class="btn btn-outline-info"><</a>
       {% endif %}
+      {% if not posts.has_previous and not posts.has_next %}
+      {% else %}
       <span class="btn btn-primary">{{comments.number}}</span>  
+      {% endif %}
       {% if comments.has_next %}
           <a href="?page={{comments.next_page_number}}" class="btn btn-outline-info">></a>
       {% endif %}
