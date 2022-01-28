@@ -82,7 +82,7 @@ class Profile(models.Model):
     id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     image = models.ImageField(default='default.jpg', upload_to='profile_pics')
-    bio = models.TextField(max_length=500, blank=True, default='')
+    bio = models.TextField(max_length=250, blank=True, default='')
     public_key = models.TextField(blank=True, default='')
     name = models.CharField(max_length=30, blank=True, default='')
     monero = models.CharField(max_length=95, blank=True, default='')
@@ -92,6 +92,7 @@ class Profile(models.Model):
     verified = models.BooleanField(default=False)
     followers_count = models.BigIntegerField(default='0')
     mention_count = models.BigIntegerField(default='0')
+    factor_auth = models.BooleanField(default=False)
     fingerprint = models.CharField(max_length=50, blank=True)
     def __str__(self):
         return f'{self.user.username} Profile'

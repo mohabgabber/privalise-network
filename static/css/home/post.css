@@ -250,6 +250,11 @@ body.dark .post-content .info{
     	width: 50%;
     }
 
+    .child-comment{
+    	width:  95%;
+    	margin-top: 2px;
+    }
+
 	.accordion_button:hover::before {
 		transform: scale(2);
 	}

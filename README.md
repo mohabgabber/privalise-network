@@ -37,6 +37,7 @@ The frontend is mostly made (like 90%) by [margual56](https://github.com/margual
   * you'll to create a .env file in the root directory of the app, and specify `debug` and `secret_key`
   * Let's Make Migrations And Migrate  `python manage.py makemigrations && python manage.py migrate`
   * Now Finally We Will Run The Server `python manage.py runserver`
+  * NOTE: you need to download `gnupg` for 2 factor-authentication and some other functionalities to work
 
 # LICENSE
 	Privalise, A Secure Privacy Friendly Social Network

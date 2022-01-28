@@ -3,7 +3,7 @@
 {% block title %}Create A New Post On Privalise!, Where Everything Is Awesome{% endblock title %}
 
 {% block content %}
-<main class="content w-100">
+<main class="content mx-auto container-fluid">
   <div class="container">
     <div class="row">
       <div class="col-sm-8">
@@ -13,9 +13,9 @@
           <form method='POST'>
             {% csrf_token %}
             {% if post %}
-            <textarea name="content" class="form-control" style="width: 100%;" cols="100" rows="7" placeholder="Post Human!">{{ content }}</textarea><br/>
+            <textarea name="content" class="form-control" style="width: 95%;" cols="100" rows="7" placeholder="Post Human!">{{ content }}</textarea><br/>
             {% else %}
-            <textarea name="content" class="form-control" style="width: 100%;" cols="100" rows="7" placeholder="Post Human!"></textarea><br/>
+            <textarea name="content" class="form-control" style="width: 95%;" cols="100" rows="7" placeholder="Post Human!"></textarea><br/>
             {% endif %}
             <button class="btn btn-primary">Post</button>
           </form>

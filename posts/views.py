@@ -91,7 +91,7 @@ class PostDetailView(LoginRequiredMixin, View):
             'comments': comments_list,
         }
         return render(request, 'posts/post_detail.html', context)
-class CommentReplyView(LoginRequiredMixin, View):
+class CommentReply(LoginRequiredMixin, View):
     def post(self, request, post_id, id, *args, **kwargs):
         post = Post.objects.get(id=post_id)
         parent_comment = Comment.objects.get(id=id)
@@ -445,3 +445,22 @@ class AboutView(View):
     def get(self, request, *args, **kwargs):
         about = About.objects.get(id=1)
         return render(request, 'posts/about.html', {'about': about,})
+class factor_conf(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'posts/2fa_conf.html')
+class factor_done(View):
+    def get(self, request, username, *args, **kwargs):
+        user = User.objects.get(username=username)
+        if request.user == user:
+            user.profile.factor_auth = True
+            user.save()
+            messages.success(request, "2FA Is Now Enabled")
+        return redirect('home')
+class factor_cancel(View):
+    def get(self, request, username, *args, **kwargs):
+        user = User.objects.get(username=username)
+        if request.user == user:
+            user.profile.factor_auth = False
+            user.save()
+            messages.success(request, "2FA Is Disabled")
+        return redirect('home')

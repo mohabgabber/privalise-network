@@ -1,0 +1,26 @@
+{% extends 'posts/base.html' %}
+{% block title %}About Us. Privalise!, Where Everything Is Awesome{% endblock title %}
+{% block content %}
+    <main class="w-100 container-fluid mx-auto content">
+        <div class="mx-auto logo-text">
+          <div>Priva<span>Lise</span></div>
+        </div>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} content">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        <br/>
+        <div class="post">
+            <div class="post-text" style="text-align: center;">
+                <h1 style="color: whitesmoke; text-align: center;">2 Fatctor Authentication?</h1>
+                <p style="font-size: large;">2 Factor Authentication is a security setting that helps keep your account secure in case your password was compromised, to sign-in a user must supply username, password, and a one-time number that is generated on every request, this is number is presented to the user in the form of a PGP-encrypted message, the message is encrypted with the user's public key that they supplied in their settings.</p>
+                <h2 style="color: azure;">How To Enable 2FA?</h2>
+                <p style="font-size: large;">To enable 2fa in your account you must supply a PGP public key, and the key's fingerprint, if you already did this, then click on the button below that says "I Understand & Enable 2FA".</p>
+                <h2 style="color: azure;">What Are The The Problems Of 2FA?</h2>
+                <p style="font-size: large;">Even though 2fa increases your account's security significantly, but there is one down side, <p style="font-size: large;color: orangered; font-family: monospace;">in case you lost access to your private key, it's impossible so restore access to your account, so please backup your private key securely on a usb or in the cloud (symmetrically encrypted).</p></p>
+                <a href="{% url '2fa-done' request.user.username %}" class="btn btn-primary" style="width: 100%;">I Understand & Enable 2FA</a>
+            </div>
+        </div>
+    </main>
+{% endblock content %}
