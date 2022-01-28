@@ -24,9 +24,11 @@ it's also perfect as an onion service, bc the website doesn't have any js in it,
    * Password Change
    * Follow/Unfollow users
    * Commenting And Replying To Comments
-   * Hashtags And Mentions (coming soon)
    * Public Profile For Each User With a profle pic
    * 2 factor authentication
+   * Hashtags And Mentions (coming soon)
+   * E2EE Notes (coming soon)
+   * E2EE Posts saving (coming soon)
 
 ## The front-end
 The frontend is mostly made (like 90%) by [margual56](https://github.com/margual56)
@@ -34,7 +36,7 @@ The frontend is mostly made (like 90%) by [margual56](https://github.com/margual
 ## Set Up: 
   * Clone The Repository `git clone https://github.com/privalise-network.git && cd privalise-network`
   * Install Requirements `pip install -r requirements.txt`
-  * you'll to create a .env file in the root directory of the app, and specify `debug` and `secret_key`
+  * you'll have to create a .env file in the root directory of the app, and specify `debug` and `secret_key`
   * Let's Make Migrations And Migrate  `python manage.py makemigrations && python manage.py migrate`
   * Now Finally We Will Run The Server `python manage.py runserver`
   * NOTE: you need to download `gnupg` for 2 factor-authentication and some other functionalities to work
