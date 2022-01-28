@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .forms import UserRegister
+from .forms import UserRegister, verification
 from django.urls import reverse_lazy
 from django.contrib.auth.models import User
 from django.views import View
@@ -13,7 +13,8 @@ from django.contrib.auth import authenticate, login, logout
 def register(request):
     if request.method == 'POST':
         form = UserRegister(request.POST)
-        if form.is_valid():
+        ver = verification(request.POST)
+        if form.is_valid() and ver.is_valid():
             form.username = request.POST.get('username')
             form.password1 = request.POST.get('password1')
             form.password2 = request.POST.get('password2')
@@ -29,22 +30,25 @@ def register(request):
             return redirect('home')
     else:
        form = UserRegister()
-    return render(request, 'users/register.html', {"form": form})  
+       ver = verification()
+    return render(request, 'users/register.html', {"form": form, 'ver': ver,})  
 class Login(View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'users/login.html')
+        ver = verification()
+        return render(request, 'users/login.html', {'ver': ver,})
     def post(self, request, *args, **kwargs):
         username = request.POST.get('username')
-        #password = request.POST.get('password')
+        ver = verification(request.POST)
         users = User.objects.filter(username=username)
-        if users.exists():
+        if users.exists() and ver.is_valid():
             return redirect('login-two', username=username)
         else:
             messages.success(request, "Incorrect Data")
-        return render(request, 'users/login.html')    
+        return render(request, 'users/login.html', {'ver': ver,})    
 class Logintwo(View):
     def get(self, request, *args, **kwargs):
         global msg, code
+        ver = verification()
         username = request.GET.get('username')
         users = User.objects.filter(username=username)
         if users.exists():
@@ -57,17 +61,20 @@ class Logintwo(View):
                 context = {
                 'msg': msg,
                 '2fa': fa,
+                'ver': ver,
                 }
             else:
                 fa = False
                 context = {
                 '2fa': fa,
+                'ver': ver,
                 }
         else:
             messages.warning(request, 'User Doesn\'t Exist')
             return redirect('login')
         return render(request, 'users/login_two.html', context)
     def post(self, request, *args, **kwargs):
+        ver = verification(request.POST)
         username = request.GET.get('username')
         user = User.objects.get(username=username)
         users = User.objects.filter(username=username)
@@ -81,7 +88,7 @@ class Logintwo(View):
                 twofa = request.POST.get('2facode')
                 if int(twofa) == code:
                     login_user = authenticate(username=usernames,password=passwords,)
-                    if login_user:
+                    if login_user and ver.is_valid():
                         login(request, login_user)
                         messages.success(request, 'Logged In Successfully')
                         return redirect('home')
@@ -93,10 +100,11 @@ class Logintwo(View):
                 context = {
                     '2fa': fa,
                     'msg': msg,
+                    'ver': ver,
                 }
             else:
                 login_user = authenticate(username=username,password=passwords,)
-                if login_user:
+                if login_user and ver.is_valid():
                     login(request, login_user)
                     messages.success(request, 'Logged In Successfully')
                     return redirect('home')
@@ -104,6 +112,7 @@ class Logintwo(View):
                     messages.warning(request, 'Incorrect Data')
                 context = {
                     '2fa': fa,
+                    'ver': ver,
                 }
         else:
             messages.warning(request, 'user doesn\'t exist')
