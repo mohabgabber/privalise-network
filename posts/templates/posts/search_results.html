@@ -55,7 +55,10 @@
                         {% if posts.has_previous %}
                             <a href="?posts={{posts.previous_page_number}}&query={{request.GET.query}}" class="btn btn-outline-info"><</a>
                         {% endif %}
-                        <span class="btn btn-primary">{{posts.number}}</span>  
+                        {% if not posts.has_previous and not posts.has_next %}
+                        {% else %}
+                        <span class="btn btn-primary">{{posts.number}}</span>
+                        {% endif %}  
                         {% if posts.has_next %}
                             <a href="?posts={{posts.next_page_number}}&query={{request.GET.query}}" class="btn btn-outline-info">></a>
                         {% endif %}
@@ -94,7 +97,10 @@
                         {% if comments.has_previous %}
                             <a href="?comments={{comments.previous_page_number}}&query={{request.GET.query}}" class="btn btn-outline-info"><</a>
                         {% endif %}
-                        <span class="btn btn-primary">{{comments.number}}</span>  
+                        {% if not comments.has_previous and not comments.has_next %}
+                        {% else %}
+                        <span class="btn btn-primary">{{comments.number}}</span>
+                        {% endif %}  
                         {% if comments.has_next %}
                             <a href="?query={{request.GET.query}}&comments={{comments.next_page_number}}" class="btn btn-outline-info">></a>
                         {% endif %}
@@ -132,7 +138,10 @@
                         {% if profiles.has_previous %}
                             <a href="?profiles={{profiles.previous_page_number}}&query={{request.GET.query}}" class="btn btn-outline-info"><</a>
                         {% endif %}
-                        <span class="btn btn-primary">{{profiles.number}}</span>  
+                        {% if not profiles.has_previous and not profiles.has_next %}
+                        {% else %}
+                        <span class="btn btn-primary">{{profiles.number}}</span>
+                        {% endif %}  
                         {% if profiles.has_next %}
                             <a href="?profiles={{profiles.next_page_number}}&query={{request.GET.query}}" class="btn btn-outline-info">></a>
                         {% endif %}

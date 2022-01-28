@@ -64,7 +64,7 @@
 		    {% endif %}
 	    {% else %}
            <div class="container">
-					<a style="text-decoration: inherit;" href="{% url 'post-notification' notification.id notification.from_user.username %}">
+					<a style="text-decoration: inherit;" href="{% url 'follow-notification' notification.id notification.from_user.username %}">
 						<div class="post container-fluid" style="text-align: center;">
 							<div class="post-text tags-id mentions-id">
 								@{{ notification.from_user }} Has Started Following You								<a class="btn btn-outline-danger" style="margin-left: 18px;" href="{% url 'notification-delete' notification.id %}">DELETE</a>
@@ -81,7 +81,10 @@
 			{% if notifications.has_previous %}
 			    <a href="?page={{notifications.previous_page_number}}" class="btn btn-outline-info"><</a>
 			{% endif %}
-			<span class="btn btn-primary">{{notifications.number}}</span>  
+			{% if not posts.has_previous and not posts.has_next %}
+			{% else %}
+			<span class="btn btn-primary">{{notifications.number}}</span>
+			{% endif %}  
 			{% if notifications.has_next %}
 			    <a href="?page={{notifications.next_page_number}}" class="btn btn-outline-info">></a>
 			{% endif %}

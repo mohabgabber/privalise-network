@@ -27,6 +27,16 @@
        display: block;
       }
 
+      #createapost
+      {
+       display: none;
+      }
+
+      #createapost:target 
+      {
+       display: block;
+      }
+    
       #sharepost
       {
        display: none;
@@ -129,7 +139,7 @@
         <li class="nav-item">
           <a href="{% url 'notifications-list' %}" class="nav-link">
             <img src="{% static 'img/bell_black.png' %}" alt="Notifications link icon">
-            <span class="link-text">Notifications</span>
+            <span class="link-text">{{request.user.notifications.count}} Notifications</span>
           </a>
         </li>
 

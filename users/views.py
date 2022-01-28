@@ -20,7 +20,7 @@ def register(request):
             try:
                 form.save()
             except:
-                messages.success(request, f'there is an error')
+                messages.warning(request, f'there is an error')
                 return render(request, 'users/register.html', {"form": form})
             username = form.cleaned_data.get('username')
             messages.success(request, f'account created for {username}')
@@ -64,7 +64,7 @@ class Logintwo(View):
                 '2fa': fa,
                 }
         else:
-            messages.success(request, 'User Doesn\'t Exist')
+            messages.warning(request, 'User Doesn\'t Exist')
             return redirect('login')
         return render(request, 'users/login_two.html', context)
     def post(self, request, *args, **kwargs):
@@ -83,11 +83,12 @@ class Logintwo(View):
                     login_user = authenticate(username=usernames,password=passwords,)
                     if login_user:
                         login(request, login_user)
+                        messages.success(request, 'Logged In Successfully')
                         return redirect('home')
                     else:
-                        messages.success(request, 'Incorrect Data')
+                        messages.warning(request, 'Incorrect Data')
                 else:
-                    messages.success(request, 'Incorrect Data')
+                    messages.warning(request, 'Incorrect Data')
                     return redirect('login')
                 context = {
                     '2fa': fa,
@@ -97,14 +98,15 @@ class Logintwo(View):
                 login_user = authenticate(username=username,password=passwords,)
                 if login_user:
                     login(request, login_user)
+                    messages.success(request, 'Logged In Successfully')
                     return redirect('home')
                 else:
-                    messages.success(request, 'Incorrect Data')
+                    messages.warning(request, 'Incorrect Data')
                 context = {
                     '2fa': fa,
                 }
         else:
-            messages.success(request, 'user doesn\'t exist')
+            messages.warning(request, 'user doesn\'t exist')
             return redirect('login')
         return render(request, 'users/login_two.html', context)
 class PasswordChange(LoginRequiredMixin, PasswordChangeView):
