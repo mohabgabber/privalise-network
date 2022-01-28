@@ -16,11 +16,12 @@ GNU General Public License for more details.
 Contact: mohabgabber1@protonmail.com
 
 '''
+from decouple import config
 import os
 from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = os.environ.get('secret_key')
-DEBUG = os.environ.get('debug')
+SECRET_KEY = config('secret_key')
+DEBUG = config('debug')
 ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'posts.apps.PostsConfig',
