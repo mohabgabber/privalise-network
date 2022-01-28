@@ -19,8 +19,8 @@ Contact: mohabgabber1@protonmail.com
 import os
 from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = 'djkmjgbkjbgmoirejoibjgboikejrgkjstojmsvoiigormjoiysmdfvmg'
-DEBUG = True
+SECRET_KEY = os.environ.get('secret_key')
+DEBUG = os.environ.get('debug')
 ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'posts.apps.PostsConfig',
