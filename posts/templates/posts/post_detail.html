@@ -148,6 +148,16 @@
                     {
                      display: block;
                     }
+                    #reply{{comment.id}} 
+                    {
+                     display: none;
+                    }
+
+                    #reply{{comment.id}}:target 
+                    {
+                     display: block;
+                    }
+
                  </style>
                 <button class="btn btn-primary">{{comment.likes.count}} Upvotes</button>
                 <div class="dropdown" style="margin-bottom: 6px;">
@@ -158,6 +168,20 @@
                     <a href="#sharecomment{{comment.id}}">Share</a>
                   </div><br>
                 </div>
+                <a style="width: 75px; height: 35%;" href="#reply{{comment.id}}" class="btn btn-danger">Reply</a>
+                <div id="reply{{comment.id}}">
+                  <form method="POST" action="{% url 'comment-reply' post.id comment.id %}">
+                    {% csrf_token %}
+                    <textarea name="content" class="form-control" style="width: 100%; margin-bottom: 6px;" cols="10" rows="7" placeholder="Post Human!"></textarea>
+                    <button type="submit" class="btn btn-primary">
+                      Publish
+                    </button>
+                    <a href="#{{comment.id}}" style="margin-left: 5px;"  class="btn btn-primary">
+                      Cancel
+                    </a>
+                  </form>
+                </div>
+
               <p id="confirmdeletecomment{{comment.id}}">
                 <a style="margin-top: 5px;" href="{% url 'comment-delete' comment.id %}" class="btn btn-danger">
                   Confirm Delete
@@ -266,6 +290,19 @@
                     <a href="#sharecomment{{child.id}}">Share</a>
                   </div><br>
                 </div>
+                <a style="width: 75px; height: 35%;" href="#reply{{comment.id}}" class="btn btn-danger">Reply</a>
+                <div id="reply{{comment.id}}">
+                  <form method="POST" action="{% url 'comment-reply' post.id comment.id %}">
+                    {% csrf_token %}
+                    <textarea name="content" class="form-control" style="width: 100%; margin-bottom: 6px;" cols="10" rows="7" placeholder="Post Human!"></textarea>
+                    <button type="submit" class="btn btn-primary">
+                      Publish
+                    </button>
+                    <a href="#{{comment.id}}" style="margin-left: 5px;"  class="btn btn-primary">
+                      Cancel
+                    </a>
+                  </form>
+                </div>
               <p id="confirmdeletecomment{{child.id}}">
                 <a style="margin-top: 5px;" href="{% url 'comment-delete' child.id %}" class="btn btn-danger">
                   Confirm Delete
@@ -305,7 +342,7 @@
                 <a style="width: 60px; height: 35%;" href="{% url 'add-comment-like' child.id %}" class="btn btn-primary"><i class="fas fa-kiss-wink-heart"></i></a>
                 <button class="btn btn-outline-info" style="margin: 5px;">{{child.likes.count}}</button>
                 <a style="width: 60px; height: 35%;" href="{% url 'add-comment-dislike' child.id %}" class="btn btn-danger"><i class="fas fa-hand-middle-finger"></i></a>
-                <a style="width: 60px; height: 35%;" href="#reply{{child.id}}" class="btn btn-danger">Reply</a>
+                <a style="width: 75px; height: 35%;" href="#reply{{child.id}}" class="btn btn-danger">Reply</a>
                 <div id="reply{{child.id}}">
                   <form method="POST" action="{% url 'comment-reply' post.id child.id %}">
                     {% csrf_token %}

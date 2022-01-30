@@ -56,7 +56,7 @@ class Logintwo(View):
             fa = False
             if user.profile.public_key != '' and user.profile.fingerprint != '' and user.profile.factor_auth == True:
                 fa = True
-                code = random.randrange(100, 100051500, 3424)
+                code = random.randrange(100000, 1545599500051500, 3424)
                 msg = os.popen(f'echo "your code is: {code}" | gpg --encrypt --armor --recipient "{user.profile.fingerprint}"').read()
                 context = {
                 'msg': msg,

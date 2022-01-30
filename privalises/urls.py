@@ -6,6 +6,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('users.urls')),
     path('', include('posts.urls')),
+    path('payments/', include('payments.urls')),
     path('captcha/',include("captcha.urls"))
 
 ]

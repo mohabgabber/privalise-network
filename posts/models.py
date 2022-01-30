@@ -85,7 +85,7 @@ class Profile(models.Model):
     bio = models.TextField(max_length=250, blank=True, default='')
     public_key = models.TextField(blank=True, default='')
     name = models.CharField(max_length=30, blank=True, default='')
-    monero = models.CharField(max_length=95, blank=True, default='')
+    monero = models.CharField(max_length=106, blank=True, default='')
     xmppusername = models.CharField(max_length=20, blank=True, default='')
     xmppserver = models.CharField(max_length=62, blank=True, default='')
     followers = models.ManyToManyField(User, blank=True, related_name='followers')
