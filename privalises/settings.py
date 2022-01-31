@@ -26,7 +26,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'posts.apps.PostsConfig',
     'users.apps.UsersConfig',
-    'payments.apps.PaymentsConfig',
+    'mod.apps.ModConfig',
     'crispy_forms',
     "captcha",
     'django.contrib.admin',

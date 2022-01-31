@@ -20,7 +20,7 @@
 		{% for post in posts %}
 			<div class="post shadow-lg" style="text-align: left;  margin: 0 auto; margin-bottom: 8px;">
 				<div class="picture-containers">
-	                <img class="profile-picture" src="{{ post.author.profile.image.url }}">  
+	                <img class="profile-picture" src="{{ post.author.profile.image.url }}">
 	            </div>
 
 				<div class="post-content">
@@ -28,6 +28,7 @@
 						<div class="post-info1">
 							<a class="username" href="{% url 'profile' post.author %}">@{{ post.author }}</a>
 							<p class="date">{{ post.date_posted }}</p>
+			                <button class="btn btn-link"><a href="{% url 'report' %}">Report</a></button>  
 						</div>
     			    </div>
 

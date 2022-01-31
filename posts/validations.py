@@ -1,3 +1,7 @@
+#import gpg
+import os
+
+#c = gpg.Context()
 '''
 from monero.wallet import Wallet
 from decimal import Decimal
@@ -41,4 +45,15 @@ def check_conf(addr, hash, amnt):
     else:
         return False
 
+def valid_sig(signature, id):
+    sig = open(f'signatures/{id}.txt', 'w')
+    sig.write(signature)
+    f.close()
+    try:
+       msg = c.verify(sig)
+       os.remove(f'signatures/{id}.txt')
+       return True
+    except:
+       os.remove(f'signatures/{id}.txt')
+       return False
 '''

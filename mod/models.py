@@ -8,8 +8,12 @@ class txs(models.Model):
     rec_addr = models.CharField(max_length=106, blank=False)
     amnt = models.IntegerField()
     sender = models.ForeignKey(User, related_name='sender', on_delete=models.CASCADE, null=False)
+    def __str__(self):
+        return f'{self.sender} Sent {self.amnt}'
 class reports(models.Model):
     id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     from_user = models.ForeignKey(User, related_name='report_from', on_delete=models.CASCADE, null=False) 
     to_user = models.ForeignKey(User, related_name='report_to', on_delete=models.CASCADE, null=False)
     reason = models.TextField(blank=False)
+    def __str__(self):
+        return f'{self.from_user} Reported {self.to_user}'
