@@ -2,153 +2,137 @@
 {% load post_extras %}
 {% block title %}Search Posts And Users On Privalise!, Where Everything Is Awesome{% endblock title %}
 {% block content %}
-   <main class="w-100 container-fluid mx-auto content">
-            <div class="mx-auto logo-text">
-              <div>Priva<span>Lise</span></div>
-            </div>
-        {% if messages %}
-           {% for message in messages %}
-              <div class="alert alert-{{ message.tags }} content">{{ message }}</div>
-           {% endfor %}
-        {% endif %}
-        <center><br>
-            <form method="GET" action="{% url 'search-results' %}">
-                <div class="input-group mb-3" style="margin: 0 auto;">
-                    <input type="text" class="form-control form-control-lg" placeholder="Username" aria-label="Username" name="query" value="{{ request.GET.query }}">
-                    <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i></button>
-                </div>
-            </form>
-        </center>
-        <div class="container">
-            <div class="row">
-                <div class="col-sm">
-                    <center><h2>Posts</h2></center>
-                    {% for post in posts %}
-                        <div class="post" style="text-align: left;  margin: 0 auto; margin-bottom: 8px;">
-                            <div class="picture-containers">
-                              <img class="profile-picture post-img" src="{{ post.author.profile.image.url }}">  
-                            </div>
-                            <div class="profile-container">
-                            </div>
-                            <div class="post-content">
-                                <div class="post-info">
-                                    <div class="post-info1">
-                                        <a class="username" href="{% url 'profile' post.author %}">
-                                        @{{ post.author }}
-                                        </a>
-                                        <p class="date">{{ post.date_posted }}</p>
-                                    </div>
-                                </div>
-                                <a style="text-decoration: inherit; color: inherit;" href="{% url 'post-detail' post.pk %}">
-                                    <div class="post-text tags-id mentions-id">
-                                        <p>{{ post.content|convert_markdown|safe }}</p>
-                                        <a style="width: 40%; height: 35%;" href="{% url 'post-detail' post.pk %}" class="btn btn-outline-info">Open Post</a>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-                    {% endfor %}
-                    <center>
-                    {% if postscount == 0 %}
-                    <h2>That's Unfortunate :(</h2>
-                    {% else %}
-                        {% if posts.has_previous %}
-                            <a href="?posts={{posts.previous_page_number}}&query={{request.GET.query}}" class="btn btn-outline-info"><</a>
-                        {% endif %}
-                        {% if not posts.has_previous and not posts.has_next %}
-                        {% else %}
-                        <span class="btn btn-primary">{{posts.number}}</span>
-                        {% endif %}  
-                        {% if posts.has_next %}
-                            <a href="?posts={{posts.next_page_number}}&query={{request.GET.query}}" class="btn btn-outline-info">></a>
-                        {% endif %}
-                    {% endif %}
-                    </center><br/>
-                </div>
-                <div class="col-sm">
-                    <center><h2>Comments</h2></center>
-                    {% for comment in comments %}
-                        <div  class="post">
-                            <div class="picture-containers">
-                              <img class="profile-picture post-img" src="{{ comment.author.profile.image.url }}">  
-                            </div>
-                            <div class="profile-container">
-                            </div>
-                            <div class="post-content">
-                                <div class="post-info">
-                                    <div class="post-info1">
-                                        <a class="username" href="{% url 'profile' comment.author %}">@{{ comment.author }}</a>
-                                        <p class="date">{{ comment.date_created }}</p>
-                                    </div>
-                                </div>
-                                <a style="text-decoration: inherit; color: inherit;" href="{% url 'post-detail' comment.post.id %}#{{comment.id}}">
-                                    <div class="post-text" style="text-align: left;">
-                                        <p>{{ comment.content|convert_markdown|safe }}</p>
-                                        <a style="width: 40%; height: 35%;" href="{% url 'post-detail' comment.post.pk %}" class="btn btn-outline-info">Open Comment</a>
-                                    </div>
-                                </a>
-                            </div>  
-                        </div>
-                    {% endfor %}
-                    <center>
-                    {% if commentscount == 0 %}
-                    <h2>What Is Life?</h2>
-                    {% else %}
-                        {% if comments.has_previous %}
-                            <a href="?comments={{comments.previous_page_number}}&query={{request.GET.query}}" class="btn btn-outline-info"><</a>
-                        {% endif %}
-                        {% if not comments.has_previous and not comments.has_next %}
-                        {% else %}
-                        <span class="btn btn-primary">{{comments.number}}</span>
-                        {% endif %}  
-                        {% if comments.has_next %}
-                            <a href="?query={{request.GET.query}}&comments={{comments.next_page_number}}" class="btn btn-outline-info">></a>
-                        {% endif %}
-                    {% endif %}
-                    </center><br/>
-                </div>
-                <div class="col-sm">
-                    <center><h2>Profiles</h2></center>
-                    {% for profile in profiles %}
-                        <div  class="post">
-                            <div class="picture-containers">
-                              <img class="profile-picture post-img" src="{{ profile.image.url }}">  
-                            </div>
-                            <div class="profile-container">
-                            </div>
-                            <div class="post-content">
-                                <div class="post-info">
-                                    <div class="post-info1">
-                                        <a class="username" href="{% url 'profile' profile.user.username %}">@{{ profile.user.username }}</a>
-                                    </div>
-                                </div>
-                                <a style="text-decoration: inherit; color: inherit;" href="{% url 'profile' profile.user.username %}">
-                                    <div class="post-text" style="text-align: left;">
-                                        <p style="word-break: break-all;">{{ profile.bio|slice:":255" }}</p>
-                                        <a style="width: 40%; height: 35%;" href="{% url 'profile' profile.user.username %}" class="btn btn-outline-info">Open Profile</a>
-                                    </div>
-                                </a>
-                            </div>  
-                        </div>
-                    {% endfor %}
-                    <center>
-                    {% if profilescount == 0 %}
-                    <h2>HELLO!</h2>
-                    {% else %}
-                        {% if profiles.has_previous %}
-                            <a href="?profiles={{profiles.previous_page_number}}&query={{request.GET.query}}" class="btn btn-outline-info"><</a>
-                        {% endif %}
-                        {% if not profiles.has_previous and not profiles.has_next %}
-                        {% else %}
-                        <span class="btn btn-primary">{{profiles.number}}</span>
-                        {% endif %}  
-                        {% if profiles.has_next %}
-                            <a href="?profiles={{profiles.next_page_number}}&query={{request.GET.query}}" class="btn btn-outline-info">></a>
-                        {% endif %}
-                    {% endif %}
-                    </center>
-                </div>
-            </div>
+<center>
+    <form method="GET" action="{% url 'search-results' %}">
+        <div class="input-group mb-3" style="margin: 0 auto;">
+            <input type="text" class="form-control form-control-lg" placeholder="Username" aria-label="Username" name="query" value="{{ request.GET.query }}">
+            <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i></button>
         </div>
-   </main>
+    </form>
+</center>
+<div class="container">
+    <div class="row">
+        <div class="col-sm">
+            <center><h2>Posts</h2></center>
+            {% for post in posts %}
+                <div class="post" style="text-align: left;  margin: 0 auto; margin-bottom: 8px;">
+                    <div class="picture-containers">
+                      <img class="profile-picture" src="{{ post.author.profile.image.url }}">  
+                    </div>
+                    <div class="post-content">
+                        <div class="post-info">
+                            <div class="post-info1">
+                                <a class="username" href="{% url 'profile' post.author %}">
+                                @{{ post.author }}
+                                </a>
+                                <p class="date">{{ post.date_posted }}</p>
+                            </div>
+                        </div>
+                        <a style="text-decoration: inherit; color: inherit;" href="{% url 'post-detail' post.pk %}">
+                            <div class="post-text text-wrap text-break" style="width: 100;">
+                                <p>{{ post.content|convert_markdown|safe }}</p>
+                                <a style="width: 40%; height: 35%;" href="{% url 'post-detail' post.pk %}" class="btn btn-outline-info">Open Post</a>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+            <center>
+            {% if postscount == 0 %}
+            <h2>That's Unfortunate :(</h2>
+            {% else %}
+                {% if posts.has_previous %}
+                    <a href="?posts={{posts.previous_page_number}}&query={{request.GET.query}}" class="btn btn-outline-info"><</a>
+                {% endif %}
+                {% if not posts.has_previous and not posts.has_next %}
+                {% else %}
+                <span class="btn btn-primary">{{posts.number}}</span>
+                {% endif %}  
+                {% if posts.has_next %}
+                    <a href="?posts={{posts.next_page_number}}&query={{request.GET.query}}" class="btn btn-outline-info">></a>
+                {% endif %}
+            {% endif %}
+            </center><br/>
+        </div>
+        <div class="col-sm">
+            <center><h2>Comments</h2></center>
+            {% for comment in comments %}
+                <div  class="post">
+                    <div class="picture-containers">
+                      <img class="profile-picture post-img" src="{{ comment.author.profile.image.url }}">  
+                    </div>
+                    <div class="post-content">
+                        <div class="post-info">
+                            <div class="post-info1">
+                                <a class="username" href="{% url 'profile' comment.author %}">@{{ comment.author }}</a>
+                                <p class="date">{{ comment.date_created }}</p>
+                            </div>
+                        </div>
+                        <a style="text-decoration: inherit; color: inherit;" href="{% url 'post-detail' comment.post.id %}#{{comment.id}}">
+                            <div class="post-text text-wrap text-break" style="width: 100; text-align: left;">
+                                <p>{{ comment.content|convert_markdown|safe }}</p>
+                                <a style="width: 40%; height: 35%;" href="{% url 'post-detail' comment.post.pk %}" class="btn btn-outline-info">Open Comment</a>
+                            </div>
+                        </a>
+                    </div>  
+                </div>
+            {% endfor %}
+            <center>
+            {% if commentscount == 0 %}
+            <h2>What Is Life?</h2>
+            {% else %}
+                {% if comments.has_previous %}
+                    <a href="?comments={{comments.previous_page_number}}&query={{request.GET.query}}" class="btn btn-outline-info"><</a>
+                {% endif %}
+                {% if not comments.has_previous and not comments.has_next %}
+                {% else %}
+                <span class="btn btn-primary">{{comments.number}}</span>
+                {% endif %}  
+                {% if comments.has_next %}
+                    <a href="?query={{request.GET.query}}&comments={{comments.next_page_number}}" class="btn btn-outline-info">></a>
+                {% endif %}
+            {% endif %}
+            </center><br/>
+        </div>
+        <div class="col-sm">
+            <center><h2>Profiles</h2></center>
+            {% for profile in profiles %}
+                <div  class="post">
+                    <div class="picture-containers">
+                      <img class="profile-picture post-img" src="{{ profile.image.url }}">  
+                    </div>
+                    <div class="post-content">
+                        <div class="post-info">
+                            <div class="post-info1">
+                                <a class="username" href="{% url 'profile' profile.user.username %}">@{{ profile.user.username }}</a>
+                            </div>
+                        </div>
+                        <a style="text-decoration: inherit; color: inherit;" href="{% url 'profile' profile.user.username %}">
+                            <div class="post-text text-wrap text-break" style="width: 100; text-align: left;">
+                                <p style="word-break: break-all;">{{ profile.bio|slice:":255" }}</p>
+                                <a style="width: 40%; height: 35%;" href="{% url 'profile' profile.user.username %}" class="btn btn-outline-info">Open Profile</a>
+                            </div>
+                        </a>
+                    </div>  
+                </div>
+            {% endfor %}
+            <center>
+            {% if profilescount == 0 %}
+            <h2>HELLO!</h2>
+            {% else %}
+                {% if profiles.has_previous %}
+                    <a href="?profiles={{profiles.previous_page_number}}&query={{request.GET.query}}" class="btn btn-outline-info"><</a>
+                {% endif %}
+                {% if not profiles.has_previous and not profiles.has_next %}
+                {% else %}
+                <span class="btn btn-primary">{{profiles.number}}</span>
+                {% endif %}  
+                {% if profiles.has_next %}
+                    <a href="?profiles={{profiles.next_page_number}}&query={{request.GET.query}}" class="btn btn-outline-info">></a>
+                {% endif %}
+            {% endif %}
+            </center>
+        </div>
+    </div>
+</div>
 {% endblock %}

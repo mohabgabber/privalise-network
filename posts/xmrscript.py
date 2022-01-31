@@ -1,3 +1,4 @@
+'''
 from monero.wallet import Wallet
 from decimal import Decimal
 from monero.address import address
@@ -40,3 +41,4 @@ def check_conf(addr, hash, amnt):
     else:
         return False
 
+'''

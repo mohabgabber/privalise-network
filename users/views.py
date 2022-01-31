@@ -27,7 +27,7 @@ def register(request):
             messages.success(request, f'account created for {username}')
             new_user = authenticate(username=form.cleaned_data['username'],password=form.cleaned_data['password1'],)
             login(request, new_user)
-            return redirect('home')
+            return redirect('complete-profile')
     else:
        form = UserRegister()
        ver = verification()

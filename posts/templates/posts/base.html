@@ -158,7 +158,18 @@
         </li>
       </ul>
     </nav>
-      {% block content %}
-      {% endblock content %}
+    <main class="container-fluid mx-auto content">
+      <div class="logo-text">
+        <div >Priva<span>Lise</span></div>
+      </div>
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} content">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+      <br/>
+        {% block content %}
+        {% endblock content %}
+    </main>
   </body>
 </html>
