@@ -29,6 +29,7 @@ it's also perfect as an onion service, bc the website doesn't have any js in it,
    * Hashtags And Mentions (coming soon)
    * E2EE Notes (coming soon)
    * E2EE Posts saving (coming soon)
+   * E2EE Chat (coming soon)
 
 ## The front-end
 The frontend is mostly made (like 90%) by [margual56](https://github.com/margual56)
