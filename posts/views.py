@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 import os
-#from .xmrscript import create_addr, pay, receive, check_addr, check_conf, valid_addr
+from .validations import valid_addr # create_addr, pay, receive, check_addr, check_conf, 
 from users.forms import verification
 from django.urls import reverse_lazy
 from django.http import HttpResponse

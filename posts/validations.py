@@ -1,14 +1,11 @@
-#import gpg
+import gpg
 import os
-
-#c = gpg.Context()
-'''
 from monero.wallet import Wallet
 from decimal import Decimal
 from monero.address import address
-
+c = gpg.Context()
+'''
 w = Wallet(port=28088)
-
 def create_addr(id):
     new_addr = w.new_address(label=id)
     return new_addr
@@ -18,12 +15,6 @@ def pay(addr, amnt):
         tx = w.transfer(addr, Decimal(str(amnt)))
         return tx
     else:
-        return False
-def valid_addr(addr):
-    try:
-        monero = address(addr)
-        return True
-    except:
         return False
 def receive(amnt, addr, hashes):
     incoming = w.incoming(local_address=addr, unconfirmed=True, confirmed=True)
@@ -44,16 +35,19 @@ def check_conf(addr, hash, amnt):
         return True
     else:
         return False
+'''
 
-def valid_sig(signature, id):
-    sig = open(f'signatures/{id}.txt', 'w')
-    sig.write(signature)
-    f.close()
+def valid_sig(signature, username, author, pk):
     try:
-       msg = c.verify(sig)
-       os.remove(f'signatures/{id}.txt')
+       msg = c.verify(open(f'signatures/{username}+{author}+{pk}.txt'))
+       os.remove(f'signatures/{username}+{author}+{pk}.txt')
        return True
     except:
-       os.remove(f'signatures/{id}.txt')
+       os.remove(f'signatures/{username}+{author}+{pk}.txt')
        return False
-'''
+def valid_addr(addr):
+    try:
+        monero = address(addr)
+        return True
+    except:
+        return False

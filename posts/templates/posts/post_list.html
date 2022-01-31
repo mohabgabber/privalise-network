@@ -28,7 +28,7 @@
 						<div class="post-info1">
 							<a class="username" href="{% url 'profile' post.author %}">@{{ post.author }}</a>
 							<p class="date">{{ post.date_posted }}</p>
-			                <button class="btn btn-link"><a href="{% url 'report' %}">Report</a></button>  
+			                <button class="btn btn-link"><a href="{% url 'report-post' post.id %}">Report</a></button>  
 						</div>
     			    </div>
 

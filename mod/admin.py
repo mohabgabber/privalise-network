@@ -1,3 +1,4 @@
 from django.contrib import admin
-
-# Register your models here.
+from .models import reports, txs
+admin.site.register(txs)
+admin.site.register(reports)
