@@ -240,7 +240,7 @@ body.dark .post-content .info{
 }
 
 
-@media only screen and (min-width: 600px) { /* Computers or tablets */
+@media only screen and (min-width: 1000px) { /* Computers or tablets */
 	.accordion_button:hover {
 		cursor: pointer;
 		text-decoration: underline;

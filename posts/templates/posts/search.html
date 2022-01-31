@@ -1,24 +1,12 @@
 {% extends 'posts/base.html' %}
 {% block title %}Search Posts And Users On Privalise!, Where Everything Is Awesome{% endblock title %}
 {% block content %}
-   <main class="w-100 container-fluid mx-auto content">
-        <div class="mx-auto logo-text">
-          <div>Priva<span>Lise</span></div>
-        </div>
-        {% if messages %}
-           {% for message in messages %}
-              <div class="alert alert-{{ message.tags }} content">{{ message }}</div>
-           {% endfor %}
-        {% endif %}
-        <center><br>
-            <form method="GET" action="{% url 'search-results' %}">
-                <div class="input-group" style="margin: 0 auto;">
-                    <input type="text" class="form-control form-control-lg" placeholder="Username" aria-label="Username" name="query" value="{{ request.GET.query }}">
-                    <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i></button>
-                </div>
-            </form>
-        </center>
-   </main>
-
-
+    <center><br>
+        <form method="GET" action="{% url 'search-results' %}">
+            <div class="input-group" style="margin: 0 auto;">
+                <input type="text" class="form-control form-control-lg" placeholder="Username" aria-label="Username" name="query" value="{{ request.GET.query }}">
+                <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i></button>
+            </div>
+        </form>
+    </center>
 {% endblock %}

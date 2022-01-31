@@ -26,6 +26,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'posts.apps.PostsConfig',
     'users.apps.UsersConfig',
+    'mod.apps.ModConfig',
     'crispy_forms',
     "captcha",
     'django.contrib.admin',
@@ -61,19 +62,12 @@ TEMPLATES = [
     },
 ]
 WSGI_APPLICATION = 'privalises.wsgi.application'
-#DATABASES = {
-#    'default': {
-#        'ENGINE': 'django.db.backends.sqlite3',
-#        'NAME': BASE_DIR / 'db.sqlite3',
-#    }
-#}
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': str(BASE_DIR / 'db.sqlite3'),
     }
 }
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -102,5 +96,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 LOGIN_REDIRECT_URL = 'home'
 LOGIN_URL = 'login'
-
-
+SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
+SESSION_COOKIE_HTTPONLY  = True
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5000000

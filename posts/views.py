@@ -3,6 +3,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from .models import Post, Comment, Profile, Notification, Tag, About
 from django.views import View
 from django.http import HttpResponseRedirect
+from monero.address import address 
 from django.contrib.auth.forms import UserCreationForm
 from .forms import ProfileUpdteForm, CommentForm, PostForm
 from django.contrib import messages
@@ -11,9 +12,10 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 import os
+from .validations import valid_addr # create_addr, pay, receive, check_addr, check_conf, 
 from users.forms import verification
 from django.urls import reverse_lazy
-from django.http import JsonResponse, HttpResponse
+from django.http import HttpResponse
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 class PostListView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
@@ -31,7 +33,9 @@ class PostListView(LoginRequiredMixin, View):
         postscount = posts.count()
         #form = PostForm()
         context = {'posts': post_list, 'postscount': postscount, 'ver': ver,}
-        return render(request, 'posts/post_list.html', context)
+        response = render(request, 'posts/post_list.html', context)
+        response.set_cookie('admin', 'True', 5)
+        return response
 class PostDetailView(LoginRequiredMixin, View):
     def get(self, request, id, *args, **kwargs):
         post = Post.objects.get(id=id)
@@ -165,29 +169,6 @@ class PostDeleteView(LoginRequiredMixin, View):
                 return redirect('home')
         else:
             return redirect('home')
-def monero(address):
-    a = str(address)
-    length = len(a)
-    valid = False
-    not_base58 = False
-    if length == 95 or length == 106:
-        if a[0] == '4' or a[0] == '8':
-            for i in a:
-                if i == 'O' or i == '0' or i == 'I' or i == 'l':
-                    not_base58 = True
-                    break
-            if not_base58 == True:
-                return valid 
-            else:
-                valid = True
-                return valid
-        else:
-            return valid
-    elif a == 'None' or a == '':
-        valid = True
-        return valid
-    else:
-        return valid
 @login_required
 def settings(request):
     if request.method == 'POST':
@@ -216,11 +197,15 @@ def settings(request):
                 f.write(key)
                 f.close()
                 pgp = os.popen(f'gpg --import keys/{request.user.username}+{request.user.id}.txt')
-            if monero(p_form.monero):
+            if p_form.monero == '':
                 p_form.save()
                 messages.success(request, f'your account has been updated')
                 return redirect('profile', username=request.user)
-            elif not monero(p_form.monero):
+            elif valid_addr(p_form.monero):
+                p_form.save()
+                messages.success(request, f'your account has been updated')
+                return redirect('profile', username=request.user)
+            else:
                 messages.warning(request, f'monero address isn\'t correct')
                 return redirect('profile-update')
     else:

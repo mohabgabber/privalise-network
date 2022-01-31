@@ -1,26 +1,19 @@
 {% extends 'posts/base.html' %}
 {% load crispy_forms_tags %}
 {% block title %}Create A New Post On Privalise!, Where Everything Is Awesome{% endblock title %}
-
 {% block content %}
-<main class="content mx-auto container-fluid">
-  {% if messages %}
-       {% for message in messages %}
-          <div class="alert alert-{{ message.tags }} content">{{ message }}</div>
-       {% endfor %}
-    {% endif %}
-  <div class="container">
-    <div class="row">
-      <div class="col-sm-8">
+<div class="container overflow-hidden">
+  <div class="row">
+    <div class="col-sm-8">
       <center>
         <div class='post-creation'>
           <br/>
           <form method='POST'>
             {% csrf_token %}
             {% if post or content %}
-            <textarea name="content" class="form-control" style="width: 95%;" cols="100" rows="7" placeholder="Post Human!">{{ content }}</textarea><br/>
+            <textarea name="content" class="form-control" style="width: 100%;" cols="100" rows="7" placeholder="Post Human!">{{ content }}</textarea><br/>
             {% else %}
-            <textarea name="content" class="form-control" style="width: 95%;" cols="100" rows="7" placeholder="Post Human!"></textarea><br/>
+            <textarea name="content" class="form-control" style="width: 100%;" cols="100" rows="7" placeholder="Post Human!"></textarea><br/>
             {% endif %}
             {{ver.captcha}}
             <button class="btn btn-primary">Post</button>
@@ -28,22 +21,21 @@
           <br/>
         </div>
       </center>
-      </div>
-      <div class="col-sm-4">
-          <br/>
-        <h2>Hello Friend,</h2><br/>
-        <h3>Are You Wondring What Should You Write About?</h3>
-        <h3>well, Fear not!. here are some suggestions:</h3>
-        <ul>
-            <h3><li>Technology</li></h3>
-            <h3><li>Your Cat :D</li></h3>
-            <h3><li>Freedom Of Speech</li></h3>
-            <h3><li>Your Ex ;)</li></h3>
-        </ul>
-      </div>
+    </div>
+    <div class="col-sm-4">
+      <br/>
+      <h2>Hello Friend,</h2><br/>
+      <h3>Are You Wondring What Should You Write About?</h3>
+      <h3>well, Fear not!. here are some suggestions:</h3>
+      <ul>
+        <h3><li>Technology</li></h3>
+        <h3><li>Your Cat :D</li></h3>
+        <h3><li>Freedom Of Speech</li></h3>
+        <h3><li>Your Ex ;)</li></h3>
+      </ul>
     </div>
   </div>
-</main>
+</div>
 {% endblock %}
 
 

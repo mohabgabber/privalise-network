@@ -3,22 +3,15 @@
 {% load static %}
 {% block title %}Edit Your Settings On Privalise!, Where Everything Is Awesome{% endblock title %}
 {% block content %}
-<br><br>
-<main class="container-fluid content mx-auto">
-  {% if messages %}
-       {% for message in messages %}
-          <div class="alert alert-{{ message.tags }} content">{{ message }}</div>
-       {% endfor %}
-    {% endif %}
-    <div class='profile'>
-      <div class="picture-container" style="border-radius: ;">
-        <img class="profile-picture" src="{{ user.profile.image.url }}">
-      </div>
-      <h2 class='account-heading'>{{ user.username }}</h2>
-      <h2 class='text-secondary'>{{ profile.name }}</h2>
-      <p>{{ profile.bio }}</p>
-    </div>
-    <div class="mx-auto">
+<div class='profile'>
+  <div class="picture-container" style="border-radius: ;">
+    <img class="profile-picture" src="{{ user.profile.image.url }}">
+  </div>
+  <h2 class='account-heading'>{{ user.username }}</h2>
+  <h2 class='text-secondary'>{{ profile.name }}</h2>
+  <p>{{ profile.bio }}</p>
+</div>
+<div class="mx-auto">
   <form method="POST" enctype='multipart/form-data' id='forms'>
 
     {% csrf_token %}
@@ -79,5 +72,4 @@
     </center>
   
   </form>       
-</main>
 {% endblock content %} 

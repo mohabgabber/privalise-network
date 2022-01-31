@@ -2,73 +2,62 @@
 {% load post_extras %}
 {% block title %}Privalise!, Where Everything Is Awesome{% endblock title %}
 {% block content %}
-	<main class="container-fluid mx-auto content">
-		<div class="mx-auto logo-text">
-		  <div>Priva<span>Lise</span></div>
-		</div>
-	  {% if messages %}
-	     {% for message in messages %}
-	        <div class="alert alert-{{ message.tags }} content">{{ message }}</div>
-	     {% endfor %}
-	  {% endif %}
-	  	<br/>
-	    <div class="container post-list">
-	    	<center>
-	    		<a class="btn btn-primary" style="width: 100%; margin-bottom: 10px;" href="#createapost">Create A Post</a>
-		        <div class='post-creation' id="createapost">
-		          <br/>
-		          <form method='POST' action="{% url 'post-create' %}">
-		            {% csrf_token %}
-		            <textarea name="content" class="form-control" style="width: 100%;" cols="100" rows="7" placeholder="Post Human!"></textarea><br/><br/>
-		            <div class='captcha-div'>{{ver.captcha}}</div>
-		            <button class="btn btn-primary" style="margin-top: 9px;">Post</button>
-		            <a href="#" class="btn btn-danger" style="margin-top: 9px;">Cancel</a>
-		          </form>
-		          <br/>
-		        </div>
-	        </center>
-			{% for post in posts %}
-				<div class="post" style="text-align: left;  margin: 0 auto; margin-bottom: 8px;">
-						<div class="picture-containers">
-				        <img class="profile-picture post-img" src="{{ post.author.profile.image.url }}">
+    <div class="container post-list">
+    	<center>
+    		<a class="btn btn-primary" style="width: 100%; margin-bottom: 10px;" href="#createapost">Create A Post</a>
+	        <div class='post-creation' id="createapost">
+	          <br/>
+	          <form method='POST' action="{% url 'post-create' %}">
+	            {% csrf_token %}
+	            <textarea name="content" class="form-control" style="width: 100%;" cols="100" rows="7" placeholder="Post Human!"></textarea><br/><br/>
+	            <div class='captcha-div'>{{ver.captcha}}</div>
+	            <button class="btn btn-primary" style="margin-top: 9px;">Post</button>
+	            <a href="#" class="btn btn-danger" style="margin-top: 9px;">Cancel</a>
+	          </form>
+	          <br/>
+	        </div>
+        </center>
+		{% for post in posts %}
+			<div class="post shadow-lg" style="text-align: left;  margin: 0 auto; margin-bottom: 8px;">
+				<div class="picture-containers">
+	                <img class="profile-picture" src="{{ post.author.profile.image.url }}">
+	            </div>
+
+				<div class="post-content">
+					<div class="post-info">
+						<div class="post-info1">
+							<a class="username" href="{% url 'profile' post.author %}">@{{ post.author }}</a>
+							<p class="date">{{ post.date_posted }}</p>
+			                <button class="btn btn-link"><a href="{% url 'report-post' post.id %}">Report</a></button>  
 						</div>
-					<div class="profile-container">
-				    </div>
+    			    </div>
 
-					<div class="post-content">
-						<div class="post-info">
-							<div class="post-info1">
-								<a class="username" href="{% url 'profile' post.author %}">@{{ post.author }}</a>
-								<p class="date">{{ post.date_posted }}</p>
-							</div>
-	    			    </div>
-
-						<a style="text-decoration: inherit; color: inherit;" href="{% url 'post-detail' post.pk %}">
-							<div class="post-text" style="width: 50%;">
-								<p>{{ post.content|convert_markdown|safe }}</p>
-					                <button class="btn btn-outline-info" style="margin: 5px;">{{ post.likes.count }} Upvotes</button>
-									<a href="{% url 'post-detail' post.pk %}" class="btn btn-outline-info">Open Post</a>
-							</div>
-					   </a>
-					</div>
+					<a style="text-decoration: inherit; color: inherit;" href="{% url 'post-detail' post.pk %}">
+						<div class="post-text text-wrap text-break" style="width: 100%;">
+							<p>{{ post.content|convert_markdown|safe|truncatechars:150 }}</p>
+				                <button class="btn btn-outline-info" style="margin: 5px;">{{ post.likes.count }} Upvotes</button>
+								<a href="{% url 'post-detail' post.pk %}" class="btn btn-outline-info">Open Post</a>
+						</div>
+				   </a>
 				</div>
-			{% endfor %}
-		</div>
-		<center>
-		{% if postscount == 0 %}
-		<h2>I'm So Lonely Right Now!! <i class="fas fa-sad-tear"></i>, Just Follow Someone Already, Damn it <i class="fas fa-angry"></i>.</h2>
-		{% else %}
-			{% if posts.has_previous %}
-			    <a href="?page={{posts.previous_page_number}}" class="btn btn-outline-info"><</a>
-			{% endif %}
-			{% if not posts.has_previous and not posts.has_next %}
-			{% else %}
-				<span class="btn btn-primary">{{posts.number}}</span>  
-			{% endif %}
-			
-			{% if posts.has_next %}
-			    <a href="?page={{posts.next_page_number}}" class="btn btn-outline-info">></a>
-			{% endif %}
+			</div>
+		{% endfor %}
+	</div>
+	<center>
+	{% if postscount == 0 %}
+	<h2>I'm So Lonely Right Now!! <i class="fas fa-sad-tear"></i>, Just Follow Someone Already, Damn it <i class="fas fa-angry"></i>.</h2>
+	{% else %}
+		{% if posts.has_previous %}
+		    <a href="?page={{posts.previous_page_number}}" class="btn btn-outline-info"><</a>
 		{% endif %}
-		</center>
+		{% if not posts.has_previous and not posts.has_next %}
+		{% else %}
+			<span class="btn btn-primary">{{posts.number}}</span>  
+		{% endif %}
+		
+		{% if posts.has_next %}
+		    <a href="?page={{posts.next_page_number}}" class="btn btn-outline-info">></a>
+		{% endif %}
+	{% endif %}
+	</center>
 {% endblock content %}

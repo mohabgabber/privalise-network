@@ -18,7 +18,7 @@
                 <h2 style="color: azure;">How To Enable 2FA?</h2>
                 <p style="font-size: large;">To enable 2fa in your account you must supply a PGP public key, and the key's fingerprint, if you already did this, then click on the button below that says "I Understand & Enable 2FA".</p>
                 <h2 style="color: azure;">What Are The The Problems Of 2FA?</h2>
-                <p style="font-size: large;">Even though 2fa increases your account's security significantly, but there is one down side, <p style="font-size: large;color: orangered; font-family: monospace;">in case you lost access to your private key, it's impossible so restore access to your account, so please backup your private key securely on a usb or in the cloud (symmetrically encrypted).</p></p>
+                <p style="font-size: large;">Even though 2fa increases your account's security significantly, but there is one down side, <p style="font-size: large;color: orangered; font-family: monospace;">in case you lost access to your private key, it's impossible to restore access to your account, so please backup your private key securely on a usb or in the cloud (symmetrically encrypted).</p></p>
                 <a href="{% url '2fa-done' request.user.username %}" class="btn btn-primary" style="width: 100%;">I Understand & Enable 2FA</a>
             </div>
         </div>
