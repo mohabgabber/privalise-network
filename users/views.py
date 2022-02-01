@@ -44,7 +44,7 @@ class Login(View):
             return redirect('login-two', username=username)
         else:
             messages.success(request, "Incorrect Data")
-        return render(request, 'users/login.html', {'ver': ver,})    
+        return render(request, 'users/login.html', {'ver': ver,})  
 class Logintwo(View):
     def get(self, request, *args, **kwargs):
         global msg, code

@@ -162,7 +162,7 @@
                   <a href="#sharecomment{{comment.id}}">Share</a>
                 </div><br>
               </div>
-              <a style="width: 75px; height: 35%;" href="#reply{{comment.id}}" class="btn btn-danger">Reply</a>
+              <a style="width: 80px; height: 35%;" href="#reply{{comment.id}}" class="btn btn-danger">Reply</a>
               <div id="reply{{comment.id}}">
                 <form method="POST" action="{% url 'comment-reply' post.id comment.id %}">
                   {% csrf_token %}
@@ -215,7 +215,7 @@
               <a style="width: 60px; height: 35%;" href="{% url 'add-comment-like' comment.id %}" class="btn btn-primary"><i class="fas fa-kiss-wink-heart"></i></a>
               <button class="btn btn-outline-info" style="margin: 5px;">{{comment.likes.count}}</button>
               <a style="width: 60px; height: 35%;" href="{% url 'add-comment-dislike' comment.id %}" class="btn btn-danger"><i class="fas fa-hand-middle-finger"></i></a>
-              <a style="width: 60px; height: 35%;" href="#reply{{comment.id}}" class="btn btn-danger">Reply</a>
+              <a style="width: 80px; height: 35%;" href="#reply{{comment.id}}" class="btn btn-danger">Reply</a>
               <div id="reply{{comment.id}}">
                 <form method="POST" action="{% url 'comment-reply' post.id comment.id %}">
                   {% csrf_token %}

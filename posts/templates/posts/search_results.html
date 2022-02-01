@@ -25,7 +25,7 @@
                                 <a class="username" href="{% url 'profile' post.author %}">
                                 @{{ post.author }}
                                 </a>
-                                <p class="date">{{ post.date_posted }}</p>
+                                <p class="date">{{ post.date_posted|date:"SHORT_DATE_FORMAT" }}</p>
                             </div>
                         </div>
                         <a style="text-decoration: inherit; color: inherit;" href="{% url 'post-detail' post.pk %}">
@@ -65,7 +65,7 @@
                         <div class="post-info">
                             <div class="post-info1">
                                 <a class="username" href="{% url 'profile' comment.author %}">@{{ comment.author }}</a>
-                                <p class="date">{{ comment.date_created }}</p>
+                                <p class="date">{{ comment.date_created|date:"SHORT_DATE_FORMAT" }}</p>
                             </div>
                         </div>
                         <a style="text-decoration: inherit; color: inherit;" href="{% url 'post-detail' comment.post.id %}#{{comment.id}}">
@@ -97,23 +97,13 @@
         <div class="col-sm">
             <center><h2>Profiles</h2></center>
             {% for profile in profiles %}
-                <div  class="post">
-                    <div class="picture-containers">
-                      <img class="profile-picture post-img" src="{{ profile.image.url }}">  
-                    </div>
-                    <div class="post-content">
-                        <div class="post-info">
-                            <div class="post-info1">
-                                <a class="username" href="{% url 'profile' profile.user.username %}">@{{ profile.user.username }}</a>
-                            </div>
-                        </div>
-                        <a style="text-decoration: inherit; color: inherit;" href="{% url 'profile' profile.user.username %}">
-                            <div class="post-text text-wrap text-break" style="width: 100; text-align: left;">
-                                <p style="word-break: break-all;">{{ profile.bio|slice:":255" }}</p>
-                                <a style="width: 40%; height: 35%;" href="{% url 'profile' profile.user.username %}" class="btn btn-outline-info">Open Profile</a>
-                            </div>
-                        </a>
-                    </div>  
+                <div class="card bg-dark w-100" style="width: 18rem; margin-bottom: 4px;">
+                  <img src="{{ profile.image.url }}" class="card-img-top" alt="...">
+                  <div class="card-body">
+                    <h5 class="card-title">@{{profile.user.username}}</h5>
+                    <p class="card-text">{{profile.bio|slice:":255"}}</p>
+                    <a href="{% url 'profile' profile.user.username %}" class="btn btn-primary">Open</a>
+                  </div>
                 </div>
             {% endfor %}
             <center>

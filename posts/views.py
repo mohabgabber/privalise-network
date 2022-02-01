@@ -423,14 +423,14 @@ def AddFavourites(request, id):
         post.favourites.add(request.user)
         messages.success(request, f'Post Is MarkaLised! Amazing :D')
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
-class PostNotification(View):
+class PostNotification(LoginRequiredMixin, View):
     def get(self, request, notification_id, post_id, *args, **kwargs):
         notification = Notification.objects.get(id=notification_id)
         post = Post.objects.get(id=post_id)
         notification.user_has_seen = True
         notification.save()
         return redirect('post-detail', id=post_id)
-class FollowNotification(View):
+class FollowNotification(LoginRequiredMixin, View):
     def get(self, request, notification_id, username, *args, **kwargs):
         notification = Notification.objects.get(id=notification_id)
         user = User.objects.get(username=username)
@@ -438,13 +438,13 @@ class FollowNotification(View):
         notification.user_has_seen = True
         notification.save()
         return redirect('profile', username=username)
-class RemoveNotification(View):
+class RemoveNotification(LoginRequiredMixin, View):
     def get(self, request, notification_id, *args, **kwargs):
         notification = Notification.objects.get(id=notification_id)
         if notification.to_user == request.user:
             notification.delete()
         return redirect('notifications-list')
-class ListNotifications(View):
+class ListNotifications(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         notifications = Notification.objects.filter(to_user=request.user)
         page = request.GET.get('page', 1)
@@ -457,22 +457,26 @@ class ListNotifications(View):
             notifications_list = paginator.page(paginator.num_pages)
         notificationscount = notifications.count()
         return render(request, "posts/notifications.html", {'notifications': notifications_list, 'notificationscount': notificationscount,})
-class AboutView(View):
+class AboutView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        about = About.objects.get(id=1)
-        return render(request, 'posts/about.html', {'about': about,})
-class factor_conf(View):
+        return render(request, 'posts/about.html')
+class factor_conf(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         return render(request, 'posts/2fa_conf.html')
-class factor_done(View):
+class factor_done(LoginRequiredMixin, View):
     def get(self, request, username, *args, **kwargs):
         user = User.objects.get(username=username)
         if request.user == user:
-            user.profile.factor_auth = True
-            user.save()
-            messages.success(request, "2FA Is Now Enabled")
+            if request.user.profile.public_key != '' and request.user.profile.fingerprint != '' :
+                user.profile.factor_auth = True
+                user.save()
+                messages.success(request, "2FA Is Now Enabled")
+            else:
+                messages.success(request, "you have to add a public key and a fingerprint in your settings")
+        else:
+            return redirect('home')
         return redirect('home')
-class factor_cancel(View):
+class factor_cancel(LoginRequiredMixin, View):
     def get(self, request, username, *args, **kwargs):
         user = User.objects.get(username=username)
         if request.user == user:
@@ -480,3 +484,6 @@ class factor_cancel(View):
             user.save()
             messages.success(request, "2FA Is Disabled")
         return redirect('home')
+class profile_complete(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'posts/complete_profile.html')
