@@ -24,7 +24,6 @@ def register(request):
                 messages.warning(request, f'there is an error')
                 return render(request, 'users/register.html', {"form": form})
             username = form.cleaned_data.get('username')
-            messages.success(request, f'account created for {username}')
             new_user = authenticate(username=form.cleaned_data['username'],password=form.cleaned_data['password1'],)
             login(request, new_user)
             return redirect('complete-profile')

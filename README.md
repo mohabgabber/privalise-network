@@ -15,21 +15,7 @@ it's also perfect as an onion service, bc the website doesn't have any js in it,
    * Pure HTML/CSS
 
 ## Main Features:
-   * Sign IN/UP/OUT
-   * Can Run On Tor With Safest Mode Enabled
-   * Post CRUD With MD Rendering
-   * Settings
-   * Notifications
-   * Paginating For Objects
-   * Password Change
-   * Follow/Unfollow users
-   * Commenting And Replying To Comments
-   * Public Profile For Each User With a profle pic
-   * 2 factor authentication
-   * Hashtags And Mentions (coming soon)
-   * E2EE Notes (coming soon)
-   * E2EE Posts saving (coming soon)
-   * E2EE Chat (coming soon)
+   It has all the standard features for a social media like: sign in/up/out, post CRUD, coment CRUD, likes/dislikes, follow/unfollow, public profile for users, etc ... but we added additional privacy-focused features like: monero address for every user, public key, fingerprint, 2FA via PGP, xmppserver, etc... we also added human verification in various places to increase security. and currently we are working on a Punishment mechanism for users who violate the laws of the network, every user will have to send a very small monero amount (1$) to be able to interact else their permissions will be read-only, this amount will be saved in their account and if they harrased, bullied any other user the amount they sent will be sent to the victim, and the network's wallet secret view key (the one that receives all this money) will be public to enhance trust in the platform.
 
 ## The front-end
 The frontend is mostly made (like 90%) by [margual56](https://github.com/margual56)
@@ -55,14 +41,3 @@ The frontend is mostly made (like 90%) by [margual56](https://github.com/margual
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 	GNU General Public License for more details.
-	
-
-
-
-
-
-
-
-
-
-
