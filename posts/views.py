@@ -3,7 +3,6 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from .models import Post, Comment, Profile, Notification, Tag, About
 from django.views import View
 from django.http import HttpResponseRedirect
-from monero.address import address 
 from django.contrib.auth.forms import UserCreationForm
 from .forms import ProfileUpdteForm, CommentForm, PostForm
 from django.contrib import messages
@@ -12,7 +11,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 import os
-from .validations import valid_addr # create_addr, pay, receive, check_addr, check_conf, 
+from .validations import valid_addr, valid_sig # create_addr, pay, receive, check_addr, check_conf, 
 from users.forms import verification
 from django.urls import reverse_lazy
 from django.http import HttpResponse

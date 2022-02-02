@@ -49,7 +49,7 @@
       <input type="text" name="xmppserver" class="form-control" value="{{ request.user.profile.xmppserver }}" placeholder="Server.domain" aria-label="Server">
     </div>
     
-    <div class="input-group mb-3">
+    <div class="input-group mb-3" style="z-index: 1;">
       {% if request.user.profile.factor_auth == True %}
         <a class="btn btn-danger" style="width: 100%;" href="{% url '2fa-cancel' request.user.username %}">Disable 2FA</a>
       {% else %}
