@@ -1,0 +1,44 @@
+{% load post_extras %}
+{% for post in posts %}
+            <div class="post shadow-lg" style="text-align: left;  margin: 0 auto; margin-bottom: 8px;">
+                <div class="picture-containers">
+                    <img class="profile-picture" src="{{ post.author.profile.image.url }}">
+                </div>
+
+                <div class="post-content">
+                    <div class="post-info">
+                        <div class="post-info1">
+                            <a class="username" href="{% url 'profile' post.author %}">@{{ post.author }}</a>
+                            <p class="date">{{ post.date_posted|date:"SHORT_DATE_FORMAT" }}</p>
+                            <button class="btn btn-link"><a href="{% url 'report-post' post.id %}">Report</a></button>  
+                        </div>
+                    </div>
+
+                    <a style="text-decoration: inherit; color: inherit;" href="{% url 'post-detail' post.pk %}">
+                        <div class="post-text text-wrap text-break" style="width: 100%;">
+                            <p>{{ post.content|convert_markdown|safe|truncatechars:150 }}</p>
+                                <button class="btn btn-outline-info" style="margin: 5px;">{{ post.likes.count }} Upvotes</button>
+                                <a href="{% url 'post-detail' post.pk %}" class="btn btn-outline-info">Open Post</a>
+                        </div>
+                   </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <center>
+    {% if postscount == 0 %}
+    <h2>I'm So Lonely Right Now!! <i class="fas fa-sad-tear"></i>, Just Follow Someone Already, Damn it <i class="fas fa-angry"></i>.</h2>
+    {% else %}
+        {% if posts.has_previous %}
+            <a href="?page={{posts.previous_page_number}}" class="btn btn-outline-info"><</a>
+        {% endif %}
+        {% if not posts.has_previous and not posts.has_next %}
+        {% else %}
+            <span class="btn btn-primary">{{posts.number}}</span>  
+        {% endif %}
+        
+        {% if posts.has_next %}
+            <a href="?page={{posts.next_page_number}}" class="btn btn-outline-info">></a>
+        {% endif %}
+    {% endif %}
+    </center>

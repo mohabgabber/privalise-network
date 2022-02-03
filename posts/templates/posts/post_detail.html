@@ -4,7 +4,7 @@
 {% load crispy_forms_tags %}
 {% block title %}{{post.author}}'s Post On Privalise!, Where Everything Is Awesome{% endblock title %}
 {% block content %}
-  <center>
+<center>
     <div class="post" style="text-align: left;">
       <div class="picture-containers">
         <img class="profile-picture post-img" src="{{ post.author.profile.image.url }}">  
@@ -14,7 +14,7 @@
         <div class="post-info">
           <div class="post-info1">
             <a class="username" href="{% url 'profile' post.author %}">@{{ post.author }}</a>
-            <p class="date">{{ post.date_posted }}</p>
+            <p class="date">{{ post.date_posted|date:"SHORT_DATE_FORMAT" }}</p>
           </div>
         </div>
 
@@ -110,7 +110,7 @@
               {% else %}
                 <a class="username" href="{% url 'profile' comment.author %}">@{{ comment.author }}</a>
               {% endif %}
-              <p class="date">{{ comment.date_created }}</p>
+              <p class="date">{{ comment.date_created|date:"SHORT_DATE_FORMAT" }}</p>
             </div>
           </div>
           <div class="post-text text-wrap text-break" style="text-align: left; width: 100%;">
@@ -236,7 +236,7 @@
   {% endfor %}
 
   {% if post.comments.count == 0 %}
-    <h2>Oooh Come Oon!, you have nothing to say at all?</h2>
+      <h2>Oooh Come Oon!, you have nothing to say at all?</h2>
   {% else %}
     {% if comments.has_previous %}
       <a href="?page={{comments.previous_page_number}}" class="btn btn-outline-info"><</a>
@@ -249,5 +249,5 @@
       <a href="?page={{comments.next_page_number}}" class="btn btn-outline-info">></a>
     {% endif %}
   {% endif %}
-  </center>
+</center>
 {% endblock content %}
