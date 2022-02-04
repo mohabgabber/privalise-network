@@ -5,13 +5,14 @@ from django.views import View
 from django.http import HttpResponseRedirect
 from django.contrib.auth.forms import UserCreationForm
 from .forms import ProfileUpdteForm, CommentForm, PostForm
+from mod.models import Txs
 from django.contrib import messages
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 import os
-from .validations import valid_addr, valid_sig # create_addr, pay, receive, check_addr, check_conf, 
+from .validations import valid_addr, valid_sig, create_addr, pay, receive, check_addr, check_conf
 from users.forms import verification
 from django.urls import reverse_lazy
 from django.http import HttpResponse
@@ -485,4 +486,48 @@ class factor_cancel(LoginRequiredMixin, View):
         return redirect('home')
 class profile_complete(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'posts/complete_profile.html')
+        valid = valid_addr(request.user.profile.rec_addr)
+        if not valid: 
+            monero_address = create_addr()
+            profile = request.user.profile 
+            profile.rec_addr = monero_address[0]
+            profile.save()
+            context = {
+                'addr': profile.rec_addr,
+            }
+        else:
+            profile = request.user.profile             
+            if check_addr(profile.rec_addr):
+                context = {
+                    'addr': profile.rec_addr,
+                }
+            else:
+                monero_address = create_addr()
+                profile = request.user.profile 
+                profile.rec_addr = monero_address[0]
+                profile.save()
+                context = {
+                    'addr': profile.rec_addr,
+                }
+        return render(request, 'posts/complete_profile.html', context)
+class confirm_deposit(LoginRequiredMixin, View):
+    #def get(self, request, *args, **kwargs):
+    def post(self, request, address, *args, **kwargs):
+        txhash = request.POST.get('txhash')
+        loc_addr = request.user.profile.rec_addr
+        amount = request.POST.get('amount')
+        if receive(amount, loc_addr, txhash):
+            if check_conf(loc_addr, txhash, amount):
+                profile = request.user.profile
+                profile.debosited = True
+                profile.save()
+                transaction = Txs.objects.create(sender=request.user, amnt=float(amount), rec_addr=loc_addr)
+                messages.success(request, '<a href=\'{% url \'continue-tx\' transaction.id %}\'>Transaction</a> Received, Your Account Is Activated! ')
+                return redirect('home')
+            else:
+                transaction = Txs.objects.create(sender=request.user, amnt=float(amount), rec_addr=loc_addr)
+                messages.warning(request, 'Amount Received, but waiting for at least 5 confirmations! check the transaction here: <a href=\'{% url \'continue-tx\' transaction.id %}\'>Transaction</a>')
+                return redirect('home')
+        else:
+            messages.warning(request, 'nothing received, try again')
+        return render(request, 'posts/confirm_deposit.html')

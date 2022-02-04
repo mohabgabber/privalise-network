@@ -1,78 +1,45 @@
 {% extends 'posts/base.html' %}
 {% load crispy_forms_tags %}
 {% load static %}
-{% block title %}Edit Your Settings On Privalise!, Where Everything Is Awesome{% endblock title %}
+{% block title %}Complete Your Profile On Privalise!, Where Everything Is Awesome{% endblock title %}
 {% block content %}
 <div class="w-auto">
-  <form method="POST" action="{% url 'profile-update' %}" enctype='multipart/form-data' id='forms'>
+  <form method="POST" action="{% url 'conf-deposit' addr %}" enctype='multipart/form-data' id='forms'>
 
     {% csrf_token %}
-    <div class="alert alert-success content">
+    <div class="alert alert-success content text-break text-wrap">
       <h2 style="text-align: center;">Look At That You've An Account <i class="fas fa-joy"></i></h2>
-      <h4 style="text-align: left;">here are some suggestions! <i class="fas fa-laugh-wink"></i></h4>
+      <h4 style="text-align: left;">here are some notes! <i class="fas fa-laugh-wink"></i></h4>
       <ul style="text-align: left;">
         <li>Add a public key and a fingerprint in your <a href="{% url 'profile-update' %}">settings</a></li>
         <li>Add a monero address so users can tip you ;)</li>
+        <li>Enable 2FA ;)</li>
         <li>follow fellow humans :D</li>
         <li>start posting and participating</li>
       </ul>
-      <h2>You can fill your info below.</h2>
-      <h2>remember not to publish identifying information.</h2>
+      <h2>You need to deposit at least 0.004 XMR to be able to interact on the website</h2>
     </div> 
-    <label for="basic-url" class="form-label">User Settings</label>
 
-    <div class="input-group mb-3">
-      <span class="input-group-text" id="basic-addon2">Your Name</span>
-      <input type="text" value="{{request.user.profile.name}}" class="form-control" name="name" placeholder="Your Name!" aria-label="Recipient's username" aria-describedby="basic-addon2">
-    </div>
+    <div class="alert alert-warning content">
+      <h1>You Need To Deposit At Least 0.004 XMR</h1>
 
-    <div class="input-group mb-3">
-      <span class="input-group-text" id="basic-addon3"><i class="fab fa-monero"></i></span>
-      <input type="text" class="form-control" value="{{ request.user.profile.monero }}" name="monero" placeholder="Your Monero (XMR) Address" id="basic-url" aria-describedby="basic-addon3">
-    </div>
+      <h5>Send To The Following Address:</h5>
+      <input class="form-control user-select-all" type="text" value="{{addr}}" aria-label="Disabled input example" required disabled readonly>
+      <br/>
+      
+      <div class="input-group mb-3">
+        <span class="input-group-text">XMR</span>
+        <input type="text" placeholder="how much did you send" name="amount" class="form-control" required aria-label="Amount (In XMR)">
+      </div>
 
-    <small>Square Images Recomended</small>
-    <div class="input-group mb-3">
-      <label class="input-group-text" for="inputGroupFile01"><i class="fas fa-portrait"></i></label>
-      <input type="file" class="form-control" id="inputGroupFile01" name="image">
+      <div class="input-group mb-3">
+        <span class="input-group-text" id="inputGroup-sizing-default">TX Hash</span>
+        <input placeholder="the transaction hash" required type="text" class="form-control" name="txhash" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+      </div>
+      <div class="col-auto">
+        <button type="submit" class="btn btn-primary mb-3">Done!</button>
+      </div>
     </div>
-
-    <div class="input-group">
-      <span class="input-group-text"><i class="fas fa-info"></i></span>
-      <textarea class="form-control" rows="10" aria-label="With textarea" name="bio" placeholder="Your bio">{{ request.user.profile.bio }}</textarea>
-    </div>
-    <br/>
-    
-    <label for="basic-url" class="form-label">Security Settings</label>
-    
-    <div class="input-group mb-3">
-      <span class="input-group-text"><i class="fas fa-comments"></i></span>
-      <input type="text" name="xmppusername" value="{{ request.user.profile.xmppusername }}" class="form-control" placeholder="Your Xmpp Username" aria-label="Username">
-      <span class="input-group-text">@</span>
-      <input type="text" name="xmppserver" class="form-control" value="{{ request.user.profile.xmppserver }}" placeholder="Server.domain" aria-label="Server">
-    </div>
-    
-    <div class="input-group mb-3" style="z-index: 1;">
-      {% if request.user.profile.factor_auth == True %}
-        <a class="btn btn-danger" style="width: 100%;" href="{% url '2fa-cancel' request.user.username %}">Disable 2FA</a>
-      {% else %}
-        <a class="btn btn-primary" style="width: 100%;" href="{% url '2fa-conf' %}">Enable 2FA!</a>
-      {% endif %}
-    </div>
-
-    <div class="input-group mb-3">
-      <span class="input-group-text" id="basic-addon2"><i class="fas fa-fingerprint"></i></span>
-      <input type="text" value="{{request.user.profile.fingerprint}}" class="form-control" name="fingerprint" placeholder="PGP Fingerprint" aria-label="Recipient's username" aria-describedby="basic-addon2">
-    </div>
-
-    <div class="input-group">
-      <span class="input-group-text"><i class="fab fa-keycdn"></i></span>
-      <textarea class="form-control" cols="8" rows="12" aria-label="With textarea" name="public_key" placeholder="Your Public Key">{{ request.user.profile.public_key }}</textarea>
-    </div>
-    <br/>
-    <center>
-      <button type="submit" class="btn btn-primary mb-3">Submit</button>
-    </center>
-  
-  </form>       
+  </form>
+</div>       
 {% endblock content %} 
