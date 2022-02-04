@@ -68,9 +68,9 @@
       <form method='POST'>
         {% csrf_token %}
         {% if comment_content %}
-        <textarea name="content" class="form-control" style="width: 100%;" cols="100" rows="7" placeholder="Comment Human!">{{comment_content}}</textarea><br/>
+        <textarea name="content" class="form-control" style="width: 100%;" cols="100" rows="7" placeholder="Comment Human!">{{comment_content}}</textarea>
         {% else %}
-        <textarea name="content" class="form-control" style="width: 100%;" cols="100" rows="7" placeholder="Comment Human!"></textarea><br/>
+        <textarea name="content" class="form-control" style="width: 100%;" cols="100" rows="7" placeholder="Comment Human!"></textarea>
         {% endif %}
         <div class='captcha-div'>{{ver.captcha}}</div>
         <button class="btn btn-primary" style="margin-top: 9px;">Post</button>

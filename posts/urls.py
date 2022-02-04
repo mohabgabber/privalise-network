@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import confirm_deposit, profile_complete, factor_conf, factor_cancel, factor_done, CommentReply, AboutView, CommentEditView, AddLike, AddDislike, SearchResults, UserDetails, AddFavourites, RemoveNotification, ListNotifications, PostNotification, FollowNotification,  Search, AddCommentLike, AddCommentDislike, ProfileView, settings, AddFollower, RemoveFollower, PostListView, PostCreateView, PostDetailView, PostUpdateView, PostDeleteView, CommentDeleteView
+from .views import confirm_deposit, profile_complete, check_deposit, factor_conf, factor_cancel, factor_done, CommentReply, AboutView, CommentEditView, AddLike, AddDislike, SearchResults, UserDetails, AddFavourites, RemoveNotification, ListNotifications, PostNotification, FollowNotification,  Search, AddCommentLike, AddCommentDislike, ProfileView, settings, AddFollower, RemoveFollower, PostListView, PostCreateView, PostDetailView, PostUpdateView, PostDeleteView, CommentDeleteView
 urlpatterns = [
     path('', PostListView.as_view(), name='home'),
     path('comeplete/profile/', profile_complete.as_view(), name='complete-profile'),
@@ -26,6 +26,7 @@ urlpatterns = [
     path('search/results/', SearchResults.as_view(), name='search-results'),
     path('fav/add/<str:id>/', AddFavourites, name='add-fav'),
     path('deposit/confirm/<str:address>', confirm_deposit.as_view(), name='conf-deposit'),
+    path('deposit/continue/<str:id>', check_deposit.as_view(), name='continue-tx'),
     path('post/form/create/', PostCreateView.as_view(), name='post-create'),
     path('notification/<str:notification_id>/post/<str:post_id>/', PostNotification.as_view(), name='post-notification'),
     path('notification/<str:notification_id>/profile/<str:username>/', FollowNotification.as_view(), name='follow-notification'),

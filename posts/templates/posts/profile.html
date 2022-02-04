@@ -45,6 +45,7 @@
 </div>
 <div class="post-list">
 	{% if request.user == user %}
+	{% if request.user.profile.debosited == True %}
 		<center>
     		<a class="btn btn-primary" style="width: 100%; margin-bottom: 10px;" href="#createapost">Create A Post</a>
 	        <div class='post-creation' id="createapost">
@@ -62,6 +63,7 @@
 	          <br/>
 	        </div>
         </center>
+		{% endif %}
 	{% endif %}
 	{% include 'posts/post.html' %}
 </div>

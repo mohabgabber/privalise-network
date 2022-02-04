@@ -1,0 +1,49 @@
+{% extends 'posts/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block title %}Complete Your Profile On Privalise!, Where Everything Is Awesome{% endblock title %}
+{% block content %}
+<div class="w-auto">
+  <form id='forms'>
+
+    {% csrf_token %}
+    <div class="alert alert-success content text-break text-wrap">
+      <h2>Please Refresh The Transaction Until The Confirmations Are >= 5</h2>
+    </div> 
+
+    <div class="alert alert-warning content">
+      <h1>TX STATUS: {% if tx.confs >= 5 %}COMPLETED{% else %}PENDING{% endif %}</h1>
+      <h1>TX ID: {{tx.id}}</h1>
+
+      <div class="input-group mb-3">
+
+      <span class="input-group-text">User:</span>
+      <input class="form-control user-select-all" type="text" value="{{tx.sender}}" aria-label="Disabled input example" required disabled readonly>
+      <br/>
+      </div>
+      <div class="input-group mb-3">
+        <span class="input-group-text">To:</span>
+        <input type="text" placeholder="how much did you send" value="{{tx.rec_addr}}" class="form-control" required aria-label="Amount (In XMR)" required disabled readonl>
+      </div>
+
+      <div class="input-group mb-3">
+        <span class="input-group-text" id="inputGroup-sizing-default">amount</span>
+        <input placeholder="the transaction hash" required disabled readonly type="text" class="form-control" value="{{tx.amnt}}" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+      </div>
+      
+      <div class="input-group mb-3">
+        <span class="input-group-text" id="inputGroup-sizing-default">Confirmations</span>
+        <input placeholder="the transaction hash" required disabled readonly type="text" class="form-control" value="{{tx.confs}}" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+      </div>
+
+      <div class="input-group mb-3">
+        <span class="input-group-text" id="inputGroup-sizing-default">TX Hash</span>
+        <input placeholder="the transaction hash" required disabled readonly type="text" class="form-control" value="{{tx.hash}}" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+      </div>
+      <div class="col-auto">
+        <a href="{% url 'home' %}" class="btn btn-primary mb-3">Done!</a>
+      </div>
+    </div>
+  </form>
+</div>       
+{% endblock content %} 
