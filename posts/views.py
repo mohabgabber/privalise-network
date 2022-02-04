@@ -598,3 +598,8 @@ class check_deposit(LoginRequiredMixin, View):
             messages.warning(request, 'TX Doesn\'t Exist')
             return redirect('home')
         return render(request, 'posts/continue_tx.html', {'tx': tx,})
+class list_txs(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        transactions = Txs.objects.filter(sender=user)
+        return render(request, 'posts/list_txs.html', {'txs': transactions,})

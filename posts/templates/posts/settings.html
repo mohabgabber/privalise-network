@@ -40,6 +40,16 @@
     </div>
     <br/>
     
+    <label for="basic-url" class="form-label">Wallet Settings</label>
+    <div class="input-group mb-3" style="z-index: 1;">
+      {% if request.user.profile.debosited == True %}
+        <a class="btn btn-primary" style="width: 100%;" href="{% url 'txs-list' %}">Your Transactions History</a>
+      {% else %}
+        <a class="btn btn-danger" style="width: 100%;" href="{% url 'complete-profile' %}">Activate Your Account!</a>
+      {% endif %}
+    </div>
+
+
     <label for="basic-url" class="form-label">Security Settings</label>
     
     <div class="input-group mb-3">
