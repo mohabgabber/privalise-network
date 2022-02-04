@@ -93,7 +93,10 @@ class Profile(models.Model):
     followers_count = models.BigIntegerField(default='0')
     mention_count = models.BigIntegerField(default='0')
     factor_auth = models.BooleanField(default=False)
+    debosited = models.BooleanField(default=False)
+    rec_addr = models.CharField(max_length=106, blank=False, default='')
     fingerprint = models.CharField(max_length=50, blank=True)
+
     def __str__(self):
         return f'{self.user.username} Profile'
 class Tag(models.Model):

@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import reports, txs
+from .models import reports, Txs
 from django.views import View
 from django.http import HttpResponseRedirect
 from monero.address import address 
