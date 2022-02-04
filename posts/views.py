@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 import os
-from .validations import valid_addr, valid_sig, create_addr, pay, receive, check_addr, check_conf
+from .validations import valid_addr, valid_sig, create_addr, pay, receive, check_addr, check_conf, check_conf_number
 from users.forms import verification
 from django.urls import reverse_lazy
 from django.http import HttpResponse
@@ -65,109 +65,130 @@ class PostDetailView(LoginRequiredMixin, View):
         }
         return render(request, 'posts/post_detail.html', context)
     def post(self, request, id, *args, **kwargs):
-        post = Post.objects.get(id=id)
-        form = CommentForm(request.POST)
-        valid = True
-        ver = verification(request.POST)
-        if form.is_valid() and ver.is_valid():
-            new_comment = form.save(commit=False)
-            new_comment.content = request.POST.get('content')
-            new_comment.author = request.user
-            new_comment.post = post
-            new_comment.save()
-            new_comment.create_tags()
+        if request.user.profile.debosited == True:
+            post = Post.objects.get(id=id)
+            form = CommentForm(request.POST)
+            valid = True
+            ver = verification(request.POST)
+            if form.is_valid() and ver.is_valid():
+                new_comment = form.save(commit=False)
+                new_comment.content = request.POST.get('content')
+                new_comment.author = request.user
+                new_comment.post = post
+                new_comment.save()
+                new_comment.create_tags()
 
-            if new_comment.author == new_comment.post.author:
-                pass
+                if new_comment.author == new_comment.post.author:
+                    pass
+                else:
+                    notification = Notification.objects.create(notification_type=2, from_user=request.user, to_user=post.author, post=post)
             else:
-                notification = Notification.objects.create(notification_type=2, from_user=request.user, to_user=post.author, post=post)
+                ver = verification()
+                valid = False
+                comment_content = request.POST.get('content')
+                messages.warning(request, 'Wrong Captcha!')
+            comments = Comment.objects.filter(post=post)
+            commentcount = 0
+            for comment in comments:
+                commentcount += 1
+            likes = post.likes.count() - post.dislikes.count()
+            page = request.GET.get('page', 1)
+            paginator = Paginator(comments, 20)
+            try:
+                comments_list = paginator.page(page)
+            except PageNotAnInteger:
+                comments_list = paginator.page(1)
+            except EmptyPage:
+                comments_list = paginator.page(paginator.num_pages)
+            if not valid:
+                context = {
+                    'likes': likes,
+                    'post': post,
+                    'ver': ver,
+                    'form': form,
+                    'comment_content': comment_content,
+                    'commentcount': commentcount,
+                    'comments': comments_list,
+                }
+            else:
+                context = {
+                    'likes': likes,
+                    'post': post,
+                    'ver': ver,
+                    'form': form,
+                    'commentcount': commentcount,
+                    'comments': comments_list,
+                }
         else:
-            ver = verification()
-            valid = False
-            comment_content = request.POST.get('content')
-            messages.warning(request, 'Wrong Captcha!')
-        comments = Comment.objects.filter(post=post)
-        commentcount = 0
-        for comment in comments:
-            commentcount += 1
-        likes = post.likes.count() - post.dislikes.count()
-        page = request.GET.get('page', 1)
-        paginator = Paginator(comments, 20)
-        try:
-            comments_list = paginator.page(page)
-        except PageNotAnInteger:
-            comments_list = paginator.page(1)
-        except EmptyPage:
-            comments_list = paginator.page(paginator.num_pages)
-        if not valid:
-            context = {
-                'likes': likes,
-                'post': post,
-                'ver': ver,
-                'form': form,
-                'comment_content': comment_content,
-                'commentcount': commentcount,
-                'comments': comments_list,
-            }
-        else:
-            context = {
-                'likes': likes,
-                'post': post,
-                'ver': ver,
-                'form': form,
-                'commentcount': commentcount,
-                'comments': comments_list,
-            }
+            messages.warning(request, 'You Need To Deposit First')
+            return redirect('home')
         return render(request, 'posts/post_detail.html', context)
 class CommentReply(LoginRequiredMixin, View):
     def post(self, request, post_id, id, *args, **kwargs):
-        post = Post.objects.get(id=post_id)
-        parent_comment = Comment.objects.get(id=id)
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            new_comment = form.save(commit=False)
-            new_comment.author = request.user
-            new_comment.post = post
-            new_comment.parent = parent_comment
-            new_comment.save()
-        if new_comment.author == new_comment.post.author or new_comment.author == parent_comment.author:
-            pass
+        if request.user.profile.debosited == True:
+            post = Post.objects.get(id=post_id)
+            parent_comment = Comment.objects.get(id=id)
+            form = CommentForm(request.POST)
+            if form.is_valid():
+                new_comment = form.save(commit=False)
+                new_comment.author = request.user
+                new_comment.post = post
+                new_comment.parent = parent_comment
+                new_comment.save()
+            if new_comment.author == new_comment.post.author or new_comment.author == parent_comment.author:
+                pass
+            else:
+                notification = Notification.objects.create(notification_type=2, from_user=request.user, to_user=parent_comment.author, comment=new_comment)
         else:
-            notification = Notification.objects.create(notification_type=2, from_user=request.user, to_user=parent_comment.author, comment=new_comment)
+            messages.warning(request, 'You Need To Deposit First')
+            return redirect('home')
         return redirect('post-detail', id=post_id)
 class PostCreateView(LoginRequiredMixin, View):
+    
     def get(self, request, *args, **kwargs):
-        ver = verification()
-        form = PostForm()
+        if request.user.profile.debosited == True:
+            ver = verification()
+            form = PostForm()
+        else:
+            messages.warning(request, 'You Need To Deposit First')
+            return redirect('home')
         context = {'form': form, 'ver': ver,}
         return render(request, 'posts/post_form.html', context)
     def post(self, request, *args, **kwargs):
-        form = PostForm(request.POST)
-        ver = verification(request.POST)
-        if form.is_valid() and ver.is_valid():
-            new_post = form.save(commit=False)
-            new_post.content = request.POST.get('content').strip()
-            new_post.author = request.user
-            new_post.save()
-            new_post.create_tags()
+        if request.user.profile.debosited == True:
+            form = PostForm(request.POST)
+            ver = verification(request.POST)
+            if form.is_valid() and ver.is_valid():
+                new_post = form.save(commit=False)
+                new_post.content = request.POST.get('content').strip()
+                new_post.author = request.user
+                new_post.save()
+                new_post.create_tags()
+            else:
+                ver = verification()
+                content = request.POST.get('content')
+                messages.warning(request, 'Wrong Captcha!')
+                return render(request, 'posts/post_form.html', {'content': content, 'ver': ver,})
+            context = {'form': form, 'ver': ver,}
         else:
-            ver = verification()
-            content = request.POST.get('content')
-            messages.warning(request, 'Wrong Captcha!')
-            return render(request, 'posts/post_form.html', {'content': content, 'ver': ver,})
-        context = {'form': form, 'ver': ver,}
+            messages.warning(request, 'You Need To Deposit First')
+            return redirect('home')
         return redirect('post-detail', id=new_post.id)
 class PostDeleteView(LoginRequiredMixin, View):
     def get(self, request, id, *args, **kwargs):
-        post = Post.objects.get(id=id)
-        if post:
-            if request.user == post.author:
-                post.delete()
-                messages.success(request, 'Post Deleted!')
-                return redirect('home')
+        if request.user.profile.debosited == True:
+            post = Post.objects.get(id=id)
+            if post:
+                if request.user == post.author:
+                    post.delete()
+                    messages.success(request, 'Post Deleted!')
+                    return redirect('home')
+                else:
+                    return redirect('home')
             else:
                 return redirect('home')
         else:
+            messages.warning(request, 'You Need To Deposit First')
             return redirect('home')
 @login_required
 def settings(request):
@@ -219,18 +240,26 @@ class UserDetails(LoginRequiredMixin, View):
         return render(request, 'posts/user_details.html', context)
 class CommentDeleteView(LoginRequiredMixin, View):
     def get(self, request, id, *args, **kwargs):
-        comment = Comment.objects.get(id=id)
-        post = comment.post
-        if request.user == comment.author:
-            comment.delete()
+        if request.user.profile.debosited == True:
+            comment = Comment.objects.get(id=id)
+            post = comment.post
+            if request.user == comment.author:
+                comment.delete()
+        else:
+            messages.warning(request, 'You Need To Deposit First')
+            return redirect('home')
         return redirect('post-detail', id=post.id)
 class CommentEditView(LoginRequiredMixin, View):
     def post(self, request, id, *args, **kwargs):
-        comment = Comment.objects.get(id=id)
-        post = comment.post
-        if request.user == comment.author:
-            comment.content = request.POST.get('content')
-            comment.save()
+        if request.user.profile.debosited == True:
+            comment = Comment.objects.get(id=id)
+            post = comment.post
+            if request.user == comment.author:
+                comment.content = request.POST.get('content')
+                comment.save()
+        else:
+            messages.warning(request, 'You Need To Deposit First')
+            return redirect('home')
         return redirect('post-detail', id=post.id)
 class PostUpdateView(LoginRequiredMixin, View):
     def post(self, request, id, *args, **kwargs):
@@ -425,37 +454,53 @@ def AddFavourites(request, id):
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 class PostNotification(LoginRequiredMixin, View):
     def get(self, request, notification_id, post_id, *args, **kwargs):
-        notification = Notification.objects.get(id=notification_id)
-        post = Post.objects.get(id=post_id)
-        notification.user_has_seen = True
-        notification.save()
+        if request.user.profile.debosited == True:
+            notification = Notification.objects.get(id=notification_id)
+            post = Post.objects.get(id=post_id)
+            notification.user_has_seen = True
+            notification.save()
+        else:
+            messages.warning(request, 'You Need To Deposit First')
+            return redirect('home')
         return redirect('post-detail', id=post_id)
 class FollowNotification(LoginRequiredMixin, View):
     def get(self, request, notification_id, username, *args, **kwargs):
-        notification = Notification.objects.get(id=notification_id)
-        user = User.objects.get(username=username)
-        profile = user.profile
-        notification.user_has_seen = True
-        notification.save()
+        if request.user.profile.debosited == True:
+            notification = Notification.objects.get(id=notification_id)
+            user = User.objects.get(username=username)
+            profile = user.profile
+            notification.user_has_seen = True
+            notification.save()
+        else:
+            messages.warning(request, 'You Need To Deposit First')
+            return redirect('home')
         return redirect('profile', username=username)
 class RemoveNotification(LoginRequiredMixin, View):
     def get(self, request, notification_id, *args, **kwargs):
-        notification = Notification.objects.get(id=notification_id)
-        if notification.to_user == request.user:
-            notification.delete()
-        return redirect('notifications-list')
+        if request.user.profile.debosited == True:
+            notification = Notification.objects.get(id=notification_id)
+            if notification.to_user == request.user:
+                notification.delete()
+            return redirect('notifications-list')
+        else:
+            messages.warning(request, 'You Need To Deposit First')
+            return redirect('home')
 class ListNotifications(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        notifications = Notification.objects.filter(to_user=request.user)
-        page = request.GET.get('page', 1)
-        paginator = Paginator(notifications, 10)
-        try:
-            notifications_list = paginator.page(page)
-        except PageNotAnInteger:
-            notifications_list = paginator.page(1)
-        except EmptyPage:
-            notifications_list = paginator.page(paginator.num_pages)
-        notificationscount = notifications.count()
+        if request.user.profile.debosited == True:
+            notifications = Notification.objects.filter(to_user=request.user)
+            page = request.GET.get('page', 1)
+            paginator = Paginator(notifications, 10)
+            try:
+                notifications_list = paginator.page(page)
+            except PageNotAnInteger:
+                notifications_list = paginator.page(1)
+            except EmptyPage:
+                notifications_list = paginator.page(paginator.num_pages)
+            notificationscount = notifications.count()
+        else:
+            messages.warning(request, 'You Need To Deposit First')
+            return redirect('home')
         return render(request, "posts/notifications.html", {'notifications': notifications_list, 'notificationscount': notificationscount,})
 class AboutView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
@@ -521,13 +566,40 @@ class confirm_deposit(LoginRequiredMixin, View):
                 profile = request.user.profile
                 profile.debosited = True
                 profile.save()
-                transaction = Txs.objects.create(sender=request.user, amnt=float(amount), rec_addr=loc_addr)
+                transaction = Txs.objects.create(sender=request.user, amnt=float(amount), rec_addr=loc_addr, confs=check_conf_number(loc_addr, txhash, float(amount)), hash=txhash)
                 messages.success(request, '<a href=\'{% url \'continue-tx\' transaction.id %}\'>Transaction</a> Received, Your Account Is Activated! ')
-                return redirect('home')
+                return redirect('continue-tx', id=transaction.id)
             else:
-                transaction = Txs.objects.create(sender=request.user, amnt=float(amount), rec_addr=loc_addr)
+                transaction = Txs.objects.create(sender=request.user, amnt=float(amount), rec_addr=loc_addr, confs=check_conf_number(loc_addr, txhash, float(amount)), hash=txhash)
                 messages.warning(request, 'Amount Received, but waiting for at least 5 confirmations! check the transaction here: <a href=\'{% url \'continue-tx\' transaction.id %}\'>Transaction</a>')
-                return redirect('home')
+                return redirect('continue-tx', id=transaction.id)
         else:
             messages.warning(request, 'nothing received, try again')
         return render(request, 'posts/confirm_deposit.html')
+class check_deposit(LoginRequiredMixin, View):
+    def get(self, request, id, *args, **kwargs):
+        transaction = Txs.objects.filter(id=id)
+        if transaction.exists():
+            tx = Txs.objects.get(id=id)
+            if request.user == tx.sender:
+                tx.confs = check_conf_number(tx.rec_addr, tx.hash, tx.amnt)
+                tx.save()
+                if tx.confs >= 5:
+                    if request.user.profile.debosited == False:
+                        profile = request.user.profile
+                        profile.debosited = True
+                        profile.save()
+                    else:
+                        pass
+            else:
+                messages.warning(request, 'TX Doesn\'t Exist')
+                return redirect('home')    
+        else:
+            messages.warning(request, 'TX Doesn\'t Exist')
+            return redirect('home')
+        return render(request, 'posts/continue_tx.html', {'tx': tx,})
+class list_txs(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        transactions = Txs.objects.filter(sender=user)
+        return render(request, 'posts/list_txs.html', {'txs': transactions,})

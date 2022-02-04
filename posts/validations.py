@@ -31,6 +31,10 @@ def check_addr(addr):
         return False
     except:
         return True
+def check_conf_number(addr, hash, amnt):
+    tx = w.incoming(local_address=addr, unconfirmed=True, confirmed=True)
+    confs = w.confirmations(tx[0])
+    return confs
 def check_conf(addr, hash, amnt):
     tx = w.incoming(local_address=addr, unconfirmed=True, confirmed=True)
     confs = w.confirmations(tx[0])

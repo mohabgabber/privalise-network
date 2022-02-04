@@ -167,6 +167,9 @@
           <div class="alert alert-{{ message.tags }} content">{{ message }}</div>
         {% endfor %}
       {% endif %}
+      {% if request.user.profile.debosited == False %}
+      <div class="alert alert-warning content">Your Account Isn't Activated, Your Can't Enjoy The Platform, Please Activate It <a href="{% url 'complete-profile' %}">HERE</a></div>
+      {% endif %}
       <br/>
         {% block content %}
         {% endblock content %}
