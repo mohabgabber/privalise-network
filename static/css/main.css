@@ -24,6 +24,11 @@ html, body {
 	padding: 0;
 }
 
+.post img{
+	max-width: 100%;
+	height: auto;
+}
+
 .captcha-div {
 	display: block;
 }
