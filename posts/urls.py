@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import list_txs, confirm_deposit, profile_complete, check_deposit, factor_conf, factor_cancel, factor_done, CommentReply, AboutView, CommentEditView, AddLike, AddDislike, SearchResults, UserDetails, AddFavourites, RemoveNotification, ListNotifications, PostNotification, FollowNotification,  Search, AddCommentLike, AddCommentDislike, ProfileView, settings, AddFollower, RemoveFollower, PostListView, PostCreateView, PostDetailView, PostUpdateView, PostDeleteView, CommentDeleteView
+from .views import tip_user, list_txs, confirm_deposit, profile_complete, check_deposit, factor_conf, factor_cancel, factor_done, CommentReply, AboutView, CommentEditView, AddLike, AddDislike, SearchResults, UserDetails, AddFavourites, RemoveNotification, ListNotifications, PostNotification, FollowNotification,  Search, AddCommentLike, AddCommentDislike, ProfileView, settings, AddFollower, RemoveFollower, PostListView, PostCreateView, PostDetailView, PostUpdateView, PostDeleteView, CommentDeleteView
 urlpatterns = [
     path('', PostListView.as_view(), name='home'),
     path('complete/profile/', profile_complete.as_view(), name='complete-profile'),
@@ -20,6 +20,7 @@ urlpatterns = [
     path('post/add/comment/reply/<str:post_id>/<str:id>/', CommentReply.as_view(), name='comment-reply'),
     path('post/remove/like/<str:id>/', AddDislike.as_view(), name='add-dislike'),
     path('search/', Search.as_view(), name='search'),
+    path('tip/user/<str:username>', tip_user.as_view(), name='tip-user'),
     path('list/txs/', list_txs.as_view(), name='txs-list'),
     path('2fa/conf/', factor_conf.as_view(), name='2fa-conf'),
     path('2fa/conf/done/<str:username>/', factor_done.as_view(), name='2fa-done'),
