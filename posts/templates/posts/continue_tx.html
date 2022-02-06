@@ -24,7 +24,7 @@
       </div>
       <div class="input-group mb-3">
         <span class="input-group-text">To:</span>
-        <input type="text" placeholder="how much did you send" value="{{tx.rec_addr}}" class="form-control" required aria-label="Amount (In XMR)" required disabled readonl>
+        <input type="text" placeholder="how much did you send" value="{% if tx.types == 'TIP' %}{{tx.receiver}}{% else %}{{tx.rec_addr}}{% endif %}" class="form-control" required aria-label="Amount (In XMR)" required disabled readonl>
       </div>
 
       <div class="input-group mb-3">
@@ -32,14 +32,25 @@
         <input placeholder="the transaction hash" required disabled readonly type="text" class="form-control" value="{{tx.amnt}}" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
       </div>
       
+      {% if tx.types != 'TIP' %}
       <div class="input-group mb-3">
         <span class="input-group-text" id="inputGroup-sizing-default">Confirmations</span>
-        <input placeholder="the transaction hash" required disabled readonly type="text" class="form-control" value="{{tx.confs}}" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+        <input placeholder="the transaction hash" required disabled readonly type="text" class="form-control" value="{% if tx.types == 'TIP' %}INTERNAL{% else %}{{tx.confs}}{% endif %}" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
       </div>
 
       <div class="input-group mb-3">
         <span class="input-group-text" id="inputGroup-sizing-default">TX Hash</span>
         <input placeholder="the transaction hash" required disabled readonly type="text" class="form-control" value="{{tx.hash}}" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+      </div>
+      {% else %}
+      <div class="input-group mb-3">
+        <span class="input-group-text" id="inputGroup-sizing-default">Message</span>
+        <input placeholder="the transaction hash" required disabled readonly type="text" class="form-control" value="{{tx.message}}" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+      </div>
+      {% endif %}
+      <div class="input-group mb-3">
+        <span class="input-group-text" id="inputGroup-sizing-default">Type</span>
+        <input placeholder="the transaction hash" required disabled readonly type="text" class="form-control" value="{{tx.types}}" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
       </div>
       <div class="col-auto">
         <a href="{% url 'home' %}" class="btn btn-primary mb-3">Done!</a>

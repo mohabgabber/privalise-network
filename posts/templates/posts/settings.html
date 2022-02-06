@@ -3,78 +3,92 @@
 {% load static %}
 {% block title %}Edit Your Settings On Privalise!, Where Everything Is Awesome{% endblock title %}
 {% block content %}
-<div class='profile'>
-  <div class="picture-container" style="border-radius: ;">
-    <img class="profile-picture" src="{{ user.profile.image.url }}">
-  </div>
-  <h2 class='account-heading'>{{ user.username }}</h2>
-  <h2 class='text-secondary'>{{ profile.name }}</h2>
-  <p>{{ profile.bio }}</p>
-</div>
+
 <div class="mx-auto">
   <form method="POST" enctype='multipart/form-data' id='forms'>
 
     {% csrf_token %}
 
-    <label for="basic-url" class="form-label">User Settings</label>
+    <div class="container">
+      <div class="row">
+        <div class="col-sm">
+          <div class='profile' style="border: none; margin-bottom: 2%;">
+            <div class="picture-container" style="border-radius: ;">
+              <img class="profile-picture" src="{{ user.profile.image.url }}">
+            </div>
+            <h2 class='account-heading'>{{ user.username }}</h2>
+            <h2 class='text-secondary'>{{ profile.name }}</h2>
+            <p>{{ profile.bio }}</p>
+          </div>
 
-    <div class="input-group mb-3">
-      <span class="input-group-text" id="basic-addon2">Your Name</span>
-      <input type="text" value="{{request.user.profile.name}}" class="form-control" name="name" placeholder="Your Name!" aria-label="Recipient's username" aria-describedby="basic-addon2">
-    </div>
+          <label for="basic-url" class="form-label">User Settings</label>
 
-    <div class="input-group mb-3">
-      <span class="input-group-text" id="basic-addon3"><i class="fab fa-monero"></i></span>
-      <input type="text" class="user-select-all form-control" value="{{ request.user.profile.monero }}" name="monero" placeholder="Your Monero (XMR) Address" id="basic-url" aria-describedby="basic-addon3">
-    </div>
+          <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addon2">Your Name</span>
+            <input type="text" value="{{request.user.profile.name}}" class="form-control" name="name" placeholder="Your Name!" aria-label="Recipient's username" aria-describedby="basic-addon2">
+          </div>
 
-    <small>Square Images Recomended</small>
-    <div class="input-group mb-3">
-      <label class="input-group-text" for="inputGroupFile01"><i class="fas fa-portrait"></i></label>
-      <input type="file" class="form-control" id="inputGroupFile01" name="image">
-    </div>
+          <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addon3"><i class="fab fa-monero"></i></span>
+            <input type="text" class="user-select-all form-control" value="{{ request.user.profile.monero }}" name="monero" placeholder="Your Monero (XMR) Address" id="basic-url" aria-describedby="basic-addon3">
+          </div>
 
-    <div class="input-group">
-      <span class="input-group-text"><i class="fas fa-info"></i></span>
-      <textarea class="form-control" rows="10" aria-label="With textarea" name="bio" placeholder="Your bio">{{ request.user.profile.bio }}</textarea>
-    </div>
-    <br/>
-    
-    <label for="basic-url" class="form-label">Wallet Settings</label>
-    <div class="input-group mb-3" style="z-index: 1;">
-      {% if request.user.profile.debosited == True %}
-        <a class="btn btn-primary" style="width: 100%;" href="{% url 'txs-list' %}">Your Transactions History</a>
-      {% else %}
-        <a class="btn btn-danger" style="width: 100%;" href="{% url 'complete-profile' %}">Activate Your Account!</a>
-      {% endif %}
-    </div>
+          <small>Square Images Recomended</small>
+          <div class="input-group mb-3">
+            <label class="input-group-text" for="inputGroupFile01"><i class="fas fa-portrait"></i></label>
+            <input type="file" class="form-control" id="inputGroupFile01" name="image">
+          </div>
 
+          <div class="input-group">
+            <span class="input-group-text"><i class="fas fa-info"></i></span>
+            <textarea class="form-control" rows="10" aria-label="With textarea" name="bio" placeholder="Your bio">{{ request.user.profile.bio }}</textarea>
+          </div>
+          <br/>
+        </div>
+        <div class="col-sm">
+          <label for="basic-url" class="form-label">Wallet Settings</label>
+          <div class="input-group mb-3" style="z-index: 1;">
+            {% if request.user.profile.debosited == True %}
+              <a class="btn btn-primary" style="width: 100%;" href="{% url 'txs-list' %}">Your Transactions History</a>
+              <br/>
+              <input class="form-control" type="text" value="You Own {{wallet.balance}}" aria-label="You Own {{request.user.wallet.balance}}" disabled readonly>
+              {% else %}
+              <a class="btn btn-danger" style="width: 100%;" href="{% url 'complete-profile' %}">Your Wallet Is Deactivated Until You Activate Your Account!</a>
+            {% endif %}
+          </div>
+        </div>
+        
+        <div class="col-sm">
+          <label for="basic-url" class="form-label">Security Settings</label>
+          
+          <div class="input-group mb-3">
+            <span class="input-group-text"><i class="fas fa-comments"></i></span>
+            <input type="text" name="xmppusername" value="{{ request.user.profile.xmppusername }}" class="form-control" placeholder="Your Xmpp Username" aria-label="Username">
+            <span class="input-group-text">@</span>
+            <input type="text" name="xmppserver" class="form-control" value="{{ request.user.profile.xmppserver }}" placeholder="Server.domain" aria-label="Server">
+          </div>
+          
+          <div class="input-group mb-3" style="z-index: 1;">
+            {% if request.user.profile.factor_auth == True %}
+              <a class="btn btn-danger" style="width: 100%;" href="{% url '2fa-cancel' request.user.username %}">Disable 2FA</a>
+            {% else %}
+              <a class="btn btn-primary" style="width: 100%;" href="{% url '2fa-conf' %}">Enable 2FA!</a>
+            {% endif %}
+          </div>
 
-    <label for="basic-url" class="form-label">Security Settings</label>
-    
-    <div class="input-group mb-3">
-      <span class="input-group-text"><i class="fas fa-comments"></i></span>
-      <input type="text" name="xmppusername" value="{{ request.user.profile.xmppusername }}" class="form-control" placeholder="Your Xmpp Username" aria-label="Username">
-      <span class="input-group-text">@</span>
-      <input type="text" name="xmppserver" class="form-control" value="{{ request.user.profile.xmppserver }}" placeholder="Server.domain" aria-label="Server">
-    </div>
-    
-    <div class="input-group mb-3" style="z-index: 1;">
-      {% if request.user.profile.factor_auth == True %}
-        <a class="btn btn-danger" style="width: 100%;" href="{% url '2fa-cancel' request.user.username %}">Disable 2FA</a>
-      {% else %}
-        <a class="btn btn-primary" style="width: 100%;" href="{% url '2fa-conf' %}">Enable 2FA!</a>
-      {% endif %}
-    </div>
+          <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addon2"><i class="fas fa-fingerprint"></i></span>
+            <input type="text" value="{{request.user.profile.fingerprint}}" class="form-control" name="fingerprint" placeholder="PGP Fingerprint" aria-label="Recipient's username" aria-describedby="basic-addon2">
+          </div>
 
-    <div class="input-group mb-3">
-      <span class="input-group-text" id="basic-addon2"><i class="fas fa-fingerprint"></i></span>
-      <input type="text" value="{{request.user.profile.fingerprint}}" class="form-control" name="fingerprint" placeholder="PGP Fingerprint" aria-label="Recipient's username" aria-describedby="basic-addon2">
-    </div>
+          <div class="input-group">
+            <span class="input-group-text"><i class="fab fa-keycdn"></i></span>
+            <textarea class="form-control" cols="8" rows="12" aria-label="With textarea" name="public_key" placeholder="Your Public Key">{{ request.user.profile.public_key }}</textarea>
+          </div>
+        </div>
 
-    <div class="input-group">
-      <span class="input-group-text"><i class="fab fa-keycdn"></i></span>
-      <textarea class="form-control" cols="8" rows="12" aria-label="With textarea" name="public_key" placeholder="Your Public Key">{{ request.user.profile.public_key }}</textarea>
+      </div>
+      
     </div>
     <br/>
     <center>

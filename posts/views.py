@@ -5,7 +5,7 @@ from django.views import View
 from django.http import HttpResponseRedirect
 from django.contrib.auth.forms import UserCreationForm
 from .forms import ProfileUpdteForm, CommentForm, PostForm
-from mod.models import Txs
+from mod.models import Txs, Wallet
 from django.contrib import messages
 from django.db.models import Q
 from django.contrib.auth.models import User
@@ -231,7 +231,8 @@ def settings(request):
                 return redirect('profile-update')
     else:
         p_form = ProfileUpdteForm(instance=request.user.profile)
-    context = {'p_form': p_form,}
+    wallet = Wallet.objects.get(user=request.user)
+    context = {'p_form': p_form, 'wallet': wallet,}
     return render(request, 'posts/settings.html', context)
 class UserDetails(LoginRequiredMixin, View):
     def get(self, request, username, *args, **kwargs):
@@ -567,11 +568,13 @@ class confirm_deposit(LoginRequiredMixin, View):
                 profile.debosited = True
                 profile.save()
                 transaction = Txs.objects.create(sender=request.user, amnt=float(amount), rec_addr=loc_addr, confs=check_conf_number(loc_addr, txhash, float(amount)), hash=txhash)
-                messages.success(request, '<a href=\'{% url \'continue-tx\' transaction.id %}\'>Transaction</a> Received, Your Account Is Activated! ')
+                wallet = Wallet.objects.get(user=request.user)
+                wallet.balance += float(amount)
+                messages.success(request, 'Your Transaction, Is Received, Your Account Is Activated! ')
                 return redirect('continue-tx', id=transaction.id)
             else:
                 transaction = Txs.objects.create(sender=request.user, amnt=float(amount), rec_addr=loc_addr, confs=check_conf_number(loc_addr, txhash, float(amount)), hash=txhash)
-                messages.warning(request, 'Amount Received, but waiting for at least 5 confirmations! check the transaction here: <a href=\'{% url \'continue-tx\' transaction.id %}\'>Transaction</a>')
+                messages.warning(request, 'Amount Received, but waiting for at least 5 confirmations! check the transaction in your settings')
                 return redirect('continue-tx', id=transaction.id)
         else:
             messages.warning(request, 'nothing received, try again')
@@ -579,18 +582,28 @@ class confirm_deposit(LoginRequiredMixin, View):
 class check_deposit(LoginRequiredMixin, View):
     def get(self, request, id, *args, **kwargs):
         transaction = Txs.objects.filter(id=id)
+        wallets = Wallet.objects.get(user=request.user)
         if transaction.exists():
             tx = Txs.objects.get(id=id)
             if request.user == tx.sender:
-                tx.confs = check_conf_number(tx.rec_addr, tx.hash, tx.amnt)
-                tx.save()
+                if tx.types != 'TIP':
+                    tx.confs = check_conf_number(tx.rec_addr, tx.hash, tx.amnt)
+                    tx.save()
                 if tx.confs >= 5:
                     if request.user.profile.debosited == False:
                         profile = request.user.profile
                         profile.debosited = True
-                        profile.save()
+                        profile.save() 
+                        tx.types == 'deposit'
+                        tx.save()
                     else:
-                        pass
+                        pass 
+                    if Wallet.objects.filter(trx=tx, user=request.user).exists():
+                        pass 
+                    else: 
+                        wallets.balance += float(tx.amnt)
+                        wallets.trx.add(tx)
+                        wallets.save()
             else:
                 messages.warning(request, 'TX Doesn\'t Exist')
                 return redirect('home')    
@@ -602,4 +615,40 @@ class list_txs(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         user = request.user
         transactions = Txs.objects.filter(sender=user)
-        return render(request, 'posts/list_txs.html', {'txs': transactions,})
+        tips = Txs.objects.filter(receiver=user) 
+        wallet = Wallet.objects.get(user=user)
+        return render(request, 'posts/list_txs.html', {'txs': transactions, 'tips': tips, 'wallet': wallet,})
+class tip_user(LoginRequiredMixin, View):
+    def get(self, request, username, *args, **kwargs):
+        if User.objects.filter(username=username).exists():
+            return render(request, 'posts/tip_user.html', {'touser':username,})
+        else:
+            messages.warning(request, 'User Doesn\'t Exist')
+            return redirect('home')
+    def post(self, request, username, *args, **kwargs):
+        amount = float(request.POST.get('amnt'))
+        fromuser = request.user 
+        touser = User.objects.get(username=username)
+        fromwallet = Wallet.objects.get(user=request.user)
+        msg = request.POST.get('txmessage')
+        mes = False
+        if len(msg) > 2:
+            mes = True
+        if fromwallet.balance > amount:
+            if Wallet.objects.filter(user=touser).exists():
+                towallet =  Wallet.objects.get(user=touser)
+                fromwallet.balance -= amount 
+                towallet.balance += amount 
+                fromwallet.save()
+                towallet.save()
+                transaction = Txs.objects.create(confs=10, receiver=touser, sender=fromuser, amnt=amount, hash="INTERNAL", types='TIP', rec_addr='INTERNAL')
+                if mes == True:
+                    transaction.message = msg 
+                transaction.save()
+            else:
+                messages.warning(request, 'NONE Existent User')
+                return redirect('home')
+        else:
+            messages.warning(request, 'Insufficient Funds!, Please Deposit into your account or tip the user off platform')
+            return redirect('home')
+        return redirect('continue-tx', id=transaction.id)

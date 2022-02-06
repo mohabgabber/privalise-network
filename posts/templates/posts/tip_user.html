@@ -1,0 +1,41 @@
+{% extends 'posts/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block title %}Tip A User On Privalise!, Where Everything Is Awesome{% endblock title %}
+{% block content %}
+<div class="w-auto">
+  <form method="POST" enctype='multipart/form-data' id='forms'>
+
+    {% csrf_token %}
+    <div class="alert alert-warning content">
+      <h1>You Are Tipping A User, That's Amazing :D</h1>
+
+      <h5>You're Sending To:</h5>
+      <input class="form-control user-select-all" type="text" value="{{touser}}" name="touser" aria-label="Disabled input example" required disabled readonly>
+      <br/>
+      
+      <div class="input-group mb-3">
+        <span class="input-group-text">How Much Do You Wanna Send?</span>
+        <input type="text" placeholder="how much do you wanna send (XMR)" name="amnt" class="form-control" required aria-label="Amount (In XMR)">
+      </div>
+
+      <div class="input-group mb-3">
+        <span class="input-group-text" id="inputGroup-sizing-default">Do You Have A Message ;)?</span>
+        <input placeholder="Your Message" type="text" class="form-control" name="txmessage" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+      </div>
+
+      <!--<div class="form-check">
+        <input class="form-check-input" type="checkbox" name="anonymous" id="flexCheckDefault">
+        <label class="form-check-label" for="flexCheckDefault">
+          Do You Want It To Be Anonymous?
+        </label>
+      </div>--> 
+
+        <div class="col-auto">
+            <h4>This Cannot Be UNDONE!</h4>
+            <button type="submit" class="btn btn-primary mb-3">Send!</button>
+        </div>
+    </div>
+  </form>
+</div>       
+{% endblock content %} 
