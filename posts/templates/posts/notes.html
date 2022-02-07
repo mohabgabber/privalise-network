@@ -1,0 +1,28 @@
+{% extends 'posts/base.html' %}
+{% load post_extras %}
+{% block title %}Search Posts And Users On Privalise!, Where Everything Is Awesome{% endblock title %}
+{% block content %}
+<center>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="input-group mb-3" style="margin: 0 auto;">
+            <textarea class="form-control form-control-lg" placeholder="NOTE BODY" aria-label="Username" name="content"></textarea>
+            <button class="btn btn-primary" type="submit">Save <i class="fas fa-save"></i></button>
+        </div>
+    </form>
+</center>
+<div class="container">
+    <div class="row">
+        <div class="col-sm">
+            <center><h2>Your Notes <i class="fas fa-list-alt"></i></h2></center>
+            {% for note in notes %}
+                <div class="card bg-dark">
+                    <div class="card-body">
+                        <p class="card-text">{{note}}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

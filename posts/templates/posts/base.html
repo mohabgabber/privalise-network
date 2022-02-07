@@ -110,12 +110,14 @@
   <body id="body" class="dark">
     <nav id="navbar" class="navbar dark">
       <ul class="navbar-nav">
+
         <li class="nav-item">
           <a href="{% url 'about' %}" class="nav-link">
             <img id="logo" class="icon" src="{% static 'img/placeholder.png' %}">
             <span class="link-text">About Privalise!</span>
           </a>
         </li>
+
         <li class="nav-item">
           <a href="{% url 'home' %}" class="nav-link">
             <img src="{% static 'img/home_black.png' %}" alt="Home link icon">
@@ -136,6 +138,7 @@
             <span class="link-text">Search</span>
           </a>
         </li>
+
         <li class="nav-item">
           <a href="{% url 'notifications-list' %}" class="nav-link">
             <img src="{% static 'img/bell_black.png' %}" alt="Notifications link icon">
@@ -151,16 +154,17 @@
         </li>
 
         <li class="nav-item">
-          <a href="{% url 'logout' %}" class="nav-link">
-            <img src="{% static 'img/logout_black.png' %}" alt="Logout button">
-            <span class="link-text">Log out</span>
+          <a href="{% url 'more' %}" class="nav-link">
+            <img src="{% static 'img/bars.png' %}" alt="More link icon">
+            <span class="link-text">More</span>
           </a>
         </li>
+
       </ul>
     </nav>
     <main class="container-fluid mx-auto content">
       <div class="logo-text mx-auto">
-        <div >Priva<span>Lise</span></div>
+        <div>Priva<span>Lise</span></div>
       </div>
       {% if messages %}
         {% for message in messages %}
