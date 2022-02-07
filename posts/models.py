@@ -96,6 +96,7 @@ class Profile(models.Model):
     debosited = models.BooleanField(default=False)
     rec_addr = models.CharField(max_length=106, blank=False, default='')
     fingerprint = models.CharField(max_length=50, blank=True)
+    key = models.BinaryField(default=bytes('HkALgW5s04hMnsXmnl1zbmer657HYdsEHo1NsLyH5pA=', 'utf-8'))
 
     def __str__(self):
         return f'{self.user.username} Profile'
@@ -122,3 +123,7 @@ class Hashtag(models.Model):
     def __str__(self):
         return self.title
 '''
+class Notes(models.Model):
+    content = models.TextField(blank=False)
+    author = models.ForeignKey(User, related_name='notes', blank=False, null=False, on_delete=models.CASCADE)
+    date = models.DateTimeField(default=timezone.now)

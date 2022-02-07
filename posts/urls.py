@@ -1,7 +1,8 @@
 from django.urls import path
-from .views import tip_user, list_txs, confirm_deposit, profile_complete, check_deposit, factor_conf, factor_cancel, factor_done, CommentReply, AboutView, CommentEditView, AddLike, AddDislike, SearchResults, UserDetails, AddFavourites, RemoveNotification, ListNotifications, PostNotification, FollowNotification,  Search, AddCommentLike, AddCommentDislike, ProfileView, settings, AddFollower, RemoveFollower, PostListView, PostCreateView, PostDetailView, PostUpdateView, PostDeleteView, CommentDeleteView
+from .views import notes, more_view, tip_user, list_txs, confirm_deposit, profile_complete, check_deposit, factor_conf, factor_cancel, factor_done, CommentReply, AboutView, CommentEditView, AddLike, AddDislike, SearchResults, UserDetails, AddFavourites, RemoveNotification, ListNotifications, PostNotification, FollowNotification,  Search, AddCommentLike, AddCommentDislike, ProfileView, settings, AddFollower, RemoveFollower, PostListView, PostCreateView, PostDetailView, PostUpdateView, PostDeleteView, CommentDeleteView
 urlpatterns = [
     path('', PostListView.as_view(), name='home'),
+    path('notes/', notes.as_view(), name='notes'),
     path('complete/profile/', profile_complete.as_view(), name='complete-profile'),
     path('about/', AboutView.as_view(), name='about'),
     path('profile/details/<str:username>/', UserDetails.as_view(), name='user-details'),
@@ -22,6 +23,7 @@ urlpatterns = [
     path('search/', Search.as_view(), name='search'),
     path('tip/user/<str:username>', tip_user.as_view(), name='tip-user'),
     path('list/txs/', list_txs.as_view(), name='txs-list'),
+    path('more/', more_view.as_view(), name='more'),
     path('2fa/conf/', factor_conf.as_view(), name='2fa-conf'),
     path('2fa/conf/done/<str:username>/', factor_done.as_view(), name='2fa-done'),
     path('2fa/conf/cancel/<str:username>/', factor_cancel.as_view(), name='2fa-cancel'),

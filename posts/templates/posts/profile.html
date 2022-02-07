@@ -26,9 +26,10 @@
 		                <button type="submit" style="margin-left: 21px;"  class="btn btn-outline-danger">UnFollow</button>
 		            </form>
 	            {% endif %}
+				<a class="btn btn-outline-primary" href="{% url 'tip-user' user.username %}" style="margin-left: 8px;">TIP</a>
 	        {% endif %}
 	        <a href="#hashLink" style="margin-left: 8px; margin-right: 8px;" class="btn btn-outline-danger"><i class="fas fa-user-secret"></i></a>
-	        <a class="btn btn-outline-primary" href="{% url 'tip-user' user.username %}">TIP</a>
+	        
 		</div>
 	</div>
 </center>

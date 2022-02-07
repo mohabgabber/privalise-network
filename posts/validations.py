@@ -3,6 +3,8 @@ import os
 from monero.wallet import Wallet
 from decimal import Decimal
 from monero.address import address
+from cryptography.fernet import Fernet 
+
 c = gpg.Context()
 w = Wallet(port=28088)
 def create_addr():
@@ -56,3 +58,5 @@ def valid_addr(addr):
         return True
     except:
         return False
+def encrypt(text, user):
+    pass

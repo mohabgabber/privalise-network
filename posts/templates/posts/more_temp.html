@@ -1,0 +1,63 @@
+{% extends 'posts/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block title %}Complete Your Profile On Privalise!, Where Everything Is Awesome{% endblock title %}
+{% block content %}
+<div class="w-auto">
+    <center style="font-size: large;">More Stuff You Can Do <i class="fas fa-laugh-wink"></i></center>
+    <div class="container bg-dark">
+        <a style="text-decoration: inherit;" href="{% url 'txs-list' %}">
+            <div class="container-fluid" style="text-align: center; margin-bottom: 9px; padding: 10px;">
+                <div class="text-wrap text-break text-start">
+                    <i class="fab fa-monero"></i> Your Wallet ({{w.balance}} XMR) 
+                </div>
+            </div>
+        </a>	
+    </div>
+    <div class="container bg-dark">
+        <a style="text-decoration: inherit;" href="{% url 'notes' %}">
+            <div class="container-fluid" style="text-align: center; margin-bottom: 9px; padding: 10px;">
+                <div class="text-wrap text-break text-start">
+                    <i class="fas fa-sticky-note"></i>  Add & Read Your Notes
+                </div>
+            </div>
+        </a>	
+    </div>
+    <div class="container bg-dark">
+        <a style="text-decoration: inherit;" href="{% url 'profile' request.user.username %}">
+            <div class="container-fluid" style="text-align: center; margin-bottom: 9px; padding: 10px;">
+                <div class="text-wrap text-break text-start">
+                    <i class="fas fa-user-circle"></i> Your Profile
+                </div>
+            </div>
+        </a>	
+    </div>
+    <div class="container bg-dark">
+        <a style="text-decoration: inherit;" href="{% url 'profile-update' %}">
+            <div class="container-fluid" style="text-align: center; margin-bottom: 9px; padding: 10px;">
+                <div class="text-wrap text-break text-start">
+                    <i class="fas fa-cog"></i>  Your Settings
+                </div>
+            </div>
+        </a>	
+    </div>
+    <div class="container bg-dark">
+        <a style="text-decoration: inherit;" href="{% url 'about' %}">
+            <div class="container-fluid" style="text-align: center; margin-bottom: 9px; padding: 10px;">
+                <div class="text-wrap text-break text-start">
+                    <i class="fas fa-info-circle"></i> About Privalise
+                </div>
+            </div>
+        </a>	
+    </div>
+    <div class="container bg-dark">
+        <a style="text-decoration: inherit;" href="{% url 'logout' %}">
+            <div class="container-fluid" style="text-align: center; margin-bottom: 9px; padding: 10px;">
+                <div class="text-wrap text-break text-start">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </div>
+            </div>
+        </a>	
+    </div>
+</div>       
+{% endblock content %} 

@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Post, Comment, Profile, Notification, Tag, About
+from .models import Post, Comment, Profile, Notification, Tag, Notes
 from django.views import View
+from cryptography.fernet import Fernet
 from django.http import HttpResponseRedirect
 from django.contrib.auth.forms import UserCreationForm
 from .forms import ProfileUpdteForm, CommentForm, PostForm
@@ -652,3 +653,48 @@ class tip_user(LoginRequiredMixin, View):
             messages.warning(request, 'Insufficient Funds!, Please Deposit into your account or tip the user off platform')
             return redirect('home')
         return redirect('continue-tx', id=transaction.id)
+class more_view(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        w = Wallet.objects.get(user=request.user)
+        return render(request, 'posts/more_temp.html', {'w':w,})
+class notes(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        if request.user.profile.key == 'keeeey' or request.user.profile.key == 'key' or request.user.profile.key == b'HkALgW5s04hMnsXmnl1zbmer657HYdsEHo1NsLyH5pA=':
+            profile = request.user.profile 
+            profile.key = Fernet.generate_key()
+            profile.save()
+        try:
+            key = bytes(request.user.profile.key, 'utf-8')
+        except:
+            key = request.user.profile.key
+        try: 
+            request.COOKIES['symkey']
+        except:
+            response = render(request, 'posts/notes.html')
+            response.set_cookie('symkey', key.decode(), max_age=None)
+            messages.success(request, 'your key is set, you can add notes now')
+            return response 
+        notes = Notes.objects.filter(author=request.user)
+        notescontent = []
+        f = Fernet(key)
+        for note in notes:
+            clearcon = f.decrypt(bytes(note.content, 'utf-8'))
+            notescontent.append(clearcon.decode())
+        response = render(request, 'posts/notes.html', {'notes': notescontent,})
+        return response
+    def post(self, request, *args, **kwargs):
+        content = bytes(request.POST.get('content'), 'utf-8')
+        user = request.user 
+        try:
+            key = Fernet(request.COOKIES['symkey'])
+        except:
+            key = Fernet(bytes(request.COOKIES['symkey'], 'utf-8'))
+        encontent = key.encrypt(content)
+        Notes.objects.create(author=user, content=encontent.decode())
+        notes = Notes.objects.filter(author=request.user)
+        notescontent = []
+        for note in notes:
+            clearcon = key.decrypt(bytes(note.content, 'utf-8'))
+            notescontent.append(clearcon.decode())
+        response = render(request, 'posts/notes.html', {'notes': notescontent,})
+        return response
