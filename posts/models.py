@@ -124,6 +124,6 @@ class Hashtag(models.Model):
         return self.title
 '''
 class Notes(models.Model):
-    content = models.TextField(blank=False)
+    content = models.BinaryField(blank=False)
     author = models.ForeignKey(User, related_name='notes', blank=False, null=False, on_delete=models.CASCADE)
     date = models.DateTimeField(default=timezone.now)

@@ -59,30 +59,3 @@ def valid_addr(addr):
     except:
         return False
 
-
-import base64
-from cryptography.exceptions import AlreadyFinalized
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from rsa.key import PrivateKey
-def encryption_decryption(text, password, ed):
-    password_bytes = password.encode('utf-8')
-    salt = b"I\x84\xa0\x1bkg\xef,\x1b\xfb\xc9\xaf:\xb8'#\x92C0\xbaI\xab\xe6\x94^v+e\x96\xad\x1e\xccBg\xa1\xa2\x82\xe98HU\xb1v\x08\xb7\xea<\xc0\xb5\x0c\xc1\xaa\xea\xa4\xe9\xfb\xba\xc0A\xfd\x10\x99\x9d\x03"
-    kdf = PBKDF2HMAC(algorithm=hashes.SHA512(), length=32, salt=salt, iterations=10000, backend=default_backend())
-    key = kdf.derive(password_bytes)
-    nonce = b'\xaf\xfa\xed9\xb1\xd1\xc1N\xb1\x1c95'
-    aesgcm = AESGCM(key)
-    try:   
-        if ed == 'e':   
-            cipher_text_bytes = aesgcm.encrypt(nonce=nonce, data=text.encode('utf-8'), associated_data=None)
-            cipher_text = base64.urlsafe_b64encode(cipher_text_bytes)
-            return cipher_text
-        elif ed == 'd':
-            decrypted_cipher_text_bytes = aesgcm.decrypt(nonce=nonce, data=base64.urlsafe_b64decode(text), associated_data=None)
-            decrypted_cipher_text = decrypted_cipher_text_bytes.decode('utf-8')
-            return decrypted_cipher_text
-    except:
-        return False 
-

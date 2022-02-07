@@ -9,6 +9,10 @@ from .forms import ProfileUpdteForm, CommentForm, PostForm
 from mod.models import Txs, Wallet
 from django.contrib import messages
 from django.db.models import Q
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives import hashes
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -659,42 +663,27 @@ class more_view(LoginRequiredMixin, View):
         return render(request, 'posts/more_temp.html', {'w':w,})
 class notes(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        if request.user.profile.key == 'keeeey' or request.user.profile.key == 'key' or request.user.profile.key == b'HkALgW5s04hMnsXmnl1zbmer657HYdsEHo1NsLyH5pA=':
-            profile = request.user.profile 
-            profile.key = Fernet.generate_key()
-            profile.save()
-        try:
-            key = bytes(request.user.profile.key, 'utf-8')
-        except:
-            key = request.user.profile.key
-        try: 
-            request.COOKIES['symkey']
-        except:
-            response = render(request, 'posts/notes.html')
-            response.set_cookie('symkey', key.decode(), max_age=None)
-            messages.success(request, 'your key is set, you can add notes now')
-            return response 
-        notes = Notes.objects.filter(author=request.user)
+        key = request.COOKIES['key']
+        private_key = serialization.load_pem_private_key(request.user.profile.privatekey, password=key.encode('utf-8'),)
+        notes = Notes.objects.filter(author=request.user).order_by('-date')
         notescontent = []
-        f = Fernet(key)
         for note in notes:
-            clearcon = f.decrypt(bytes(note.content, 'utf-8'))
-            notescontent.append(clearcon.decode())
+            plaintext = private_key.decrypt(note.content, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
+            notescontent.append(plaintext.decode())
         response = render(request, 'posts/notes.html', {'notes': notescontent,})
         return response
     def post(self, request, *args, **kwargs):
         content = bytes(request.POST.get('content'), 'utf-8')
-        user = request.user 
-        try:
-            key = Fernet(request.COOKIES['symkey'])
-        except:
-            key = Fernet(bytes(request.COOKIES['symkey'], 'utf-8'))
-        encontent = key.encrypt(content)
-        Notes.objects.create(author=user, content=encontent.decode())
-        notes = Notes.objects.filter(author=request.user)
+        user = request.user
+        key = request.COOKIES['key']
+        private_key = serialization.load_pem_private_key(request.user.profile.privatekey, password=key.encode('utf-8'),)
+        public_key = private_key.public_key()
+        ciphertext = public_key.encrypt(content, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
+        Notes.objects.create(author=user, content=ciphertext)
+        notes = Notes.objects.filter(author=request.user).order_by('-date')
         notescontent = []
         for note in notes:
-            clearcon = key.decrypt(bytes(note.content, 'utf-8'))
-            notescontent.append(clearcon.decode())
+            plaintext = private_key.decrypt(note.content, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
+            notescontent.append(plaintext.decode())
         response = render(request, 'posts/notes.html', {'notes': notescontent,})
         return response
