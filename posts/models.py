@@ -96,8 +96,8 @@ class Profile(models.Model):
     debosited = models.BooleanField(default=False)
     rec_addr = models.CharField(max_length=106, blank=False, default='')
     fingerprint = models.CharField(max_length=50, blank=True)
-    key = models.BinaryField(default=bytes('HkALgW5s04hMnsXmnl1zbmer657HYdsEHo1NsLyH5pA=', 'utf-8'))
-
+    privatekey = models.BinaryField()
+    publickey = models.BinaryField()
     def __str__(self):
         return f'{self.user.username} Profile'
 class Tag(models.Model):

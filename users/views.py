@@ -6,6 +6,9 @@ from django.contrib.auth.models import User
 from django.views import View
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib import messages
+from posts.models import Profile
+from posts.validations import encryption_decryption
+import rsa
 import os
 from django.contrib.auth.mixins import LoginRequiredMixin
 import random
@@ -26,7 +29,16 @@ def register(request):
             username = form.cleaned_data.get('username')
             new_user = authenticate(username=form.cleaned_data['username'],password=form.cleaned_data['password1'],)
             login(request, new_user)
-            return redirect('complete-profile')
+            publickey, privatekey = rsa.newkeys(2048)
+            profile = request.user.profile  
+            profile.publickey = publickey
+            password = request.POST.get('password1')
+            profile.privatekey = encryption_decryption(str(privatekey), password, 'e')
+            profile.save()
+            response = redirect('complete-profile')
+            privkey = encryption_decryption(request.user.profile.privatekey, password, 'd')
+            response.set_cookie('key', privkey, max_age=None)
+            return response 
     else:
        form = UserRegister()
        ver = verification()
@@ -90,7 +102,10 @@ class Logintwo(View):
                     if login_user and ver.is_valid():
                         login(request, login_user)
                         messages.success(request, 'Logged In Successfully')
-                        return redirect('home')
+                        privkey = encryption_decryption(request.user.profile.privatekey, passwords, 'd')
+                        response = redirect('home')
+                        response.set_cookie('key', privkey, max_age=None)
+                        return response
                     else:
                         messages.warning(request, 'Incorrect Data')
                 else:
@@ -106,7 +121,12 @@ class Logintwo(View):
                 if login_user and ver.is_valid():
                     login(request, login_user)
                     messages.success(request, 'Logged In Successfully')
-                    return redirect('home')
+                    user = User.objects.get(username=usernames)
+                    profile = Profile.objects.get(user=user)
+                    privkey = encryption_decryption(profile.privatekey, passwords, 'd')
+                    response = redirect('home')
+                    response.set_cookie('key', privkey, max_age=None)
+                    return response
                 else:
                     messages.warning(request, 'Incorrect Data')
                 context = {
