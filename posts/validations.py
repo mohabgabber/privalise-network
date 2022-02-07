@@ -58,5 +58,4 @@ def valid_addr(addr):
         return True
     except:
         return False
-def encrypt(text, user):
-    pass
+
