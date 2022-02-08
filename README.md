@@ -20,7 +20,7 @@ it's also perfect as an onion service, bc the website doesn't have any js in it,
    * End-To-End Encryption For users Notes, Messages, Password.
    * We Completly Removed JavaScript
    * No Personal Info For Registration
-   * We Added A Mandatory 0.004 XMR Deposit For Every User To Combat Spam, Users Can Withdraw It If They Left The Platform
+   * We Added A Mandatory 0.004 XMR Deposit For Every User To Combat Spam, Users Can Withdraw It If They Leave The Platform
    * User-To-User Payments Using Monero
 ## The front-end
 The frontend is mostly made (like 90%) by [margual56](https://github.com/margual56)
