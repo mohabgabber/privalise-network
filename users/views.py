@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+import hashlib
 from .forms import UserRegister, verification
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization
@@ -31,16 +32,16 @@ def register(request):
             login(request, new_user)
             profile = request.user.profile  
             password = request.POST.get('password1')
-            hashpass = password.encode('utf-8')
+            hash = hashlib.sha512(password.encode('utf-8'))
             private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
             private_key_pass = password.encode('utf-8')
-            encrypted_pem_private_key = private_key.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, encryption_algorithm=serialization.BestAvailableEncryption(bytes(hashpass.hex(), 'utf-8')))
+            encrypted_pem_private_key = private_key.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, encryption_algorithm=serialization.BestAvailableEncryption(bytes(hash.hexdigest(), 'utf-8')))
             pem_public_key = private_key.public_key().public_bytes(encoding=serialization.Encoding.PEM, format=serialization.PublicFormat.SubjectPublicKeyInfo)
             profile.privatekey = encrypted_pem_private_key
             profile.publickey = pem_public_key
             profile.save()
             response = redirect('complete-profile')
-            response.set_cookie('key', hashpass.hex(), max_age=None)
+            response.set_cookie('key', hash.hexdigest(), max_age=None)
             return response 
     else:
        form = UserRegister()
@@ -106,8 +107,8 @@ class Logintwo(View):
                         login(request, login_user)
                         messages.success(request, 'Logged In Successfully')
                         response = redirect('home')
-                        hashpass = passwords.encode('utf-8')
-                        response.set_cookie('key', str(hashpass.hex()), max_age=None)
+                        hash = hashlib.sha512(passwords.encode('utf-8'))
+                        response.set_cookie('key', hash.hexdigest(), max_age=None)
                         return response
                     else:
                         messages.warning(request, 'Incorrect Data')
@@ -126,9 +127,9 @@ class Logintwo(View):
                     messages.success(request, 'Logged In Successfully')
                     user = User.objects.get(username=usernames)
                     profile = Profile.objects.get(user=user)
-                    hashpass = passwords.encode('utf-8')
+                    hash = hashlib.sha512(passwords.encode('utf-8'))
                     response = redirect('home')
-                    response.set_cookie('key', str(hashpass.hex()), max_age=None)
+                    response.set_cookie('key', hash.hexdigest(), max_age=None)
                     return response
                 else:
                     messages.warning(request, 'Incorrect Data')

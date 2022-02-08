@@ -9,38 +9,22 @@
         {% if tx.types == 'deposit' %}
             <div class="container alert alert-success content text-break text-wrap">
                 <div class="row">
-                    <div class="col-sm">TYPE:</div>
-                    <div class="col-sm">AMOUNT:</div> 
-                    <div class="col-sm">HASH:</div>
-                    <div class="col-sm">RECEIVING ADDRESS:</div>  
-                    <div class="col-sm">STATUS:</div>
-                    <div class="col-sm"></div>
-                </div>
-                <div class="row">
-                    <div class="col-sm">{{tx.types}}</div>
-                    <div class="col-sm">+{{tx.amnt}}</div> 
-                    <div class="col-sm">{{tx.hash}}</div>
-                    <div class="col-sm">{{tx.rec_addr}}</div>  
-                    <div class="col-sm">{% if tx.confs >= 5 %}COMPLETED{% else %}PENDING{% endif %}</div>
+                    <div class="col-sm">TYPE: {{tx.types}}</div>
+                    <div class="col-sm">AMOUNT: +{{tx.amnt}}</div> 
+                    <div class="col-sm">HASH: {{tx.hash}}</div>
+                    <div class="col-sm">RECEIVING ADDRESS: {{tx.rec_addr}}</div>  
+                    <div class="col-sm">STATUS: {% if tx.confs >= 5 %}COMPLETED{% else %}PENDING{% endif %}</div>
                     <div class="col-sm"><a class="btn btn-primary" href="{% url 'continue-tx' tx.id %}">OPEN</a></div>
                 </div>
             </div> 
         {% else %}
             <div class="container alert alert-success content text-break text-wrap">
                 <div class="row">
-                    <div class="col-sm">TYPE:</div>
-                    <div class="col-sm">AMOUNT:</div> 
-                    <div class="col-sm">HASH:</div>
-                    <div class="col-sm">RECEIVING ADDRESS:</div>  
-                    <div class="col-sm">STATUS:</div>
-                    <div class="col-sm"></div>
-                </div>
-                <div class="row">
-                    <div class="col-sm">{{tx.types}}</div>
-                    <div class="col-sm">+{{tx.amnt}}</div> 
-                    <div class="col-sm">{{tx.hash}}</div>
-                    <div class="col-sm">{{tx.rec_addr}}</div>  
-                    <div class="col-sm">{% if tx.confs >= 5 %}COMPLETED{% else %}PENDING{% endif %}</div>
+                    <div class="col-sm">TYPE: {{tx.types}}</div>
+                    <div class="col-sm">AMOUNT: +{{tx.amnt}}</div> 
+                    <div class="col-sm">HASH: {{tx.hash|truncatechars:25}}</div>
+                    <div class="col-sm">RECEIVING ADDRESS: {{tx.rec_addr|truncatechars:25}}</div>  
+                    <div class="col-sm">STATUS: {% if tx.confs >= 5 %}COMPLETED{% else %}PENDING{% endif %}</div>
                     <div class="col-sm"><a class="btn btn-primary" href="{% url 'continue-tx' tx.id %}">OPEN</a></div>
                 </div>
             </div>

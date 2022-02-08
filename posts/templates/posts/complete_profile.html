@@ -5,8 +5,6 @@
 {% block content %}
 <div class="w-auto">
   <form method="POST" action="{% url 'conf-deposit' addr %}" enctype='multipart/form-data' id='forms'>
-
-    {% csrf_token %}
     <div class="alert alert-success content text-break text-wrap">
       <h2 style="text-align: center;">Look At That You've An Account <i class="fas fa-joy"></i></h2>
       <h4 style="text-align: left;">here are some notes! <i class="fas fa-laugh-wink"></i></h4>

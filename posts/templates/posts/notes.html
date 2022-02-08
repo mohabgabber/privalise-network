@@ -6,23 +6,26 @@
     <form method="POST">
         {% csrf_token %}
         <div class="input-group mb-3" style="margin: 0 auto;">
-            <textarea class="form-control form-control-lg" placeholder="NOTE BODY" aria-label="Username" name="content"></textarea>
+            <textarea class="form-control form-control-lg" placeholder="NOTE BODY" cols="55" rows="6" aria-label="Username" name="content"></textarea>
             <button class="btn btn-primary" type="submit">Save <i class="fas fa-save"></i></button>
         </div>
     </form>
 </center>
 <div class="container">
     <div class="row">
-        <div class="col-sm">
-            <center><h2>Your Notes <i class="fas fa-list-alt"></i></h2></center>
-            {% for note in notes %}
-                <div class="card bg-dark">
+        <center><h2>Your End-To-End Encrypted Notes <i class="fas fa-list-alt"></i></h2></center>
+        {% for note in notes %}
+            <div class="col-sm">
+                <div class="card bg-dark" style="width: 18rem;">
                     <div class="card-body">
+                        <h5 class="card-title">@{{request.user.username}}</h5>
                         <p class="card-text">{{note}}</p>
+                        <a href="#" class="card-link">Open</a>
+                        <a href="#" class="card-link">Remove</a>
                     </div>
                 </div>
-            {% endfor %}
-        </div>
+            </div>
+        {% endfor %}
     </div>
 </div>
 {% endblock %}

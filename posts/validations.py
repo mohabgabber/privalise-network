@@ -20,9 +20,10 @@ def pay(addr, amnt):
 def receive(amnt, addr, hashes):
     incoming = w.incoming(local_address=addr, unconfirmed=True, confirmed=True)
     if float(amnt) >= 0.004:
-        if incoming[0] and float(incoming[0].amount) >= float(amnt) and incoming[0].transaction.hash == hashes and incoming[0].local_address == addr:
+        try:
+            inc = incoming[0] and float(incoming[0].amount) >= float(amnt) and incoming[0].transaction.hash == hashes and incoming[0].local_address == addr
             return True
-        else:
+        except:
             return False
     else:
         return False
