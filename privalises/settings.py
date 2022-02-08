@@ -1,6 +1,6 @@
 '''
 
-Privalise, A Secure Privacy Friendly Social Network
+Privalise, A Secure, Privacy-Friendly Social Network
 Copyright (C) 2022  Mohab Gabber
 
 This program is free software: you can redistribute it and/or modify
@@ -99,3 +99,4 @@ LOGIN_URL = 'login'
 SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 SESSION_COOKIE_HTTPONLY  = True
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5000000
+CSRF_COOKIE_HTTPONLY = True

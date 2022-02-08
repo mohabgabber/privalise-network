@@ -1,0 +1,14 @@
+{% extends 'posts/base.html' %}
+{% load post_extras %}
+{% block title %}Set Your Key On Privalise!, Where Everything Is Awesome{% endblock title %}
+{% block content %}
+<center>
+    <form method="POST" class="align-middle">
+        {% csrf_token %}
+        <div class="input-group mb-3" style="margin: 0 auto;">
+            <input type="password" class="form-control form-control-lg" placeholder="Please Type Your Password" aria-label="password" name="password">
+            <button class="btn btn-primary" type="submit">Submit <i class="fas fa-save"></i></button>
+        </div>
+    </form>
+</center>
+{% endblock %}

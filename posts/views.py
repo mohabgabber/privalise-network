@@ -6,7 +6,10 @@ from cryptography.fernet import Fernet
 from django.http import HttpResponseRedirect
 from django.contrib.auth.forms import UserCreationForm
 from .forms import ProfileUpdteForm, CommentForm, PostForm
+import hashlib
 from mod.models import Txs, Wallet
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 from django.contrib import messages
 from django.db.models import Q
 from cryptography.hazmat.primitives.asymmetric import rsa
@@ -149,7 +152,7 @@ class CommentReply(LoginRequiredMixin, View):
             return redirect('home')
         return redirect('post-detail', id=post_id)
 class PostCreateView(LoginRequiredMixin, View):
-    
+
     def get(self, request, *args, **kwargs):
         if request.user.profile.debosited == True:
             ver = verification()
@@ -285,7 +288,7 @@ class ProfileView(LoginRequiredMixin, View):
         user = User.objects.get(username=username)
         profile = user.profile
         posts = Post.objects.filter(author=user).order_by('-date_posted')
-        followers = profile.followers.all()    
+        followers = profile.followers.all()
         page = request.GET.get('page', 1)
         paginator = Paginator(posts, 20)
         try:
@@ -318,7 +321,7 @@ class RemoveFollower(LoginRequiredMixin, View):
         user = User.objects.get(username=username)
         profile = user.profile
         profile.followers.remove(request.user)
-        return redirect('profile', username=user.username)    
+        return redirect('profile', username=user.username)
 class Search(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         return render(request, 'posts/search.html')
@@ -328,7 +331,7 @@ class SearchResults(LoginRequiredMixin, View):
         profiles = Profile.objects.filter(Q(user__username__icontains=query))
         posts = Post.objects.filter(Q(content__icontains=query))
         comments = Comment.objects.filter(Q(content__icontains=query))
-        
+
         postspage = request.GET.get('posts', 1)
         postspaginator = Paginator(posts, 20)
         try:
@@ -337,7 +340,7 @@ class SearchResults(LoginRequiredMixin, View):
             post_list = postspaginator.page(1)
         except EmptyPage:
             post_list = postspaginator.page(postspaginator.num_pages)
-        
+
         commentspage = request.GET.get('comments', 1)
         commentspaginator = Paginator(comments, 20)
         try:
@@ -346,7 +349,7 @@ class SearchResults(LoginRequiredMixin, View):
             comment_list = commentspaginator.page(1)
         except EmptyPage:
             comment_list = commentspaginator.page(commentspaginator.num_pages)
-        
+
         profilespage = request.GET.get('profiles', 1)
         profilepaginator = Paginator(profiles, 20)
         try:
@@ -359,7 +362,7 @@ class SearchResults(LoginRequiredMixin, View):
         postscount = posts.count()
         profilescount = profiles.count()
         context = {'profilescount': profilescount, 'postscount': postscount, 'commentscount': commentscount,'profiles': profile_list, 'posts': post_list, 'comments': comment_list,}
-        return render(request, 'posts/search_results.html', context)    
+        return render(request, 'posts/search_results.html', context)
 class AddCommentLike(LoginRequiredMixin, View):
     def get(self, request, id, *args, **kwargs):
         comment = Comment.objects.get(id=id)
@@ -412,7 +415,7 @@ class AddLike(LoginRequiredMixin, View):
                 is_dislike = True
                 break
         if is_dislike:
-            post.dislikes.remove(request.user)  
+            post.dislikes.remove(request.user)
         is_like = False
         for like in post.likes.all():
             if like == request.user:
@@ -443,7 +446,7 @@ class AddDislike(LoginRequiredMixin, View):
             post.dislikes.add(request.user)
         if is_dislike:
             post.dislikes.remove(request.user)
-        return redirect('post-detail', id=id)        
+        return redirect('post-detail', id=id)
 @login_required
 def FavouritesList(request):
     new = Post.newmanager.filter(favourites=request.user)
@@ -535,32 +538,34 @@ class factor_cancel(LoginRequiredMixin, View):
             user.save()
             messages.success(request, "2FA Is Disabled")
         return redirect('home')
+
 class profile_complete(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         valid = valid_addr(request.user.profile.rec_addr)
-        if not valid: 
+        if not valid:
             monero_address = create_addr()
-            profile = request.user.profile 
+            profile = request.user.profile
             profile.rec_addr = monero_address[0]
             profile.save()
             context = {
                 'addr': profile.rec_addr,
             }
         else:
-            profile = request.user.profile             
+            profile = request.user.profile
             if check_addr(profile.rec_addr):
                 context = {
                     'addr': profile.rec_addr,
                 }
             else:
                 monero_address = create_addr()
-                profile = request.user.profile 
+                profile = request.user.profile
                 profile.rec_addr = monero_address[0]
                 profile.save()
                 context = {
                     'addr': profile.rec_addr,
                 }
         return render(request, 'posts/complete_profile.html', context)
+@method_decorator(csrf_exempt, name='dispatch')
 class confirm_deposit(LoginRequiredMixin, View):
     #def get(self, request, *args, **kwargs):
     def post(self, request, address, *args, **kwargs):
@@ -572,13 +577,13 @@ class confirm_deposit(LoginRequiredMixin, View):
                 profile = request.user.profile
                 profile.debosited = True
                 profile.save()
-                transaction = Txs.objects.create(sender=request.user, amnt=float(amount), rec_addr=loc_addr, confs=check_conf_number(loc_addr, txhash, float(amount)), hash=txhash)
+                transaction = Txs.objects.create(sender=request.user, amnt=float(amount), rec_addr=loc_addr, confs=check_conf_number(loc_addr, txhash, float(amount)), hash=txhash, types='deposit')
                 wallet = Wallet.objects.get(user=request.user)
                 wallet.balance += float(amount)
                 messages.success(request, 'Your Transaction, Is Received, Your Account Is Activated! ')
                 return redirect('continue-tx', id=transaction.id)
             else:
-                transaction = Txs.objects.create(sender=request.user, amnt=float(amount), rec_addr=loc_addr, confs=check_conf_number(loc_addr, txhash, float(amount)), hash=txhash)
+                transaction = Txs.objects.create(sender=request.user, amnt=float(amount), rec_addr=loc_addr, confs=check_conf_number(loc_addr, txhash, float(amount)), hash=txhash, types='deposit')
                 messages.warning(request, 'Amount Received, but waiting for at least 5 confirmations! check the transaction in your settings')
                 return redirect('continue-tx', id=transaction.id)
         else:
@@ -598,20 +603,20 @@ class check_deposit(LoginRequiredMixin, View):
                     if request.user.profile.debosited == False:
                         profile = request.user.profile
                         profile.debosited = True
-                        profile.save() 
+                        profile.save()
                         tx.types == 'deposit'
                         tx.save()
                     else:
-                        pass 
+                        pass
                     if Wallet.objects.filter(trx=tx, user=request.user).exists():
-                        pass 
-                    else: 
+                        pass
+                    else:
                         wallets.balance += float(tx.amnt)
                         wallets.trx.add(tx)
                         wallets.save()
             else:
                 messages.warning(request, 'TX Doesn\'t Exist')
-                return redirect('home')    
+                return redirect('home')
         else:
             messages.warning(request, 'TX Doesn\'t Exist')
             return redirect('home')
@@ -620,7 +625,7 @@ class list_txs(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         user = request.user
         transactions = Txs.objects.filter(sender=user)
-        tips = Txs.objects.filter(receiver=user) 
+        tips = Txs.objects.filter(receiver=user)
         wallet = Wallet.objects.get(user=user)
         return render(request, 'posts/list_txs.html', {'txs': transactions, 'tips': tips, 'wallet': wallet,})
 class tip_user(LoginRequiredMixin, View):
@@ -632,7 +637,7 @@ class tip_user(LoginRequiredMixin, View):
             return redirect('home')
     def post(self, request, username, *args, **kwargs):
         amount = float(request.POST.get('amnt'))
-        fromuser = request.user 
+        fromuser = request.user
         touser = User.objects.get(username=username)
         fromwallet = Wallet.objects.get(user=request.user)
         msg = request.POST.get('txmessage')
@@ -642,13 +647,13 @@ class tip_user(LoginRequiredMixin, View):
         if fromwallet.balance > amount:
             if Wallet.objects.filter(user=touser).exists():
                 towallet =  Wallet.objects.get(user=touser)
-                fromwallet.balance -= amount 
-                towallet.balance += amount 
+                fromwallet.balance -= amount
+                towallet.balance += amount
                 fromwallet.save()
                 towallet.save()
                 transaction = Txs.objects.create(confs=10, receiver=touser, sender=fromuser, amnt=amount, hash="INTERNAL", types='TIP', rec_addr='INTERNAL')
                 if mes == True:
-                    transaction.message = msg 
+                    transaction.message = msg
                 transaction.save()
             else:
                 messages.warning(request, 'NONE Existent User')
@@ -663,6 +668,10 @@ class more_view(LoginRequiredMixin, View):
         return render(request, 'posts/more_temp.html', {'w':w,})
 class notes(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
+        try:
+            request.COOKIES['key']
+        except:
+            return redirect('set-key')
         key = request.COOKIES['key']
         private_key = serialization.load_pem_private_key(request.user.profile.privatekey, password=key.encode('utf-8'),)
         notes = Notes.objects.filter(author=request.user).order_by('-date')
@@ -675,6 +684,10 @@ class notes(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         content = bytes(request.POST.get('content'), 'utf-8')
         user = request.user
+        try:
+            request.COOKIES['key']
+        except:
+            return redirect('set-key')
         key = request.COOKIES['key']
         private_key = serialization.load_pem_private_key(request.user.profile.privatekey, password=key.encode('utf-8'),)
         public_key = private_key.public_key()
@@ -682,8 +695,72 @@ class notes(LoginRequiredMixin, View):
         Notes.objects.create(author=user, content=ciphertext)
         notes = Notes.objects.filter(author=request.user).order_by('-date')
         notescontent = []
+        dates = []
         for note in notes:
             plaintext = private_key.decrypt(note.content, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
             notescontent.append(plaintext.decode())
-        response = render(request, 'posts/notes.html', {'notes': notescontent,})
+            dates.append(note.date)
+        response = render(request, 'posts/notes.html', {'notes': notescontent, 'dates': dates,})
         return response
+class del_note(LoginRequiredMixin, View):
+    def post(self, request, id, *args, **kwargs):
+        if Notes.objects.filter(id=id).exists():
+            note = Notes.objects.get(id=id)
+            if request.user == note.author:
+                note.delete()
+                messages.success(request, 'Note Deleted!')
+        return redirect('notes')
+class key_set(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        try:
+            request.COOKIES['key']
+            return redirect('notes')
+        except:
+            pass
+        return render(request, 'posts/set_key.html')
+    def post(self, request, *args, **kwargs):
+        try:
+            request.COOKIES['key']
+            return redirect('notes')
+        except:
+            pass
+        password = request.POST.get('password')
+        hash = hashlib.sha512(password.encode('utf-8'))
+        response = redirect('notes')
+        response.set_cookie('key', hash.hexdigest(), max_age=None)
+        messages.success(request, 'your key is set')
+        return response
+# class passwords(LoginRequiredMixin, View):
+#     def get(self, request, *args, **kwargs):
+#         try:
+#             request.COOKIES['key']
+#         except:
+#             return redirect('set-key-passwords')
+#         key = request.COOKIES['key']
+#         private_key = serialization.load_pem_private_key(request.user.profile.privatekey, password=key.encode('utf-8'),)
+#         notes = Notes.objects.filter(author=request.user).order_by('-date')
+#         notescontent = []
+#         for note in notes:
+#             plaintext = private_key.decrypt(note.content, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
+#             notescontent.append(plaintext.decode())
+#         response = render(request, 'posts/passwords.html', {'notes': notescontent,})
+#         return response
+#     def post(self, request, *args, **kwargs):
+#         content = bytes(request.POST.get('content'), 'utf-8')
+#         user = request.user
+#         try:
+#             request.COOKIES['key']
+#         except:
+#             return redirect('set-key-passwords')
+#         key = request.COOKIES['key']
+#         private_key = serialization.load_pem_private_key(request.user.profile.privatekey, password=key.encode('utf-8'),)
+#         public_key = private_key.public_key()
+#         ciphertext = public_key.encrypt(content, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
+#         Notes.objects.create(author=user, content=ciphertext)
+#         notes = Notes.objects.filter(author=request.user).order_by('-date')
+#         notescontent = []
+#         for note in notes:
+#             plaintext = private_key.decrypt(note.content, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
+#             notescontent.append(plaintext.decode())
+#         response = render(request, 'posts/passwords.html', {'notes': notescontent,})
+#         return response

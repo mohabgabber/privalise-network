@@ -4,7 +4,7 @@
 ## The Main Idea:
 Can you imagine a centralized, but privacy-respecting social network? One that is modern, easy to use, fast and provides security and protection for everyone. That is why we created PrivaLise!
 
-2 factor authentication via PGP, no associated personal information to hack... To Put It Simply: The Web App will not record anything about its users. <br/>
+2 factor authentication via PGP, monero integration, no associated personal information to hack... To Put It Simply: The Web App will not record anything about its users. <br/>
 We'll always avoid using any 3rd party software, such as google APIs, google analytics, any FAANG framework (React, Vue...), so rest assured that you will be totally anonymous :D
 
 it's also perfect as an onion service, bc the website doesn't have any js in it, so it can work in tor with the safest mode enabled.
@@ -24,7 +24,8 @@ The frontend is mostly made (like 90%) by [margual56](https://github.com/margual
   * Clone The Repository `git clone https://github.com/privalise-network.git && cd privalise-network`
   * Install Requirements `pip install -r requirements.txt`
   * you'll have to create a .env file in the root directory of the app, and specify `debug` and `secret_key`
-  * Let's Make Migrations And Migrate  `python manage.py makemigrations && python manage.py migrate`
+  * Let's Make Migrations And Migrate  `python manage.py makemigrations mod && python manage.py makemigrations posts && python manage.py makemigrations users && python manage.py migrate`
+  * you need to be running `monero-wallet-rpc` in the background in order for certain functionalities to work
   * Now Finally We Will Run The Server `python manage.py runserver`
   * NOTE: you need to download `gnupg` for 2 factor-authentication and some other functionalities to work
 
