@@ -19,7 +19,6 @@ pycryptodomex==3.14.0
 PyNaCl==1.4.0
 python-decouple==3.5
 requests==2.27.1
-rsa==4.8
 six==1.16.0
 sqlparse==0.4.2
 urllib3==1.26.8
