@@ -1,0 +1,30 @@
+{% extends 'posts/base.html' %}
+{% load post_extras %}
+{% block title %}Your Messages On Privalise!, Where Everything Is Awesome{% endblock title %}
+{% block content %}
+<center>
+    <form method="GET" action="">
+        <div class="input-group mb-3" style="margin: 0 auto;">
+            <input type="text" class="form-control form-control-lg" placeholder="Message Someone" aria-label="Username" name="username">
+            <button class="btn btn-primary" type="submit">Message</button>
+        </div>
+    </form>
+</center>
+<div class="container">
+    <div class="row">
+        <center><h2>Your End-To-End Encrypted Messages <i class="fas fa-inbox"></i></h2></center>
+        {% for msg in msgs %}
+            <div class="col-sm" style='margin-bottom:7px;'>
+                <div class="card bg-dark w-100" style="width: 18rem; margin-bottom: 4px;">
+                    <img src="{{ msg.received.profile.image.url }}" class="card-img-top" alt="...">
+                    <div class="card-body">
+                    <h5 class="card-title">@{{msg.received.username}}</h5>
+                    <p class="card-text">{{msg.received.profile.bio|slice:":120"}}</p>
+                    <a href="{% url 'profile' profile.user.username %}" class="btn btn-primary">Message</a>
+                    </div>
+                </div>
+            </div>
+              {% endfor %}
+    </div>
+</div>
+{% endblock %}

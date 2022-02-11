@@ -100,6 +100,14 @@ class Profile(models.Model):
     publickey = models.BinaryField()
     def __str__(self):
         return f'{self.user.username} Profile'
+class Message(models.Model):
+    id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
+    msg = models.BinaryField(null=False, blank=False)
+    date = models.DateTimeField(default=timezone.now)
+    to = models.ForeignKey(User, related_name='received', on_delete=models.CASCADE, blank=False, null=False)
+    res = models.CharField(max_length=5, blank=False, null=False)
+    author = models.ForeignKey(User, blank=False, null=False, related_name='sent', on_delete=models.CASCADE)
+
 class Tag(models.Model):
     name = models.CharField(max_length=255)
 class About(models.Model):

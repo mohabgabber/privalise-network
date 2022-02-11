@@ -1,0 +1,18 @@
+{% extends 'posts/base.html' %}
+{% load post_extras %}
+{% block title %}Your Messages On Privalise!, Where Everything Is Awesome{% endblock title %}
+{% block content %}
+<div class="overflow-scroll w-100">
+    {% for msg in msgs %}
+        {{msg}}
+    {% endfor %}
+    
+</div>
+<form method="POST" class="w-100">
+    {% csrf_token %}
+    <div class="input-group mb-3" style="margin: 0 auto;">
+        <input type="text" class="form-control form-control-lg" placeholder="Type Your Message" name="msgcontent">
+        <button class="btn btn-primary" type="submit"><i class="fas fa-paper-plane"></i></button>
+    </div>
+</form>
+{% endblock %}

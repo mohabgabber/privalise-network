@@ -154,6 +154,14 @@
         </li>
 
         <li class="nav-item">
+          <a href="{% url 'profile' request.user %}" class="nav-link">
+            <img src="{% static 'img/message_black.png' %}" alt="Profile link icon">
+            <span class="link-text">Messages</span>
+          </a>
+        </li>
+
+
+        <li class="nav-item">
           <a href="{% url 'more' %}" class="nav-link">
             <img src="{% static 'img/bars.png' %}" alt="More link icon">
             <span class="link-text">More</span>

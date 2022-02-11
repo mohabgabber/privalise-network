@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Post, Comment, Profile, Notification, Tag, Notes
+from .models import Post, Comment, Profile, Notification, Tag, Notes, Message
 from django.views import View
 from cryptography.fernet import Fernet
 from django.http import HttpResponseRedirect
@@ -733,37 +733,64 @@ class key_set(LoginRequiredMixin, View):
         response.set_cookie('key', hash.hexdigest(), max_age=None)
         messages.success(request, 'your key is set')
         return response
-# class passwords(LoginRequiredMixin, View):
-#     def get(self, request, *args, **kwargs):
-#         try:
-#             request.COOKIES['key']
-#         except:
-#             return redirect('set-key-passwords')
-#         key = request.COOKIES['key']
-#         private_key = serialization.load_pem_private_key(request.user.profile.privatekey, password=key.encode('utf-8'),)
-#         notes = Notes.objects.filter(author=request.user).order_by('-date')
-#         notescontent = []
-#         for note in notes:
-#             plaintext = private_key.decrypt(note.content, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
-#             notescontent.append(plaintext.decode())
-#         response = render(request, 'posts/passwords.html', {'notes': notescontent,})
-#         return response
-#     def post(self, request, *args, **kwargs):
-#         content = bytes(request.POST.get('content'), 'utf-8')
-#         user = request.user
-#         try:
-#             request.COOKIES['key']
-#         except:
-#             return redirect('set-key-passwords')
-#         key = request.COOKIES['key']
-#         private_key = serialization.load_pem_private_key(request.user.profile.privatekey, password=key.encode('utf-8'),)
-#         public_key = private_key.public_key()
-#         ciphertext = public_key.encrypt(content, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
-#         Notes.objects.create(author=user, content=ciphertext)
-#         notes = Notes.objects.filter(author=request.user).order_by('-date')
-#         notescontent = []
-#         for note in notes:
-#             plaintext = private_key.decrypt(note.content, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
-#             notescontent.append(plaintext.decode())
-#         response = render(request, 'posts/passwords.html', {'notes': notescontent,})
-#         return response
+class messages_list(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        mesgs = Message.objects.filter(author=request.user)
+        context = {'msgs': mesgs,}
+        return render(request, 'posts/messages_list.html', context)
+class messages(LoginRequiredMixin, View):
+    def get(self, request, touser, *args, **kwargs):
+        if User.objects.filter(username=touser).exists():
+            user = User.objects.get(username=touser)
+            msgs = Message.objects.filter(Q(to=request.user)|Q(author=request.user))
+            try:
+               key = request.COOKIES['key']
+            except:
+                return redirect('set-key')
+            private_key = serialization.load_pem_private_key(request.user.profile.privatekey, password=key.encode('utf-8'),)
+            messagescontent = []
+            for mess in msgs:
+                plaintext = private_key.decrypt(mess.msg, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
+                messagescontent.append(plaintext.decode())
+            context = {'msgs': messagescontent,}
+        else:
+            messages.warning(request, 'User Doesn\'t Exist')
+            return redirect('messages-list')
+        return render(request, 'posts/messages.html', context)
+    def post(self, request, touser, *args, **kwargs):
+        if User.objects.filter(username=touser).exists():
+            # CREATING MESSAGE
+            touser = User.objects.get(username=touser)
+            fromuser = request.user
+            try:
+                key = request.COOKIES['key']
+            except:
+                return redirect('set-key')
+
+            msg = bytes(request.POST.get('msgcontent'), 'utf-8').strip()
+            private_key = serialization.load_pem_private_key(request.user.profile.privatekey, password=key.encode('utf-8'),)
+            frompublic_key = serialization.load_pem_public_key(request.user.profile.publickey)
+            topublic_key = serialization.load_pem_public_key(touser.profile.publickey)
+
+            tociphertext = topublic_key.encrypt(msg, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
+            fromciphertext = frompublic_key.encrypt(msg, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
+            tocreate = Message.objects.create(author=fromuser, msg=tociphertext, to=touser, res='from')
+            fromcreate = Message.objects.create(author=fromuser, msg=fromciphertext, to=touser, res='to')
+            
+            if len(msg) > 420:
+                messages.warning(request, 'Please Do not write more than 420 characters')
+                return render(request, 'posts/messages.html', {'msgcontent': msg,})
+    
+            
+            # DECRYPTION
+            
+            msgs = Message.objects.filter(author=request.user, to=touser).order_by('date')
+            messagescontent = []
+            for msg in msgs:
+                plaintext = private_key.decrypt(msg.msg, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
+                messagescontent.append(plaintext.decode())
+            context = {'msgs': messagescontent,}
+        else:
+            messages.warning(request, 'User Doesn\'t Exist')
+            return redirect('messages-list')
+        return render(request, 'posts/messages.html', context)
