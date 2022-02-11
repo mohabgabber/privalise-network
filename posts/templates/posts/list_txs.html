@@ -4,49 +4,57 @@
 {% block title %}Complete Your Profile On Privalise!, Where Everything Is Awesome{% endblock title %}
 {% block content %}
 <div class="w-100">
-    <center style="font-size: large;">You Have {{wallet.balance}} <i class="fab fa-monero"></i></center>
+    <center style="font-size: large;">You Have {{wallet.balance}} <i class="fab fa-monero"></i><br/><br/>
+      <div class="container w-auto" style="margin-bottom:15px;">
+        <div class="col">
+          <a class="btn btn-primary" href="{% url 'complete-profile' %}">DEPOSIT</a>
+          <a class="btn btn-danger" href="{% url 'complete-profile' %}">WITDHRAW</a>
+
+        </div>
+      </div>
+    </center>
     {% for tx in txs %}
         {% if tx.types == 'deposit' %}
             <div class="container alert alert-success content text-break text-wrap">
                 <div class="row">
                     <div class="col-sm">TYPE: {{tx.types}}</div>
-                    <div class="col-sm">AMOUNT: +{{tx.amnt}}</div> 
+                    <div class="col-sm">AMOUNT: +{{tx.amnt}}</div>
                     <div class="col-sm">HASH: {{tx.hash}}</div>
-                    <div class="col-sm">RECEIVING ADDRESS: {{tx.rec_addr}}</div>  
-                    <div class="col-sm">STATUS: {% if tx.confs >= 5 %}COMPLETED{% else %}PENDING{% endif %}</div>
-                    <div class="col-sm"><a class="btn btn-primary" href="{% url 'continue-tx' tx.id %}">OPEN</a></div>
-                </div>
-            </div> 
-        {% else %}
-            <div class="container alert alert-success content text-break text-wrap">
-                <div class="row">
-                    <div class="col-sm">TYPE: {{tx.types}}</div>
-                    <div class="col-sm">AMOUNT: +{{tx.amnt}}</div> 
-                    <div class="col-sm">HASH: {{tx.hash|truncatechars:25}}</div>
-                    <div class="col-sm">RECEIVING ADDRESS: {{tx.rec_addr|truncatechars:25}}</div>  
+                    <div class="col-sm">RECEIVING ADDRESS: {{tx.rec_addr}}</div>
                     <div class="col-sm">STATUS: {% if tx.confs >= 5 %}COMPLETED{% else %}PENDING{% endif %}</div>
                     <div class="col-sm"><a class="btn btn-primary" href="{% url 'continue-tx' tx.id %}">OPEN</a></div>
                 </div>
             </div>
-        {% endif %}        
+        {% else %}
+            <div class="container alert alert-success content text-break text-wrap">
+                <div class="row">
+                    <div class="col-sm">TYPE: {{tx.types}}</div>
+                    <div class="col-sm">AMOUNT: +{{tx.amnt}}</div>
+                    <div class="col-sm">HASH: {{tx.hash|truncatechars:25}}</div>
+                    <div class="col-sm">RECEIVING ADDRESS: {{tx.rec_addr|truncatechars:25}}</div>
+                    <div class="col-sm">STATUS: {% if tx.confs >= 5 %}COMPLETED{% else %}PENDING{% endif %}</div>
+                    <div class="col-sm"><a class="btn btn-primary" href="{% url 'continue-tx' tx.id %}">OPEN</a></div>
+                </div>
+            </div>
+        {% endif %}
     {% endfor %}
     {% for tip in tips %}
         <div class="container alert alert-info content text-break text-wrap">
             <div class="row">
                 <div class="col-sm">TYPE:</div>
-                <div class="col-sm">AMOUNT:</div> 
+                <div class="col-sm">AMOUNT:</div>
                 <div class="col-sm">SENDER:</div>
                 <div class="col-sm">RECEIVING USER:</div>
                 <div class="col-sm"></div>
             </div>
             <div class="row">
                 <div class="col-sm">{{tip.types}}</div>
-                <div class="col-sm">+{{tip.amnt}}</div> 
+                <div class="col-sm">+{{tip.amnt}}</div>
                 <div class="col-sm">{{tip.sender}}</div>
-                <div class="col-sm">{{tip.receiver}}</div>  
+                <div class="col-sm">{{tip.receiver}}</div>
                 <div class="col-sm"><a class="btn btn-primary" href="{% url 'continue-tx' tx.id %}">OPEN</a></div>
             </div>
         </div>
     {% endfor %}
-</div>       
-{% endblock content %} 
+</div>
+{% endblock content %}
