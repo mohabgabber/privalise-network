@@ -16,13 +16,13 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/profile/page.css' %}">
     <title>{% block title %}{% endblock title %}</title>
     <style type="text/css">
-    
+
       #hashLink
       {
        display: none;
       }
 
-      #hashLink:target 
+      #hashLink:target
       {
        display: block;
       }
@@ -32,17 +32,17 @@
        display: none;
       }
 
-      #createapost:target 
+      #createapost:target
       {
        display: block;
       }
-    
+
       #sharepost
       {
        display: none;
       }
 
-      #sharepost:target 
+      #sharepost:target
       {
        display: block;
       }
@@ -52,7 +52,7 @@
        display: none;
       }
 
-      #editpost:target 
+      #editpost:target
       {
        display: block;
       }
@@ -62,18 +62,18 @@
        display: none;
       }
 
-      #confirmdeletepost:target 
+      #confirmdeletepost:target
       {
        display: block;
       }
 
-      .dropdown 
+      .dropdown
       {
         position: relative;
         display: inline-block;
       }
 
-      .dropdown-content 
+      .dropdown-content
       {
         display: none;
         position: absolute;
@@ -83,7 +83,7 @@
         z-index: 1;
       }
 
-      .dropdown-content a 
+      .dropdown-content a
       {
         color: black;
         padding: 12px 16px;
@@ -91,17 +91,17 @@
         display: block;
       }
 
-      .dropdown-content a:hover 
+      .dropdown-content a:hover
       {
         background-color: #f1f1f1
       }
 
-      .dropdown:hover .dropdown-content 
+      .dropdown:hover .dropdown-content
       {
         display: block;
       }
 
-      .dropdown:hover .dropbtn 
+      .dropdown:hover .dropbtn
       {
         background-color: #3e8e41;
       }
@@ -148,7 +148,7 @@
 
         <li class="nav-item">
           <a href="{% url 'profile' request.user %}" class="nav-link">
-            <img src="{% static 'img/user_black.png' %}" alt="Profile link icon"> 
+            <img src="{% static 'img/user_black.png' %}" alt="Profile link icon">
             <span class="link-text">Profile</span>
           </a>
         </li>
@@ -172,7 +172,7 @@
         {% endfor %}
       {% endif %}
       {% if request.user.profile.debosited == False %}
-      <div class="alert alert-warning content">Your Account Deactivated, You Won't Be Able Enjoy The Platform, Please Activate It <a href="{% url 'complete-profile' %}">HERE</a></div>
+      <div class="alert alert-warning content">Your Account Is Deactivated, You Won't Be Able Enjoy The Platform, Please Activate It <a href="{% url 'complete-profile' %}">HERE</a></div>
       {% endif %}
       <br/>
         {% block content %}

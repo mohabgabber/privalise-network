@@ -6,7 +6,11 @@
     <form method="POST">
         {% csrf_token %}
         <div class="input-group mb-3" style="margin: 0 auto;">
-            <textarea class="form-control form-control-lg" placeholder="NOTE BODY" cols="55" rows="6" aria-label="Username" name="content"></textarea>
+          {% if content %}
+            <textarea class="form-control form-control-lg" placeholder="NOTE BODY (420 Characters MAX)" cols="55" rows="6" aria-label="Username" name="content">{{content}}</textarea>
+          {% else %}
+            <textarea class="form-control form-control-lg" placeholder="NOTE BODY (420 Characters MAX)" cols="55" rows="6" aria-label="Username" name="content"></textarea>
+          {% endif %}
             <button class="btn btn-primary" type="submit">Save <i class="fas fa-save"></i></button>
         </div>
     </form>
@@ -15,7 +19,7 @@
     <div class="row">
         <center><h2>Your End-To-End Encrypted Notes <i class="fas fa-list-alt"></i></h2></center>
         {% for note in notes %}
-            <div class="col-sm">
+            <div class="col-sm" style='margin-bottom:7px;'>
                 <div class="card bg-dark" style="width: 18rem;">
                     <div class="card-body">
                         <h5 class="card-title">@{{request.user.username}}</h5>

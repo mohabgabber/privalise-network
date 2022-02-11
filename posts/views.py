@@ -682,7 +682,10 @@ class notes(LoginRequiredMixin, View):
         response = render(request, 'posts/notes.html', {'notes': notescontent,})
         return response
     def post(self, request, *args, **kwargs):
-        content = bytes(request.POST.get('content'), 'utf-8')
+        content = bytes(request.POST.get('content'), 'utf-8').strip()
+        if len(content) > 420:
+            messages.warning(request, 'Please Do not write more than 420 characters')
+            return render(request, 'posts/notes.html', {'content': content,})
         user = request.user
         try:
             request.COOKIES['key']
@@ -700,7 +703,7 @@ class notes(LoginRequiredMixin, View):
             plaintext = private_key.decrypt(note.content, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
             notescontent.append(plaintext.decode())
             dates.append(note.date)
-        response = render(request, 'posts/notes.html', {'notes': notescontent, 'dates': dates,})
+        response = render(request, 'posts/notes.html', {'notes': notescontent,})
         return response
 class del_note(LoginRequiredMixin, View):
     def post(self, request, id, *args, **kwargs):
