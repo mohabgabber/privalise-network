@@ -9,7 +9,9 @@ We don't use any 3rd party software, such as google APIs, google analytics, any 
 ## The Technology Behind It:
    * Python 3.10
    * Django 4
-   * Pure HTML/CSS
+   * Bootstrap 5
+   * Jsencrypt
+   * Forge
 
 ## Main Features:
    Privalise has your normal social-media feature (i.e. likes/dislikes, follow/unfollow, comments/replies, posting) but we've added a lot of other Privacy-Focused features, Like:
