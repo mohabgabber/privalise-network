@@ -16,15 +16,15 @@
         {% for msg in msgs %}
             <div class="col-sm" style='margin-bottom:7px;'>
                 <div class="card bg-dark w-100" style="width: 18rem; margin-bottom: 4px;">
-                    <img src="{{ msg.received.profile.image.url }}" class="card-img-top" alt="...">
+                    <img src="{{ msg.to.profile.image.url }}" class="card-img-top" alt="...">
                     <div class="card-body">
-                    <h5 class="card-title">@{{msg.received.username}}</h5>
-                    <p class="card-text">{{msg.received.profile.bio|slice:":120"}}</p>
-                    <a href="{% url 'profile' profile.user.username %}" class="btn btn-primary">Message</a>
+                    <h5 class="card-title">@{{msg.to.username}}</h5>
+                    <p class="card-text">{{msg.to.profile.bio|slice:":120"}}</p>
+                    <a href="{% url 'messages' msg.to.username %}" class="btn btn-primary">Message</a>
                     </div>
                 </div>
             </div>
-              {% endfor %}
+        {% endfor %}
     </div>
 </div>
 {% endblock %}

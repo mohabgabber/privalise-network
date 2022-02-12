@@ -1,20 +1,91 @@
-{% extends 'users/base.html' %}
-{% block title %}Register On Privalise{% endblock title %}
-{% block content %}
-<div class="w-auto content">
-	<form method="POST" class="form-inputs" style="margin: 0">
-		<div style="color:white;">
-			<div>	
-				{% csrf_token %}
-				<input id="id_username" style="color: white;" class="textinput textInput form-control" placeholder="Username" type="text" name="username" autofocus="" autocapitalize="none" maxlength="150" required=""/>
-				<input id="id_password" style="color: white;" class="textinput textInput form-control" placeholder="Choose A Password" type="password" name="password1" required />
-				<input id="id_password" style="color: white;" class="textinput textInput form-control" placeholder="Confirm Password" type="password" name="password2" required />
-                {{ver.captcha}}
-				<button type="submit" class="btn btn-outline-info">Register</button>
-				<h3>  Already Have An Account? <a href="{% url 'login' %}" style="color: cyan;">Login</a></h3>
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="author" content="Kodinger">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>Login To Privalise</title>
+	<link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+	<link rel="stylesheet" href="{% static 'css/captcha.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/login/my-login.css' %}">
+	<link rel="stylesheet" href="{% static 'css/all.css' %}">
+</head>
+
+<body class="my-login-page bg-dark">
+	<script src="{% static 'js/jsencrypt.min.js' %}"></script>
+	<script src="{% static 'js/jquery.min.js' %}"></script>
+	<script src="{% static 'js/forge.min.js' %}"></script>
+	<script type="text/javascript">
+		$(function() {
+			$('#signup').click(function() {
+				var encrypt = new JSEncrypt();
+				var crypt = new JSEncrypt({default_key_size: 2048});
+				var PublicPrivateKey = {PublicKey: crypt.getPublicKey(), PrivateKey:crypt.getPrivateKey()};
+				document.getElementById('pubkey').value = PublicPrivateKey.PublicKey;
+				document.getElementById('privkey').value = PublicPrivateKey.PrivateKey;
+				forge.options.usePureJavaScript = true;
+				var md = forge.md.sha512.create();
+				md.update(document.getElementById('password1'));
+				document.cookie = "key=" + md.digest().toHex() + "; path=/;";
+			});
+		});
+	</script>
+	<section class="h-100">
+		<div class="container h-100">
+			<div class="row justify-content-md-center h-100">
+				<div class="card-wrapper">
+					<div class="brand">
+						<img src="{% static 'img/placeholder.png' %}" alt="logo">
+					</div>
+					{% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} content">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+					<div class="card fat">
+						<div class="card-body">
+							<h4 class="card-title">Register To Privalise</h4>
+							<form method="POST" class="my-login-validation" novalidate="">
+								{% csrf_token %}
+								<div class="form-group mb-2">
+									<label for="username">Username <i class="far fa-user"></i></label>
+									<input id="username" type="text" placeholder="Your Username" class="form-control" name="username" value="" required autofocus>
+								</div>
+								<div class="form-group mb-2">
+									<label for="password">Password <i class="fas fa-user-shield"></i></label>
+									<input id="password" type="password" placeholder="Your Password" class="form-control" name="password1" value="" required>
+								</div>
+								<div class="form-group mb-2">
+									<label for="confpass">Confirm Password <i class="fas fa-user-shield"></i></label>
+									<input id="confpass" type="password" placeholder="Confirm Your Password" class="form-control" name="password2" value="" required>
+								</div>
+								<input id="pubkey" type="hidden" value="" name="publickey">
+								<input id="privkey" type="hidden" value="" name="privatekey">
+								<div class="form-group mb-2 img-thumbnail captcha">
+									{{ver.captcha}}
+								</div>
+
+								<div class="form-group m-0">
+									<button type="submit" id="signup" style="margin-top: 6px;" class="btn btn-primary btn-block">
+										Signup
+									</button>
+								</div>
+								<div class="mt-4 text-center">
+									Already have an account? <a href="{% url 'login' %}" class="btn btn-outline-primary">Login Already</a>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
 			</div>
-			<br>
 		</div>
-	</form>
-</div>
-{% endblock content %}
+	</section>
+	<script>
+		document.getElementsByName('captcha_1')[0].placeholder = "Verify You're A Human";
+	</script>
+	<script src="{% static 'js/jquery.min.js' %}"></script>
+	<script src="{% static 'js/bootstrap.bundle.js' %}"></script>
+	<script src="{% static 'js/my-login.js' %}"></script>
+</body>
+</html>

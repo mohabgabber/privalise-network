@@ -27,21 +27,17 @@ def register(request):
             except:
                 messages.warning(request, f'there is an error')
                 return render(request, 'users/register.html', {"form": form})
-            username = form.cleaned_data.get('username')
             new_user = authenticate(username=form.cleaned_data['username'],password=form.cleaned_data['password1'],)
             login(request, new_user)
             profile = request.user.profile
-            password = request.POST.get('password1')
+            password = form.cleaned_data['password1']
             hash = hashlib.sha512(password.encode('utf-8'))
-            private_key = rsa.generate_private_key(public_exponent=65537, key_size=4096)
-            private_key_pass = password.encode('utf-8')
-            encrypted_pem_private_key = private_key.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, encryption_algorithm=serialization.BestAvailableEncryption(bytes(hash.hexdigest(), 'utf-8')))
-            pem_public_key = private_key.public_key().public_bytes(encoding=serialization.Encoding.PEM, format=serialization.PublicFormat.SubjectPublicKeyInfo)
-            profile.privatekey = encrypted_pem_private_key
-            profile.publickey = pem_public_key
+            privikey = serialization.load_pem_private_key(bytes(request.POST.get('privatekey'), 'utf-8'), password=None)
+            privatekeys = privikey.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, encryption_algorithm=serialization.BestAvailableEncryption(bytes(hash.hexdigest(), 'utf-8')))
+            profile.privatekey = privatekeys 
+            profile.publickey = request.POST.get('publickey')
             profile.save()
             response = redirect('complete-profile')
-            response.set_cookie('key', hash.hexdigest(), max_age=None)
             return response
     else:
        form = UserRegister()

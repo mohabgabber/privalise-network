@@ -141,8 +141,13 @@
 
         <li class="nav-item">
           <a href="{% url 'notifications-list' %}" class="nav-link">
-            <img src="{% static 'img/bell_black.png' %}" alt="Notifications link icon">
-            <span class="link-text">{{request.user.notifications.count}} Notifications</span>
+              <div class="position-relative"><img src="{% static 'img/bell_black.png' %}" alt="Notifications link icon"><span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                {{request.user.notification_to.count}}
+                <span class="visually-hidden">unread notifications</span>
+              </span>
+            </div>
+
+            <span class="link-text">Notifications</span>
           </a>
         </li>
 
@@ -154,7 +159,7 @@
         </li>
 
         <li class="nav-item">
-          <a href="{% url 'profile' request.user %}" class="nav-link">
+          <a href="{% url 'messages-list' %}" class="nav-link">
             <img src="{% static 'img/message_black.png' %}" alt="Profile link icon">
             <span class="link-text">Messages</span>
           </a>
@@ -186,5 +191,6 @@
         {% block content %}
         {% endblock content %}
     </main>
+    <script src="{% static 'js/bootstrap.bundle.js' %}"></script>
   </body>
 </html>

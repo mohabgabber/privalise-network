@@ -10,7 +10,6 @@ import hashlib
 from mod.models import Txs, Wallet
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-from django.contrib import messages
 from django.db.models import Q
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import serialization
@@ -25,6 +24,7 @@ from users.forms import verification
 from django.urls import reverse_lazy
 from django.http import HttpResponse
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.contrib import messages
 class PostListView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         logged_in_user = request.user
@@ -42,7 +42,6 @@ class PostListView(LoginRequiredMixin, View):
         #form = PostForm()
         context = {'posts': post_list, 'postscount': postscount, 'ver': ver,}
         response = render(request, 'posts/post_list.html', context)
-        response.set_cookie('admin', 'True', 5)
         return response
 class PostDetailView(LoginRequiredMixin, View):
     def get(self, request, id, *args, **kwargs):
@@ -94,7 +93,7 @@ class PostDetailView(LoginRequiredMixin, View):
                 ver = verification()
                 valid = False
                 comment_content = request.POST.get('content')
-                messages.warning(request, 'Wrong Captcha!')
+                ms.warning(request, 'Wrong Captcha!')
             comments = Comment.objects.filter(post=post)
             commentcount = 0
             for comment in comments:
@@ -507,6 +506,9 @@ class ListNotifications(LoginRequiredMixin, View):
             except EmptyPage:
                 notifications_list = paginator.page(paginator.num_pages)
             notificationscount = notifications.count()
+            for notification in notifications:
+                notification.user_has_seen = True 
+                notification.save()
         else:
             messages.warning(request, 'You Need To Deposit First')
             return redirect('home')
@@ -673,37 +675,26 @@ class notes(LoginRequiredMixin, View):
         except:
             return redirect('set-key')
         key = request.COOKIES['key']
-        private_key = serialization.load_pem_private_key(request.user.profile.privatekey, password=key.encode('utf-8'),)
+        private_key = serialization.load_pem_private_key(bytes(request.user.profile.privatekey, 'utf-8'), password=None)
         notes = Notes.objects.filter(author=request.user).order_by('-date')
-        notescontent = []
-        for note in notes:
-            plaintext = private_key.decrypt(note.content, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
-            notescontent.append(plaintext.decode())
-        response = render(request, 'posts/notes.html', {'notes': notescontent,})
+        response = render(request, 'posts/notes.html')
         return response
     def post(self, request, *args, **kwargs):
         content = bytes(request.POST.get('content'), 'utf-8').strip()
         if len(content) > 420:
             messages.warning(request, 'Please Do not write more than 420 characters')
             return render(request, 'posts/notes.html', {'content': content,})
-        user = request.user
         try:
             request.COOKIES['key']
         except:
             return redirect('set-key')
         key = request.COOKIES['key']
-        private_key = serialization.load_pem_private_key(request.user.profile.privatekey, password=key.encode('utf-8'),)
+        private_key = serialization.load_pem_private_key(bytes(request.user.profile.privatekey, 'utf-8'), password=None)
         public_key = private_key.public_key()
         ciphertext = public_key.encrypt(content, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
-        Notes.objects.create(author=user, content=ciphertext)
+        Notes.objects.create(author=request.user, content=ciphertext)
         notes = Notes.objects.filter(author=request.user).order_by('-date')
-        notescontent = []
-        dates = []
-        for note in notes:
-            plaintext = private_key.decrypt(note.content, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
-            notescontent.append(plaintext.decode())
-            dates.append(note.date)
-        response = render(request, 'posts/notes.html', {'notes': notescontent,})
+        response = render(request, 'posts/notes.html')
         return response
 class del_note(LoginRequiredMixin, View):
     def post(self, request, id, *args, **kwargs):
@@ -731,14 +722,14 @@ class key_set(LoginRequiredMixin, View):
         hash = hashlib.sha512(password.encode('utf-8'))
         response = redirect('notes')
         response.set_cookie('key', hash.hexdigest(), max_age=None)
-        messages.success(request, 'your key is set')
+       # messages.success(request, 'your key is set')
         return response
 class messages_list(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        mesgs = Message.objects.filter(author=request.user)
+        mesgs = Message.objects.filter(Q(to=request.user)|Q(author=request.user))
         context = {'msgs': mesgs,}
         return render(request, 'posts/messages_list.html', context)
-class messages(LoginRequiredMixin, View):
+class messages_view(LoginRequiredMixin, View):
     def get(self, request, touser, *args, **kwargs):
         if User.objects.filter(username=touser).exists():
             user = User.objects.get(username=touser)
@@ -747,12 +738,7 @@ class messages(LoginRequiredMixin, View):
                key = request.COOKIES['key']
             except:
                 return redirect('set-key')
-            private_key = serialization.load_pem_private_key(request.user.profile.privatekey, password=key.encode('utf-8'),)
-            messagescontent = []
-            for mess in msgs:
-                plaintext = private_key.decrypt(mess.msg, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
-                messagescontent.append(plaintext.decode())
-            context = {'msgs': messagescontent,}
+            context = {'msgs': msgs, 'key': str(seriprivkey.decode()),}
         else:
             messages.warning(request, 'User Doesn\'t Exist')
             return redirect('messages-list')
@@ -766,31 +752,18 @@ class messages(LoginRequiredMixin, View):
                 key = request.COOKIES['key']
             except:
                 return redirect('set-key')
-
             msg = bytes(request.POST.get('msgcontent'), 'utf-8').strip()
+            if len(msg) > 420:
+                messages.warning(request, 'Please Do not write more than 420 characters')
+                return render(request, 'posts/messages.html', {'msgcontent': msg,})
             private_key = serialization.load_pem_private_key(request.user.profile.privatekey, password=key.encode('utf-8'),)
             frompublic_key = serialization.load_pem_public_key(request.user.profile.publickey)
             topublic_key = serialization.load_pem_public_key(touser.profile.publickey)
-
             tociphertext = topublic_key.encrypt(msg, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
             fromciphertext = frompublic_key.encrypt(msg, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
             tocreate = Message.objects.create(author=fromuser, msg=tociphertext, to=touser, res='from')
             fromcreate = Message.objects.create(author=fromuser, msg=fromciphertext, to=touser, res='to')
-            
-            if len(msg) > 420:
-                messages.warning(request, 'Please Do not write more than 420 characters')
-                return render(request, 'posts/messages.html', {'msgcontent': msg,})
-    
-            
-            # DECRYPTION
-            
-            msgs = Message.objects.filter(author=request.user, to=touser).order_by('date')
-            messagescontent = []
-            for msg in msgs:
-                plaintext = private_key.decrypt(msg.msg, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
-                messagescontent.append(plaintext.decode())
-            context = {'msgs': messagescontent,}
         else:
             messages.warning(request, 'User Doesn\'t Exist')
             return redirect('messages-list')
-        return render(request, 'posts/messages.html', context)
+        return render(request, 'posts/messages.html')

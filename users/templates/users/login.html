@@ -1,17 +1,63 @@
-{% extends 'users/base.html' %}
-{% block title %}Register On Privalise{% endblock title %}
-{% block content %}
-<div class="w-auto content">
-	<form method="GET" action="{% url 'login-two' %}" class="form-inputs" style="margin: 0">
-		<div style="color:white;">
-			<div>	
-				<input id="id_username" style="color: white;" class="textinput textInput form-control" placeholder="Username" type="text" name="username" autofocus="" autocapitalize="none" maxlength="150" required />
-				{{ver.captcha}}
-				<button type="submit" class="btn btn-outline-info">Log In</button>
-				<h3>  Don't Have An Account? <a href="{% url 'register' %}" style="color: cyan;">Register</a></h3>
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="author" content="Kodinger">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>Login To Privalise</title>
+	<link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+	<link rel="stylesheet" href="{% static 'css/captcha.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/login/my-login.css' %}">
+	<link rel="stylesheet" href="{% static 'css/all.css' %}">
+</head>
+
+<body class="my-login-page bg-dark">
+	<section class="h-100">
+		<div class="container h-100">
+			<div class="row justify-content-md-center h-100">
+				<div class="card-wrapper">
+					<div class="brand">
+						<img src="{% static 'img/placeholder.png' %}" alt="logo">
+					</div>
+					{% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} content">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+					<div class="card fat">
+						<div class="card-body">
+							<h4 class="card-title">Login To Privalise</h4>
+							<form method="GET" action="{% url 'login-two' %}" class="my-login-validation" novalidate="">
+								<div class="form-group mb-2">
+									<label for="email">Username <i class="far fa-user"></i></label>
+									<input id="email" type="text" placeholder="Your Username" class="form-control" name="username" value="" required autofocus>
+								</div>
+
+								<div class="form-group mb-2 img-thumbnail captcha">
+									{{ver.captcha}}
+								</div>
+
+								<div class="form-group m-0">
+									<button type="submit" style="margin-top: 6px;" class="btn btn-primary btn-block">
+										Login
+									</button>
+								</div>
+								<div class="mt-4 text-center">
+									Don't have an account? <a href="{% url 'register' %}" class="btn btn-outline-primary">Create One</a>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
 			</div>
-			<br>
 		</div>
-	</form>
-</div>
-{% endblock content %}
+	</section>
+	<script>
+		document.getElementsByName('captcha_1')[0].placeholder = "Verify You're A Human";
+	</script>
+	<script src="{% static 'js/jquery.min.js' %}"></script>
+	<script src="{% static 'js/bootstrap.bundle.js' %}"></script>
+	<script src="{% static 'js/my-login.js' %}"></script>
+</body>
+</html>
