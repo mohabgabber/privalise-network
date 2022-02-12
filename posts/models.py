@@ -96,10 +96,18 @@ class Profile(models.Model):
     debosited = models.BooleanField(default=False)
     rec_addr = models.CharField(max_length=106, blank=False, default='')
     fingerprint = models.CharField(max_length=50, blank=True)
-    privatekey = models.BinaryField()
-    publickey = models.BinaryField()
+    privatekey = models.TextField()
+    publickey = models.TextField()
     def __str__(self):
         return f'{self.user.username} Profile'
+class Message(models.Model):
+    id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
+    msg = models.TextField(null=False, blank=False)
+    date = models.DateTimeField(default=timezone.now)
+    to = models.ForeignKey(User, related_name='received', on_delete=models.CASCADE, blank=False, null=False)
+    res = models.CharField(max_length=5, blank=False, null=False)
+    author = models.ForeignKey(User, blank=False, null=False, related_name='sent', on_delete=models.CASCADE)
+
 class Tag(models.Model):
     name = models.CharField(max_length=255)
 class About(models.Model):
@@ -124,7 +132,7 @@ class Hashtag(models.Model):
         return self.title
 '''
 class Notes(models.Model):
-    content = models.BinaryField(blank=False)
+    content = models.TextField(blank=False)
     author = models.ForeignKey(User, related_name='notes', blank=False, null=False, on_delete=models.CASCADE)
     date = models.DateTimeField(default=timezone.now)
 class Passwords(models.Model):

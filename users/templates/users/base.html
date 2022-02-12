@@ -11,175 +11,21 @@
         <link rel="stylesheet" href="{% static 'css/login/page.css' %}">
         <link rel="stylesheet" href="{% static 'css/register/page.css' %}">
         <link rel="stylesheet" href="{% static 'css/all.css' %}">
+        <link rel="stylesheet" href="{% static 'css/login/logins.css' %}">
         <title>{% block title %}{% endblock title %}</title>
-        <style>
-            body{
-                margin: 0;
-                padding: 0;
-                background-color: rgba(18, 9, 58, 0.6);
-                color: #fff;
-                font-family: Arial;
-                font-size: 12px;
-                /*overflow: hidden;*/
-            }
-
-            .body{
-                position: absolute;
-                top: -45px;
-                left: -20px;
-                right: -40px;
-                bottom: -40px;
-                width: auto;
-                height: auto;
-                background-color: rgba(18, 9, 58, 0.6);
-                background-size: cover;
-                -webkit-filter: blur(5px);
-                z-index: 0;
-            }
-
-            .grad{
-                position: absolute;
-                top: -20px;
-                left: -20px;
-                right: -40px;
-                bottom: -40px;
-                width: auto;
-                height: auto;
-                background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0)), color-stop(100%,rgba(0,0,0,0.65))); /* Chrome,Safari4+ */
-                z-index: 1;
-                opacity: 0.7;
-            }
-
-            .header{
-                position: absolute;
-                top: calc(50% - 35px);
-                left: calc(50% - 255px);
-                z-index: 2;
-            }
-
-            .header div{
-                float: left;
-                color: #fff;
-                font-family: 'Exo', sans-serif;
-                font-size: 35px;
-                font-weight: 200;
-            }
-
-            .header div span{
-                color: #5379fa !important;
-            }
-
-            
-
-            .login input[type=text]{
-                width: 250px;
-                height: 30px;
-                background: transparent;
-                border: 1px solid rgba(255,255,255,0.6);
-                border-radius: 2px;
-                color: #fff;
-                font-family: 'Exo', sans-serif;
-                font-size: 16px;
-                font-weight: 400;
-                padding: 4px;
-                margin-bottom: 7px;
-            }
-
-            .login input[type=email]{
-                width: 250px;
-                height: 30px;
-                margin-bottom: 7px;
-
-                background: transparent;
-                border: 1px solid rgba(255,255,255,0.6);
-                border-radius: 2px;
-                color: #fff;
-                font-family: 'Exo', sans-serif;
-                font-size: 16px;
-                font-weight: 400;
-                padding: 4px;
-            }
-            .login input[type=password]{
-                width: 250px;
-                height: 30px;
-                background: transparent;
-                border: 1px solid rgba(255,255,255,0.6);
-                border-radius: 2px;
-                color: #fff;
-                font-family: 'Exo', sans-serif;
-                font-size: 16px;
-                font-weight: 400;
-                margin-bottom: 7px;
-
-                padding: 4px;
-                margin-top: 10px;
-            }
-
-            .login input[type=button]{
-                width: 260px;
-                height: 35px;
-                background: #fff;
-                border: 1px solid #fff;
-                cursor: pointer;
-                border-radius: 2px;
-                color: #a18d6c;
-                font-family: 'Exo', sans-serif;
-                font-size: 16px;
-                font-weight: 400;
-                padding: 6px;
-                margin-top: 10px;
-            }
-
-            .login input[type=button]:hover{
-                opacity: 0.8;
-            }
-
-            .login input[type=button]:active{
-                opacity: 0.6;
-            }
-
-            .login input[type=text]:focus{
-                outline: none;
-                border: 1px solid rgba(255,255,255,0.9);
-            }
-
-            .login input[type=password]:focus{
-                outline: none;
-                border: 1px solid rgba(255,255,255,0.9);
-            }
-
-            .login input[type=button]:focus{
-                outline: none;
-            }
-
-            ::-webkit-input-placeholder{
-            color: rgba(255,255,255,0.6);
-            }
-
-            ::-moz-input-placeholder{
-            color: rgba(255,255,255,0.6);
-            }
-            .login{
-                position: absolute;
-                top: calc(50% - 180px);
-                left: calc(50% - 50px);
-                height: 150px;
-                width: 350px;
-                padding: 10px;
-                z-index: 2;
-            }
-        </style>
     </head>
-    <main class="container-fluid mx-auto content">
-        <div class="logo-text">
-            <div style="color: white;">Priva<span>Lise</span></div>
-        </div>
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }} content">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
+    <body style="overflow: hidden;">
+        <nav class="navbar navbar-dark bg-dark" >
+            <div class="container-fluid mx-auto">
+              <a class="navbar-brand mx-auto" style="font-size:xx-large" href="#">
+                Priva<span style="color: #5379fa;">Lise</span>
+              </a>
+            </div>
+        </nav>
+    <main class="container-fluid mx-auto content bg-dark position-relative">
         {% block content %}
         {% endblock content %}
     </main>
+    <script src="{% static 'js/bootstrap.bundle.js' %}"></script>
+    </body>
 </html>
