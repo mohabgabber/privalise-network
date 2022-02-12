@@ -6,9 +6,6 @@ Can you imagine a centralized, but privacy-respecting social network? One that i
 
 2 factor authentication via PGP, monero integration, End-To-End Encryption, no associated personal information to hack... To Put It Simply: The Web App will not record anything about its users. <br/>
 We don't use any 3rd party software, such as google APIs, google analytics, any FAANG framework (React, Vue...), so rest assured that you will be totally anonymous :D
-
-it's also perfect as an onion service, bc the website doesn't have any js in it, so it can work in tor with the safest mode enabled.
-
 ## The Technology Behind It:
    * Python 3.10
    * Django 4
@@ -18,7 +15,6 @@ it's also perfect as an onion service, bc the website doesn't have any js in it,
    Privalise has your normal social-media feature (i.e. likes/dislikes, follow/unfollow, comments/replies, posting) but we've added a lot of other Privacy-Focused features, Like:
    * 2 Factor Authentication Via PGP
    * End-To-End Encryption For users Notes, Messages, Password.
-   * We Completly Removed JavaScript
    * No Personal Info For Registration
    * We Added A Mandatory 0.004 XMR Deposit For Every User To Combat Spam, Users Can Withdraw It If They Leave The Platform
    * User-To-User Payments Using Monero
