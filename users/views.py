@@ -30,15 +30,10 @@ def register(request):
             new_user = authenticate(username=form.cleaned_data['username'],password=form.cleaned_data['password1'],)
             login(request, new_user)
             profile = request.user.profile
-            password = form.cleaned_data['password1']
-            hash = hashlib.sha512(password.encode('utf-8'))
-            privikey = serialization.load_pem_private_key(bytes(request.POST.get('privatekey'), 'utf-8'), password=None)
-            privatekeys = privikey.private_bytes(encoding=serialization.Encoding.PEM, format=serialization.PrivateFormat.PKCS8, encryption_algorithm=serialization.BestAvailableEncryption(bytes(hash.hexdigest(), 'utf-8')))
-            profile.privatekey = privatekeys 
+            profile.privatekey = request.POST.get('privatekey')
             profile.publickey = request.POST.get('publickey')
             profile.save()
-            response = redirect('complete-profile')
-            return response
+            return redirect('complete-profile')
     else:
        form = UserRegister()
        ver = verification()
@@ -46,15 +41,6 @@ def register(request):
 class Login(View):
     def get(self, request, *args, **kwargs):
         ver = verification()
-        return render(request, 'users/login.html', {'ver': ver,})
-    def post(self, request, *args, **kwargs):
-        username = request.POST.get('username')
-        ver = verification(request.POST)
-        users = User.objects.filter(username=username)
-        if users.exists() and ver.is_valid():
-            return redirect('login-two', username=username)
-        else:
-            messages.success(request, "Incorrect Data")
         return render(request, 'users/login.html', {'ver': ver,})
 class Logintwo(View):
     def get(self, request, *args, **kwargs):
@@ -103,8 +89,6 @@ class Logintwo(View):
                         login(request, login_user)
                         messages.success(request, 'Logged In Successfully')
                         response = redirect('home')
-                        hash = hashlib.sha512(passwords.encode('utf-8'))
-                        response.set_cookie('key', hash.hexdigest(), max_age=None)
                         return response
                     else:
                         messages.warning(request, 'Incorrect Data')
@@ -121,11 +105,7 @@ class Logintwo(View):
                 if login_user and ver.is_valid():
                     login(request, login_user)
                     messages.success(request, 'Logged In Successfully')
-                    user = User.objects.get(username=usernames)
-                    profile = Profile.objects.get(user=user)
-                    hash = hashlib.sha512(passwords.encode('utf-8'))
                     response = redirect('home')
-                    response.set_cookie('key', hash.hexdigest(), max_age=None)
                     return response
                 else:
                     messages.warning(request, 'Incorrect Data')

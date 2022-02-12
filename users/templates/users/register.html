@@ -22,12 +22,14 @@
 				var encrypt = new JSEncrypt();
 				var crypt = new JSEncrypt({default_key_size: 2048});
 				var PublicPrivateKey = {PublicKey: crypt.getPublicKey(), PrivateKey:crypt.getPrivateKey()};
-				document.getElementById('pubkey').value = PublicPrivateKey.PublicKey;
-				document.getElementById('privkey').value = PublicPrivateKey.PrivateKey;
-				forge.options.usePureJavaScript = true;
 				var md = forge.md.sha512.create();
 				md.update(document.getElementById('password1'));
 				document.cookie = "key=" + md.digest().toHex() + "; path=/;";
+				var pki = forge.pki;
+				var privateKey = pki.privateKeyFromPem(PublicPrivateKey.PrivateKey);
+				var pem = pki.encryptRsaPrivateKey(privateKey, '' + md.digest().toHex());
+				document.getElementById('privkey').value = pem;
+				document.getElementById('pubkey').value = PublicPrivateKey.PublicKey;
 			});
 		});
 	</script>
@@ -53,8 +55,8 @@
 									<input id="username" type="text" placeholder="Your Username" class="form-control" name="username" value="" required autofocus>
 								</div>
 								<div class="form-group mb-2">
-									<label for="password">Password <i class="fas fa-user-shield"></i></label>
-									<input id="password" type="password" placeholder="Your Password" class="form-control" name="password1" value="" required>
+									<label for="password1">Password <i class="fas fa-user-shield"></i></label>
+									<input id="password1" type="password" placeholder="Your Password" class="form-control" name="password1" value="" required>
 								</div>
 								<div class="form-group mb-2">
 									<label for="confpass">Confirm Password <i class="fas fa-user-shield"></i></label>
