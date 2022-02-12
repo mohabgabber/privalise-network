@@ -732,38 +732,38 @@ class messages_list(LoginRequiredMixin, View):
 class messages_view(LoginRequiredMixin, View):
     def get(self, request, touser, *args, **kwargs):
         if User.objects.filter(username=touser).exists():
-            user = User.objects.get(username=touser)
-            msgs = Message.objects.filter(Q(to=request.user)|Q(author=request.user))
             try:
                key = request.COOKIES['key']
             except:
                 return redirect('set-key')
-            context = {'msgs': msgs, 'key': str(seriprivkey.decode()),}
+            user = User.objects.get(username=touser)
+            msgs = Message.objects.filter(Q(to=request.user, author=user)|Q(author=request.user, to=user))
+            encprivkey = request.user.profile.privatekey 
+            context = {'msgs': msgs, 'privkey': encprivkey,}
         else:
             messages.warning(request, 'User Doesn\'t Exist')
             return redirect('messages-list')
         return render(request, 'posts/messages.html', context)
     def post(self, request, touser, *args, **kwargs):
         if User.objects.filter(username=touser).exists():
-            # CREATING MESSAGE
-            touser = User.objects.get(username=touser)
-            fromuser = request.user
             try:
-                key = request.COOKIES['key']
+                request.COOKIES['key']
             except:
                 return redirect('set-key')
-            msg = bytes(request.POST.get('msgcontent'), 'utf-8').strip()
-            if len(msg) > 420:
-                messages.warning(request, 'Please Do not write more than 420 characters')
-                return render(request, 'posts/messages.html', {'msgcontent': msg,})
-            private_key = serialization.load_pem_private_key(request.user.profile.privatekey, password=key.encode('utf-8'),)
+            touser = User.objects.get(username=touser)
+            fromuser = request.user
+            msg = request.POST.get('msgcontent').strip()
             frompublic_key = serialization.load_pem_public_key(request.user.profile.publickey)
             topublic_key = serialization.load_pem_public_key(touser.profile.publickey)
             tociphertext = topublic_key.encrypt(msg, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
             fromciphertext = frompublic_key.encrypt(msg, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
-            tocreate = Message.objects.create(author=fromuser, msg=tociphertext, to=touser, res='from')
-            fromcreate = Message.objects.create(author=fromuser, msg=fromciphertext, to=touser, res='to')
+            tocreate = Message.objects.create(author=fromuser, msg=tociphertext, to=touser, res=touser)
+            fromcreate = Message.objects.create(author=fromuser, msg=fromciphertext, to=touser, res=fromuser)
+
+            msgs = Message.objects.filter(Q(to=request.user, author=touser)|Q(author=request.user, to=touser))
+            encprivkey = request.user.profile.privatekey 
+            context = {'msgs': msgs, 'privkey': encprivkey,}
         else:
             messages.warning(request, 'User Doesn\'t Exist')
             return redirect('messages-list')
-        return render(request, 'posts/messages.html')
+        return render(request, 'posts/messages.html', context)
