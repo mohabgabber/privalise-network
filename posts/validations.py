@@ -4,7 +4,6 @@ from monero.wallet import Wallet
 from decimal import Decimal
 from monero.address import address
 from cryptography.fernet import Fernet 
-
 c = gpg.Context()
 w = Wallet(port=28088)
 def create_addr():

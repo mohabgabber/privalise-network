@@ -27,8 +27,12 @@ def register(request):
             except:
                 messages.warning(request, f'there is an error')
                 return render(request, 'users/register.html', {"form": form})
-            new_user = authenticate(username=form.cleaned_data['username'],password=form.cleaned_data['password1'],)
-            login(request, new_user)
+            try:
+                new_user = authenticate(username=form.cleaned_data['username'],password=form.cleaned_data['password1'],)
+                login(request, new_user)
+            except:
+                messages.warning(request, f'there is an error')
+                return render(request, 'users/register.html', {"form": form})
             profile = request.user.profile
             profile.privatekey = request.POST.get('privatekey')
             profile.publickey = request.POST.get('publickey')

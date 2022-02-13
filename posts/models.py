@@ -136,7 +136,7 @@ class Notes(models.Model):
     author = models.ForeignKey(User, related_name='notes', blank=False, null=False, on_delete=models.CASCADE)
     date = models.DateTimeField(default=timezone.now)
 class Passwords(models.Model):
-    password = models.BinaryField(blank=False)
-    url = models.BinaryField()
-    name = models.BinaryField()
+    password = models.TextField(blank=False)
+    url = models.TextField()
+    name = models.TextField()
     author = models.ForeignKey(User, related_name='passwords', blank=False, null=False, on_delete=models.CASCADE)

@@ -3,7 +3,7 @@
 {% block title %}Your Messages On Privalise!, Where Everything Is Awesome{% endblock title %}
 {% block content %}
 <center>
-    <form method="GET" action="">
+    <form method="GET" action="{% url 'messages' %}">
         <div class="input-group mb-3" style="margin: 0 auto;">
             <input type="text" class="form-control form-control-lg" placeholder="Message Someone" aria-label="Username" name="username">
             <button class="btn btn-primary" type="submit">Message</button>
@@ -20,7 +20,7 @@
                     <div class="card-body">
                     <h5 class="card-title">@{{msg.to.username}}</h5>
                     <p class="card-text">{{msg.to.profile.bio|slice:":120"}}</p>
-                    <a href="{% url 'messages' msg.to.username %}" class="btn btn-primary">Message</a>
+                    <a href="{% url 'messages' %}" class="btn btn-primary">Message</a>
                     </div>
                 </div>
             </div>

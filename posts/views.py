@@ -25,6 +25,7 @@ from django.urls import reverse_lazy
 from django.http import HttpResponse
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.contrib import messages
+from django.contrib.auth import authenticate
 class PostListView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         logged_in_user = request.user
@@ -708,59 +709,70 @@ class key_set(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         try:
             request.COOKIES['key']
-            return redirect('notes')
+            messages.success(request, 'your key is already set.')
+            return redirect('home')
         except:
             pass
         return render(request, 'posts/set_key.html')
     def post(self, request, *args, **kwargs):
         try:
             request.COOKIES['key']
-            return redirect('notes')
+            messages.success(request, 'your key is already set.')
+            return redirect('home')
         except:
             pass
         password = request.POST.get('password')
-        hash = hashlib.sha512(password.encode('utf-8'))
-        response = redirect('notes')
-        response.set_cookie('key', hash.hexdigest(), max_age=None)
-       # messages.success(request, 'your key is set')
+        user = authenticate(username=request.user.username,password=password)
+        if user:
+            response = redirect('home')
+            messages.success(request, 'your key is set')
+        else:
+            messages.warning(request, 'wrong authentication')
+            return render(request, 'posts/set_key.html')
         return response
 class messages_list(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        mesgs = Message.objects.filter(Q(to=request.user)|Q(author=request.user))
+        mesgs = Message.objects.filter(res=request.user)
         context = {'msgs': mesgs,}
         return render(request, 'posts/messages_list.html', context)
 class messages_view(LoginRequiredMixin, View):
-    def get(self, request, touser, *args, **kwargs):
-        if User.objects.filter(username=touser).exists():
+    def get(self, request, *args, **kwargs):
+        if User.objects.filter(username=request.GET.get('username')).exists():
             try:
                key = request.COOKIES['key']
             except:
                 return redirect('set-key')
-            user = User.objects.get(username=touser)
-            msgs = Message.objects.filter(Q(to=request.user, author=user)|Q(author=request.user, to=user))
-            encprivkey = request.user.profile.privatekey 
-            context = {'msgs': msgs, 'privkey': encprivkey,}
+            
+            touser = User.objects.get(username=request.GET.get('username'))
+            msgs = Message.objects.filter(Q(to=request.user, author=touser, res=request.user)|Q(author=request.user, to=touser, res=request.user))
+            
+            # Getting Message Parties's Pub/Priv Keys
+            encprivkey = request.user.profile.privatekey
+            pubkey = touser.profile.publickey
+            
+            context = {'msgs': msgs, 'privkey': encprivkey, 'pubkey': pubkey,}
         else:
             messages.warning(request, 'User Doesn\'t Exist')
             return redirect('messages-list')
         return render(request, 'posts/messages.html', context)
-    def post(self, request, touser, *args, **kwargs):
-        if User.objects.filter(username=touser).exists():
+    def post(self, request, *args, **kwargs):
+        if User.objects.filter(username=request.GET.get('username')).exists():
             try:
                 request.COOKIES['key']
             except:
                 return redirect('set-key')
-            touser = User.objects.get(username=touser)
+            
+            # Getting Message Parties
+            touser = User.objects.get(username=request.GET.get('username'))
             fromuser = request.user
+            
+            # Creating Message
             msg = request.POST.get('msgcontent').strip()
-            frompublic_key = serialization.load_pem_public_key(request.user.profile.publickey)
-            topublic_key = serialization.load_pem_public_key(touser.profile.publickey)
-            tociphertext = topublic_key.encrypt(msg, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
-            fromciphertext = frompublic_key.encrypt(msg, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
-            tocreate = Message.objects.create(author=fromuser, msg=tociphertext, to=touser, res=touser)
-            fromcreate = Message.objects.create(author=fromuser, msg=fromciphertext, to=touser, res=fromuser)
-
-            msgs = Message.objects.filter(Q(to=request.user, author=touser)|Q(author=request.user, to=touser))
+            #tocreate = Message.objects.create(author=fromuser, msg=msg, to=touser, res=touser)
+            fromcreate = Message.objects.create(author=fromuser, msg=msg, to=touser, res=fromuser)
+            
+            # Messages Listing
+            msgs = Message.objects.filter(Q(to=request.user, author=touser, res=request.user)|Q(author=request.user, to=touser, res=request.user))
             encprivkey = request.user.profile.privatekey 
             context = {'msgs': msgs, 'privkey': encprivkey,}
         else:
