@@ -105,7 +105,7 @@ class Message(models.Model):
     msg = models.TextField(null=False, blank=False)
     date = models.DateTimeField(default=timezone.now)
     to = models.ForeignKey(User, related_name='received', on_delete=models.CASCADE, blank=False, null=False)
-    res = models.CharField(max_length=5, blank=False, null=False)
+    res = models.ForeignKey(User, related_name='msgfor', on_delete=models.CASCADE, blank=False, null=False)
     author = models.ForeignKey(User, blank=False, null=False, related_name='sent', on_delete=models.CASCADE)
 
 class Tag(models.Model):
@@ -136,7 +136,7 @@ class Notes(models.Model):
     author = models.ForeignKey(User, related_name='notes', blank=False, null=False, on_delete=models.CASCADE)
     date = models.DateTimeField(default=timezone.now)
 class Passwords(models.Model):
-    password = models.BinaryField(blank=False)
-    url = models.BinaryField()
-    name = models.BinaryField()
+    password = models.TextField(blank=False)
+    url = models.TextField()
+    name = models.TextField()
     author = models.ForeignKey(User, related_name='passwords', blank=False, null=False, on_delete=models.CASCADE)
