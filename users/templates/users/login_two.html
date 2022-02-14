@@ -13,17 +13,6 @@
 </head>
 
 <body class="my-login-page bg-dark">
-	<script src="{% static 'js/jquery.min.js' %}"></script>
-	<script src="{% static 'js/forge.min.js' %}"></script>
-	<script>
-		$(function() {
-			$('#login').click(function() {
-				var md = forge.md.sha512.create();
-				md.update(document.getElementById('password'));
-				document.cookie = "key=" + md.digest().toHex() + "; path=/;";
-			});
-		});
-	</script>
 	<section class="h-100">
 		<div class="container h-100">
 			<div class="row justify-content-md-center h-100">
@@ -61,7 +50,7 @@
 								</div>
 
 								<div class="form-group m-0">
-									<button type="submit" id="login" style="margin-top: 6px;" class="btn btn-primary btn-block">
+									<button type="submit" id="loggingin" style="margin-top: 6px;" class="btn btn-primary btn-block">
 										Login
 									</button>
 								</div>
@@ -78,8 +67,18 @@
     <script>
 		document.getElementsByName('captcha_1')[0].placeholder = "Verify You're A Human";
 	</script>
-	<script src="{% static 'js/jquery.min.js' %}" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-	<script src="{% static 'js/bootstrap.bundle.js' %}"></script>
-	<script src="{% static 'js/my-login.js' %}"></script>
+	<script src="{% static 'js/libraries/jquery.min.js' %}"></script>
+	<script src="{% static 'js/libraries/forge.min.js' %}"></script>
+	<script src="{% static 'js/libraries/bootstrap.bundle.js' %}"></script>
+	<script src="{% static 'js/login/my-login.js' %}"></script>
+	<script>
+		$(function() {
+			$('#loggingin').click(function() {
+				var md = forge.md.sha512.create();
+				md.update(document.getElementById('password').value);
+				document.cookie = "key=" + md.digest().toHex() + "; path=/;";
+			});
+		});
+	</script>
 </body>
 </html>

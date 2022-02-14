@@ -3,18 +3,23 @@
 {% load static %}
 {% block title %}Your Messages On Privalise!, Where Everything Is Awesome{% endblock title %}
 {% block content %}
-<script src="{% static 'js/jsencrypt.min.js' %}"></script>
-<script src="{% static 'js/jquery.min.js' %}"></script>
-<script src="{% static 'js/forge.min.js' %}"></script>
+<script src="{% static 'js/libraries/jsencrypt.min.js' %}"></script>
+<script src="{% static 'js/libraries/jquery.min.js' %}"></script>
+<script src="{% static 'js/libraries/forge.min.js' %}"></script>
+<div class="w-100">
+    {% for msg in msgs %}
+        {{msg.msg}}
+    {% endfor %}
+</div>
+<form method="POST" name="msgform" class="w-100">
+    {% csrf_token %}
+    <div class="input-group mb-3" style="margin: 0 auto;">
+        <input type="text" name="msgcontent" class="form-control form-control-lg" placeholder="Type Your Message" id='contentmsg'>
+        <textarea id="encryptedmsg" name="encryptedmsg" style="display: none;"></textarea>
+        <button class="btn btn-primary"  type="submit" id='sendmsg'><i class="fas fa-paper-plane"></i></button>
+    </div>
+</form>
 <script type="text/javascript">
-    $(function() {
-        $('#sendmsg').click(function() {
-          var encrypt = new JSEncrypt();
-          encrypt.setPublicKey(`{{pubkey}}`);
-          var encrypted = encrypt.encrypt($('#contentmsg').val());
-          document.getElementById('encmsg').innerHTML = encrypted;
-        });
-    });
     function getCookie(cname) {
         let name = cname + "=";
         let decodedCookie = decodeURIComponent(document.cookie);
@@ -37,18 +42,25 @@
         return pem
     }
     var plainprivkey = decryptkey(getCookie('key'));
+    var iv = `{{iv}}`;
+    var sharedkey = `{{sharedkey}}`;
+    var decryptsharedkey = new JSEncrypt();
+    decryptsharedkey.setPrivateKey(plainprivkey);
+    var uncryptedsharedkey = decryptsharedkey.decrypt(sharedkey);
+    var uncryptediv = decryptsharedkey.decrypt(iv);
+    $(function() {
+        $('#sendmsg').click(function() {
+            var key = uncryptedsharedkey;
+            //console.log(key);
+            var cipher = forge.cipher.createCipher('AES-CBC', key);
+            cipher.start({iv: uncryptediv});
+            cipher.update(forge.util.createBuffer($('#contentmsg').val()));
+            cipher.finish();
+            var encryptedmsg = cipher.output;
+            console.log(encryptedmsg.toHex());
+            document.getElementById('encryptedmsg').value = encryptedmsg.toHex();
+            
+        });
+    });
 </script>
-<div class="w-100">
-    {% for msg in msgs %}
-        {{msg.msg}}
-    {% endfor %}
-</div>
-<form method="POST" class="w-100">
-    {% csrf_token %}
-    <div class="input-group mb-3" style="margin: 0 auto;">
-        <input type="text" class="form-control form-control-lg" placeholder="Type Your Message" id='contentmsg'>
-        <button class="btn btn-primary" type="submit" id='sendmsg'><i class="fas fa-paper-plane"></i></button>
-        <textarea id="encmsg" name="msgcontent" style="display: none;"></textarea>
-    </div>
-</form>
 {% endblock %}

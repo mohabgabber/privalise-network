@@ -1,6 +1,7 @@
 from django.contrib import admin
-from .models import Post, Profile, Comment, Tag, Notification, Notes, Message
+from .models import Post, Profile, Comment, Tag, Notification, Notes, Message, Keys 
 admin.site.register(Post)
+admin.site.register(Keys)
 admin.site.register(Message)
 admin.site.register(Profile)
 admin.site.register(Comment)
