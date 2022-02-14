@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Post, Comment, Profile, Notification, Tag, Notes, Message
+from .models import Post, Comment, Profile, Notification, Tag, Notes, Message, Keys
 from django.views import View
 from cryptography.fernet import Fernet
 from django.http import HttpResponseRedirect
@@ -735,22 +735,40 @@ class messages_list(LoginRequiredMixin, View):
         mesgs = Message.objects.filter(res=request.user)
         context = {'msgs': mesgs,}
         return render(request, 'posts/messages_list.html', context)
+class shared_key(LoginRequiredMixin, View):
+    def get(self, request, touser, *args, **kwargs):
+        pubkey1 = request.user.profile.publickey
+        pubkey2 = User.objects.get(username=touser)
+        return render(request, 'posts/set_shared_key.html', {'pubkey1': pubkey1, 'pubkey2': pubkey2})
+    def post(self, request, touser, *args, **kwargs):
+        user1 = User.objects.get(username=touser)
+        shared_key1 = request.POST.get('sharedkey1')
+        shared_key2 = request.POST.get('sharedkey2')
+        Keys.objects.create(partner1=request.user, partner2=user1, shared_key1=shared_key1, shared_key2=shared_key2, iv1=request.POST.get('iv1'), iv2=request.POST.get('iv2'))
+        response = redirect('messages')
+        response['Location'] += f'?username={user1.username}'
+        return response
 class messages_view(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         if User.objects.filter(username=request.GET.get('username')).exists():
-            try:
-               key = request.COOKIES['key']
-            except:
-                return redirect('set-key')
-            
             touser = User.objects.get(username=request.GET.get('username'))
-            msgs = Message.objects.filter(Q(to=request.user, author=touser, res=request.user)|Q(author=request.user, to=touser, res=request.user))
+            msgs = Message.objects.filter(Q(to=request.user, author=touser)|Q(author=request.user, to=touser))
             
+            try:
+                sharedkey = Keys.objects.get(Q(partner1=touser, partner2=request.user)|Q(partner1=request.user, partner2=touser))
+                if sharedkey.partner1 == request.user:
+                    shkey = sharedkey.shared_key1
+                    iv = sharedkey.iv1
+                else:
+                    shkey = sharedkey.shared_key2
+                    iv = sharedkey.iv2
+            except:
+                return redirect('set-sharedkey', touser=touser)
             # Getting Message Parties's Pub/Priv Keys
             encprivkey = request.user.profile.privatekey
             pubkey = touser.profile.publickey
             
-            context = {'msgs': msgs, 'privkey': encprivkey, 'pubkey': pubkey,}
+            context = {'msgs': msgs, 'privkey': encprivkey, 'pubkey': pubkey, 'sharedkey': shkey, 'iv': iv,}
         else:
             messages.warning(request, 'User Doesn\'t Exist')
             return redirect('messages-list')
@@ -767,14 +785,25 @@ class messages_view(LoginRequiredMixin, View):
             fromuser = request.user
             
             # Creating Message
-            msg = request.POST.get('msgcontent').strip()
-            #tocreate = Message.objects.create(author=fromuser, msg=msg, to=touser, res=touser)
-            fromcreate = Message.objects.create(author=fromuser, msg=msg, to=touser, res=fromuser)
+            msg = request.POST.get('encryptedmsg')
+            createmsg = Message.objects.create(author=fromuser, msg=msg, to=touser)
             
             # Messages Listing
-            msgs = Message.objects.filter(Q(to=request.user, author=touser, res=request.user)|Q(author=request.user, to=touser, res=request.user))
-            encprivkey = request.user.profile.privatekey 
-            context = {'msgs': msgs, 'privkey': encprivkey,}
+            msgs = Message.objects.filter(Q(to=request.user, author=touser)|Q(author=request.user, to=touser))
+            encprivkey = request.user.profile.privatekey
+            pubkey = touser.profile.publickey
+            try:
+                sharedkey = Keys.objects.get(Q(partner1=touser, partner2=request.user)|Q(partner1=request.user, partner2=touser))
+                if sharedkey.partner1 == request.user:
+                    shkey = sharedkey.shared_key1
+                    iv = sharedkey.iv1
+                else:
+                    shkey = sharedkey.shared_key2
+                    iv = sharedkey.iv2
+            except:
+                return redirect('set-sharedkey', touser=touser)
+
+            context = {'msgs': msgs, 'privkey': encprivkey, 'pubkey': pubkey, 'sharedkey': shkey, 'iv': iv,}
         else:
             messages.warning(request, 'User Doesn\'t Exist')
             return redirect('messages-list')

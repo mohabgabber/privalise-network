@@ -1,0 +1,38 @@
+{% load static %}
+<script src="{% static 'js/libraries/jsencrypt.min.js' %}"></script>
+<script src="{% static 'js/libraries/jquery.min.js' %}"></script>
+<script src="{% static 'js/libraries/forge.min.js' %}"></script>
+<form method="POST" name="keysform" action="{% url 'set-sharedkey' pubkey2.username %}">
+    {% csrf_token %}
+    <textarea name="sharedkey1" id="sharedkey1" style="display: none;"></textarea>
+    <textarea name="sharedkey2" style="display: none;" id="sharedkey2"></textarea>
+    <textarea name="iv1" style="display: none;" id="ivkey1"></textarea>
+    <textarea name="iv2" style="display: none;" id="ivkey2"></textarea>
+</form>
+<script>
+
+var key = forge.random.getBytesSync(32);
+var iv = forge.random.getBytesSync(32);
+console.log(key);
+
+var key1 = new JSEncrypt();
+key1.setPublicKey(`{{pubkey1}}`);
+var enckey1 = key1.encrypt(key);
+var enciv1 = key1.encrypt(iv);
+
+var key2 = new JSEncrypt();
+key2.setPublicKey(`{{pubkey2.profile.publickey}}`);
+var enckey2 = key2.encrypt(key);
+var enciv2 = key2.encrypt(iv);
+
+console.log(enckey1);
+console.log(enckey2);
+
+document.getElementById('sharedkey1').value = enckey1;
+document.getElementById('sharedkey2').value = enckey2;
+document.getElementById('ivkey1').value = enciv1;
+document.getElementById('ivkey2').value = enciv2;
+
+document.keysform.submit();
+
+</script>

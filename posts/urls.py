@@ -1,11 +1,12 @@
 from django.urls import path
-from .views import messages_view, messages_list, notes, del_note, more_view, key_set, tip_user, list_txs, confirm_deposit, profile_complete, check_deposit, factor_conf, factor_cancel, factor_done, CommentReply, AboutView, CommentEditView, AddLike, AddDislike, SearchResults, UserDetails, AddFavourites, RemoveNotification, ListNotifications, PostNotification, FollowNotification,  Search, AddCommentLike, AddCommentDislike, ProfileView, settings, AddFollower, RemoveFollower, PostListView, PostCreateView, PostDetailView, PostUpdateView, PostDeleteView, CommentDeleteView
+from .views import shared_key, messages_view, messages_list, notes, del_note, more_view, key_set, tip_user, list_txs, confirm_deposit, profile_complete, check_deposit, factor_conf, factor_cancel, factor_done, CommentReply, AboutView, CommentEditView, AddLike, AddDislike, SearchResults, UserDetails, AddFavourites, RemoveNotification, ListNotifications, PostNotification, FollowNotification,  Search, AddCommentLike, AddCommentDislike, ProfileView, settings, AddFollower, RemoveFollower, PostListView, PostCreateView, PostDetailView, PostUpdateView, PostDeleteView, CommentDeleteView
 urlpatterns = [
     path('', PostListView.as_view(), name='home'),
+    path('sharedkey/set/<str:touser>', shared_key.as_view(), name='set-sharedkey'),
     path('notes/', notes.as_view(), name='notes'),
     path('complete/profile/', profile_complete.as_view(), name='complete-profile'),
     path('about/', AboutView.as_view(), name='about'),
-    path('list/messages', messages_list.as_view(), name='messages-list'),
+    path('list/messages/', messages_list.as_view(), name='messages-list'),
     path('message/', messages_view.as_view(), name='messages'),
     path('set/key/', key_set.as_view(), name='set-key'),
     path('profile/details/<str:username>/', UserDetails.as_view(), name='user-details'),

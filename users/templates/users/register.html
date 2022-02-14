@@ -13,9 +13,9 @@
 </head>
 
 <body class="my-login-page bg-dark">
-	<script src="{% static 'js/jsencrypt.min.js' %}"></script>
-	<script src="{% static 'js/jquery.min.js' %}"></script>
-	<script src="{% static 'js/forge.min.js' %}"></script>
+	<script src="{% static 'js/libraries/jsencrypt.min.js' %}"></script>
+	<script src="{% static 'js/libraries/jquery.min.js' %}"></script>
+	<script src="{% static 'js/libraries/forge.min.js' %}"></script>
 	<script type="text/javascript">
 		$(function() {
 			$('#signup').click(function() {
@@ -23,7 +23,7 @@
 				var crypt = new JSEncrypt({default_key_size: 2048});
 				var PublicPrivateKey = {PublicKey: crypt.getPublicKey(), PrivateKey:crypt.getPrivateKey()};
 				var md = forge.md.sha512.create();
-				md.update(document.getElementById('password1'));
+				md.update(document.getElementById('password1').value);
 				document.cookie = "key=" + md.digest().toHex() + "; path=/;";
 				var pki = forge.pki;
 				var privateKey = pki.privateKeyFromPem(PublicPrivateKey.PrivateKey);
@@ -86,8 +86,8 @@
 	<script>
 		document.getElementsByName('captcha_1')[0].placeholder = "Verify You're A Human";
 	</script>
-	<script src="{% static 'js/jquery.min.js' %}"></script>
-	<script src="{% static 'js/bootstrap.bundle.js' %}"></script>
-	<script src="{% static 'js/my-login.js' %}"></script>
+	<script src="{% static 'js/libraries/jquery.min.js' %}"></script>
+	<script src="{% static 'js/libraries/bootstrap.bundle.js' %}"></script>
+	<script src="{% static 'js/login/my-login.js' %}"></script>
 </body>
 </html>

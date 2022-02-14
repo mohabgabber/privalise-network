@@ -100,12 +100,22 @@ class Profile(models.Model):
     publickey = models.TextField()
     def __str__(self):
         return f'{self.user.username} Profile'
+
+
+class Keys(models.Model):
+    id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
+    partner1 = models.ForeignKey(User, related_name='partner1', on_delete=models.CASCADE)
+    partner2 = models.ForeignKey(User, related_name='partner2', on_delete=models.CASCADE)
+    shared_key1 = models.TextField()
+    shared_key2 = models.TextField()
+    iv1 = models.TextField()
+    iv2 = models.TextField()
+
 class Message(models.Model):
     id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     msg = models.TextField(null=False, blank=False)
     date = models.DateTimeField(default=timezone.now)
     to = models.ForeignKey(User, related_name='received', on_delete=models.CASCADE, blank=False, null=False)
-    res = models.ForeignKey(User, related_name='msgfor', on_delete=models.CASCADE, blank=False, null=False)
     author = models.ForeignKey(User, blank=False, null=False, related_name='sent', on_delete=models.CASCADE)
 
 class Tag(models.Model):
