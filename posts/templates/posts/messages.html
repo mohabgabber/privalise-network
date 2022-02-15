@@ -66,20 +66,28 @@
         document.getElementById(id).innerHTML = await decrypted.data;
     }
 </script>
-<div class="w-100">
-    {% for msg in msgs %}
-        <script>decryptmsgs(`{{msg.msg}}`, `{{msg.id}}`)</script>
-        <p id="{{msg.id}}"></p>
-    {% endfor %}
-</div>
-<form method="POST" name="msgform" class="w-100">
-    {% csrf_token %}
-    <div class="input-group mb-3" style="margin: 0 auto;">
-        <input type="text" autofocus name="msgcontent" class="form-control form-control-lg" placeholder="Type Your Message" id='contentmsg'>
-        <textarea id="encryptedmsgs" name="encryptedmsg" style="display: none;"></textarea>
-        <button class="btn btn-primary"  onclick="encmesg()" type="submit" id='sendmsg'><i class="fas fa-paper-plane"></i></button>
+<div class="w-100 content">
+    <div class="w-auto">
+        {% for msg in msgs %}
+            <script>decryptmsgs(`{{msg.msg}}`, `{{msg.id}}`)</script>
+            {% if msg.author == request.user %}
+                <div class="card bg-dark float-end mb-3">
+                    <div id="{{msg.id}}" class="card-body"></div>
+                </div>
+            {% else %}
+                <div class="card bg-primary float-start mb-3">
+                    <div id="{{msg.id}}" class="card-body"></div>
+                </div>
+            {% endif %}
+        {% endfor %}
     </div>
-</form>
-<script>
-</script>
+    <form method="POST" name="msgform" class="w-75 mx-auto content fixed-bottom">
+        {% csrf_token %}
+        <div class="input-group mb-3" style="margin: 0 auto;">
+            <input type="text" autofocus name="msgcontent" class="form-control form-control-lg" placeholder="Type Your Message" id='contentmsg'>
+            <textarea id="encryptedmsgs" name="encryptedmsg" style="display: none;"></textarea>
+            <button class="btn btn-primary"  onclick="encmesg()" type="submit" id='sendmsg'><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </form>
+</div>
 {% endblock %}
