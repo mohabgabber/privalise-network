@@ -44,12 +44,8 @@
     async function encmesg() 
     {
         const message = await openpgp.createMessage({ text: document.getElementById('contentmsg').value }); 
-        const encrypted = await openpgp.encrypt({
-            message,
-            passwords: [getCookie('key')],
-            config: { preferredCompressionAlgorithm: openpgp.enums.compression.zlib }
-        });
-        // console.log(encrypted);
+        const encrypted = await openpgp.encrypt({message, passwords: [getCookie('key')],});
+        // console.log(await encrypted);
         document.getElementById('encryptedmsgs').value = await encrypted;
         document.msgform.submit();
     }
@@ -59,26 +55,33 @@
         });
         const decrypted = await openpgp.decrypt({
             message,
-            passwords: [getCookie('key')], // optional
-            config: { preferredCompressionAlgorithm: openpgp.enums.compression.zlib }
+            passwords: [getCookie('key')],
         });
         console.log(decrypted.data);
         document.getElementById(id).innerHTML = await decrypted.data;
     }
 </script>
 <div class="w-100 content">
-    <div class="w-auto">
+    <div class="w-75 mx-auto gap-3">
         {% for msg in msgs %}
             <script>decryptmsgs(`{{msg.msg}}`, `{{msg.id}}`)</script>
-            {% if msg.author == request.user %}
-                <div class="card bg-dark float-end mb-3">
-                    <div id="{{msg.id}}" class="card-body"></div>
-                </div>
-            {% else %}
-                <div class="card bg-primary float-start mb-3">
-                    <div id="{{msg.id}}" class="card-body"></div>
-                </div>
-            {% endif %}
+            <div class="row">
+                {% if msg.author == request.user %}
+                    <div class="card rounded bg-dark sent-message col-md-12 my-3 content mb-3 float-end" style="width: 18rem;">
+                        <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted"><a href="{% url 'profile' msg.author.username %}" class="username card-link">{{msg.author}}</a> {{msg.date}}</h6>
+                        <p class="card-text" id="{{msg.id}}"></p>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="card bg-danger content received-message my-3 mb-3 col-md-12 float-start rounded" style="width: 18rem;">
+                        <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted"><a href="{% url 'profile' msg.author.username %}" class="username card-link">{{msg.author}}</a> {{msg.date}}</h6>
+                        <p class="card-text" id="{{msg.id}}"></p>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
         {% endfor %}
     </div>
     <form method="POST" name="msgform" class="w-75 mx-auto content fixed-bottom">

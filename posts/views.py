@@ -786,7 +786,10 @@ class messages_view(LoginRequiredMixin, View):
             
             # Creating Message
             msg = request.POST.get('encryptedmsg')
-            createmsg = Message.objects.create(author=fromuser, msg=str(msg), to=touser)
+            if len(msg) < 1:
+                pass 
+            else:
+                createmsg = Message.objects.create(author=fromuser, msg=str(msg), to=touser)
             
             # Messages Listing
             msgs = Message.objects.filter(Q(to=request.user, author=touser)|Q(author=request.user, to=touser)).order_by('date')
