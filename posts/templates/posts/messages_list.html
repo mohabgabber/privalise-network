@@ -20,7 +20,7 @@
                     <div class="card-body">
                     <h5 class="card-title">@{{msg.to.username}}</h5>
                     <p class="card-text">{{msg.to.profile.bio|slice:":120"}}</p>
-                    <a href="{% url 'messages' %}" class="btn btn-primary">Message</a>
+                    <a href="{% url 'messages' %}?username={{msg.to.username}}" class="btn btn-primary">Message</a>
                     </div>
                 </div>
             </div>
