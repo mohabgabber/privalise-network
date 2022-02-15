@@ -5,22 +5,10 @@
 {% block content %}
 <script src="{% static 'js/libraries/jsencrypt.min.js' %}"></script>
 <script src="{% static 'js/libraries/jquery.min.js' %}"></script>
-<script src="{% static 'js/libraries/forge.min.js' %}"></script>
-<div class="w-100">
-    {% for msg in msgs %}
-        {{msg.msg}}
-    {% endfor %}
-</div>
-<form method="POST" name="msgform" class="w-100">
-    {% csrf_token %}
-    <div class="input-group mb-3" style="margin: 0 auto;">
-        <input type="text" name="msgcontent" class="form-control form-control-lg" placeholder="Type Your Message" id='contentmsg'>
-        <textarea id="encryptedmsg" name="encryptedmsg" style="display: none;"></textarea>
-        <button class="btn btn-primary"  type="submit" id='sendmsg'><i class="fas fa-paper-plane"></i></button>
-    </div>
-</form>
+<script src="{% static 'js/libraries/openpgp.js' %}"></script>
 <script type="text/javascript">
-    function getCookie(cname) {
+    function getCookie(cname) 
+    {
         let name = cname + "=";
         let decodedCookie = decodeURIComponent(document.cookie);
         let ca = decodedCookie.split(';');
@@ -35,32 +23,71 @@
         }
         return "";
     }
-    function decryptkey(password) {
+    
+    function decryptkey(password) 
+    {
         var pki = forge.pki;
         var privateKey = pki.decryptRsaPrivateKey(`{{privkey}}`, password);
         var pem = pki.privateKeyToPem(privateKey);
         return pem
     }
-    var plainprivkey = decryptkey(getCookie('key'));
-    var iv = `{{iv}}`;
-    var sharedkey = `{{sharedkey}}`;
-    var decryptsharedkey = new JSEncrypt();
-    decryptsharedkey.setPrivateKey(plainprivkey);
-    var uncryptedsharedkey = decryptsharedkey.decrypt(sharedkey);
-    var uncryptediv = decryptsharedkey.decrypt(iv);
-    $(function() {
-        $('#sendmsg').click(function() {
-            var key = uncryptedsharedkey;
-            //console.log(key);
-            var cipher = forge.cipher.createCipher('AES-CBC', key);
-            cipher.start({iv: uncryptediv});
-            cipher.update(forge.util.createBuffer($('#contentmsg').val()));
-            cipher.finish();
-            var encryptedmsg = cipher.output;
-            console.log(encryptedmsg.toHex());
-            document.getElementById('encryptedmsg').value = encryptedmsg.toHex();
-            
+    // var plainprivkey = decryptkey(getCookie('key'));
+    // var iv = `{{iv}}`;
+    // var sharedkey = `{{sharedkey}}`;
+    // var decryptsharedkey = new JSEncrypt();
+    // decryptsharedkey.setPrivateKey(plainprivkey);
+    // var uncryptedsharedkey = decryptsharedkey.decrypt(sharedkey);
+    // var uncryptediv = decryptsharedkey.decrypt(iv);
+    // function decryptmsgs(msg) 
+    // {  
+    // }
+    async function encmesg() 
+    {
+        const message = await openpgp.createMessage({ text: document.getElementById('contentmsg').value }); 
+        const encrypted = await openpgp.encrypt({
+            message,
+            passwords: [getCookie('key')],
+            config: { preferredCompressionAlgorithm: openpgp.enums.compression.zlib }
         });
-    });
+        // console.log(encrypted);
+        document.getElementById('encryptedmsgs').value = await encrypted;
+        document.msgform.submit();
+    }
+    async function decryptmsgs(msg, id) {
+        const message = await openpgp.readMessage({
+            armoredMessage: msg 
+        });
+        const decrypted = await openpgp.decrypt({
+            message,
+            passwords: [getCookie('key')], // optional
+            config: { preferredCompressionAlgorithm: openpgp.enums.compression.zlib }
+        });
+        console.log(decrypted.data);
+        document.getElementById(id).innerHTML = await decrypted.data;
+    }
 </script>
+<div class="w-100 content">
+    <div class="w-auto">
+        {% for msg in msgs %}
+            <script>decryptmsgs(`{{msg.msg}}`, `{{msg.id}}`)</script>
+            {% if msg.author == request.user %}
+                <div class="card bg-dark float-end mb-3">
+                    <div id="{{msg.id}}" class="card-body"></div>
+                </div>
+            {% else %}
+                <div class="card bg-primary float-start mb-3">
+                    <div id="{{msg.id}}" class="card-body"></div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    <form method="POST" name="msgform" class="w-75 mx-auto content fixed-bottom">
+        {% csrf_token %}
+        <div class="input-group mb-3" style="margin: 0 auto;">
+            <input type="text" autofocus name="msgcontent" class="form-control form-control-lg" placeholder="Type Your Message" id='contentmsg'>
+            <textarea id="encryptedmsgs" name="encryptedmsg" style="display: none;"></textarea>
+            <button class="btn btn-primary"  onclick="encmesg()" type="submit" id='sendmsg'><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </form>
+</div>
 {% endblock %}

@@ -11,9 +11,8 @@
 </form>
 <script>
 
-var key = forge.random.getBytesSync(32);
-var iv = forge.random.getBytesSync(32);
-console.log(key);
+var key = forge.random.getBytesSync(16);
+var iv = forge.random.getBytesSync(8);
 
 var key1 = new JSEncrypt();
 key1.setPublicKey(`{{pubkey1}}`);

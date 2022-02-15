@@ -732,7 +732,7 @@ class key_set(LoginRequiredMixin, View):
         return response
 class messages_list(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        mesgs = Message.objects.filter(res=request.user)
+        mesgs = Message.objects.filter(Q(to=request.user)|Q(author=request.user))
         context = {'msgs': mesgs,}
         return render(request, 'posts/messages_list.html', context)
 class shared_key(LoginRequiredMixin, View):
@@ -752,7 +752,7 @@ class messages_view(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         if User.objects.filter(username=request.GET.get('username')).exists():
             touser = User.objects.get(username=request.GET.get('username'))
-            msgs = Message.objects.filter(Q(to=request.user, author=touser)|Q(author=request.user, to=touser))
+            msgs = Message.objects.filter(Q(to=request.user, author=touser)|Q(author=request.user, to=touser)).order_by('date')
             
             try:
                 sharedkey = Keys.objects.get(Q(partner1=touser, partner2=request.user)|Q(partner1=request.user, partner2=touser))
@@ -786,10 +786,10 @@ class messages_view(LoginRequiredMixin, View):
             
             # Creating Message
             msg = request.POST.get('encryptedmsg')
-            createmsg = Message.objects.create(author=fromuser, msg=msg, to=touser)
+            createmsg = Message.objects.create(author=fromuser, msg=str(msg), to=touser)
             
             # Messages Listing
-            msgs = Message.objects.filter(Q(to=request.user, author=touser)|Q(author=request.user, to=touser))
+            msgs = Message.objects.filter(Q(to=request.user, author=touser)|Q(author=request.user, to=touser)).order_by('date')
             encprivkey = request.user.profile.privatekey
             pubkey = touser.profile.publickey
             try:
