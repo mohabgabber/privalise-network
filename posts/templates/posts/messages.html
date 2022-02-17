@@ -44,12 +44,8 @@
     async function encmesg() 
     {
         const message = await openpgp.createMessage({ text: document.getElementById('contentmsg').value }); 
-        const encrypted = await openpgp.encrypt({
-            message,
-            passwords: [getCookie('key')],
-            config: { preferredCompressionAlgorithm: openpgp.enums.compression.zlib }
-        });
-        // console.log(encrypted);
+        const encrypted = await openpgp.encrypt({message, passwords: [getCookie('key')],});
+        // console.log(await encrypted);
         document.getElementById('encryptedmsgs').value = await encrypted;
         document.msgform.submit();
     }
@@ -59,35 +55,49 @@
         });
         const decrypted = await openpgp.decrypt({
             message,
-            passwords: [getCookie('key')], // optional
-            config: { preferredCompressionAlgorithm: openpgp.enums.compression.zlib }
+            passwords: [getCookie('key')],
         });
         console.log(decrypted.data);
         document.getElementById(id).innerHTML = await decrypted.data;
+        document.getElementById('bottomviewscroll').scrollIntoView();
     }
 </script>
 <div class="w-100 content">
-    <div class="w-auto">
+    <div class="w-100 mx-auto container ">
         {% for msg in msgs %}
-            <script>decryptmsgs(`{{msg.msg}}`, `{{msg.id}}`)</script>
+        <script>decryptmsgs(`{{msg.msg}}`, `{{msg.id}}`)</script>
+        <div class="row">
             {% if msg.author == request.user %}
-                <div class="card bg-dark float-end mb-3">
-                    <div id="{{msg.id}}" class="card-body"></div>
+                    <div class="card mb-2 bg-dark w-100" style="width: 18rem;">
+                        <div class="card-body">
+                            <h6 class="card-subtitle mb-3 text-muted"><a href="{% url 'profile' msg.author.username %}" class="username card-link">{{msg.author}}</a> {{msg.date}}</h6>
+                            <p class="card-text" id="{{msg.id}}"></p>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="card bg-danger mb-3 w-100" style="width: 18rem;">
+                        <div class="card-body">
+                            <h6 class="card-subtitle mb-2 text-muted"><a href="{% url 'profile' msg.author.username %}" class="username card-link">{{msg.author}}</a> {{msg.date}}</h6>
+                            <p class="card-text" id="{{msg.id}}"></p>
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
-            {% else %}
-                <div class="card bg-primary float-start mb-3">
-                    <div id="{{msg.id}}" class="card-body"></div>
-                </div>
-            {% endif %}
-        {% endfor %}
+                {% endfor %}
+            </div>
+    <div id="bottomviewscroll" class="mx-auto text-muted text-center mb-5">End-To-End Encrypted Messages</div>
+    <div style="margin-top: 30px;" class="content">
+        <form method="POST" name="msgform" class="mx-auto w-75 mb-auto mt-5 content fixed-bottom">
+            {% csrf_token %}
+            <div class="input-group mb-3" style="margin: 0 auto;">
+                <input type="text" autofocus name="msgcontent" class="form-control form-control-lg" placeholder="Type Your Message" id='contentmsg'>
+                <textarea id="encryptedmsgs" name="encryptedmsg" style="display: none;"></textarea>
+                <button class="btn btn-primary"  onclick="encmesg()" type="submit" id='sendmsg'><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </form>
     </div>
-    <form method="POST" name="msgform" class="w-75 mx-auto content fixed-bottom">
-        {% csrf_token %}
-        <div class="input-group mb-3" style="margin: 0 auto;">
-            <input type="text" autofocus name="msgcontent" class="form-control form-control-lg" placeholder="Type Your Message" id='contentmsg'>
-            <textarea id="encryptedmsgs" name="encryptedmsg" style="display: none;"></textarea>
-            <button class="btn btn-primary"  onclick="encmesg()" type="submit" id='sendmsg'><i class="fas fa-paper-plane"></i></button>
-        </div>
-    </form>
 </div>
+<script>
+    // window.scroll(0,document.body.scrollHeight);
+</script>
 {% endblock %}
