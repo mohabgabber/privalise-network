@@ -108,8 +108,6 @@ class Keys(models.Model):
     partner2 = models.ForeignKey(User, related_name='partner2', on_delete=models.CASCADE)
     shared_key1 = models.TextField()
     shared_key2 = models.TextField()
-    iv1 = models.TextField()
-    iv2 = models.TextField()
 
 class Message(models.Model):
     id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
