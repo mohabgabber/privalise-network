@@ -766,7 +766,7 @@ class messages_view(LoginRequiredMixin, View):
             encprivkey = request.user.profile.privatekey
             pubkey = touser.profile.publickey
             
-            context = {'msgs': msgs, 'privkey': encprivkey, 'sharedkey': shkey,}
+            context = {'msgs': msgs, 'privkey': encprivkey, 'sharedkey': shkey, 'room_name': touser.username}
         else:
             messages.warning(request, 'User Doesn\'t Exist')
             return redirect('messages-list')
@@ -797,7 +797,7 @@ class messages_view(LoginRequiredMixin, View):
             except:
                 return redirect('set-sharedkey', touser=touser)
 
-            context = {'msgs': msgs, 'privkey': encprivkey, 'sharedkey': shkey,}
+            context = {'msgs': msgs, 'privkey': encprivkey, 'sharedkey': shkey, 'room_name': touser.username}
         else:
             messages.warning(request, 'User Doesn\'t Exist')
             return redirect('messages-list')
