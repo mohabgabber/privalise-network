@@ -744,7 +744,7 @@ class shared_key(LoginRequiredMixin, View):
         user1 = User.objects.get(username=touser)
         shared_key1 = request.POST.get('sharedkey1')
         shared_key2 = request.POST.get('sharedkey2')
-        Keys.objects.create(partner1=request.user, partner2=user1, shared_key1=shared_key1, shared_key2=shared_key2, iv1=request.POST.get('iv1'), iv2=request.POST.get('iv2'))
+        Keys.objects.create(partner1=request.user, partner2=user1, shared_key1=shared_key1, shared_key2=shared_key2)
         response = redirect('messages')
         response['Location'] += f'?username={user1.username}'
         return response
@@ -758,28 +758,21 @@ class messages_view(LoginRequiredMixin, View):
                 sharedkey = Keys.objects.get(Q(partner1=touser, partner2=request.user)|Q(partner1=request.user, partner2=touser))
                 if sharedkey.partner1 == request.user:
                     shkey = sharedkey.shared_key1
-                    iv = sharedkey.iv1
                 else:
                     shkey = sharedkey.shared_key2
-                    iv = sharedkey.iv2
             except:
                 return redirect('set-sharedkey', touser=touser)
             # Getting Message Parties's Pub/Priv Keys
             encprivkey = request.user.profile.privatekey
             pubkey = touser.profile.publickey
             
-            context = {'msgs': msgs, 'privkey': encprivkey, 'pubkey': pubkey, 'sharedkey': shkey, 'iv': iv,}
+            context = {'msgs': msgs, 'privkey': encprivkey, 'sharedkey': shkey,}
         else:
             messages.warning(request, 'User Doesn\'t Exist')
             return redirect('messages-list')
         return render(request, 'posts/messages.html', context)
     def post(self, request, *args, **kwargs):
         if User.objects.filter(username=request.GET.get('username')).exists():
-            try:
-                request.COOKIES['key']
-            except:
-                return redirect('set-key')
-            
             # Getting Message Parties
             touser = User.objects.get(username=request.GET.get('username'))
             fromuser = request.user
@@ -799,14 +792,12 @@ class messages_view(LoginRequiredMixin, View):
                 sharedkey = Keys.objects.get(Q(partner1=touser, partner2=request.user)|Q(partner1=request.user, partner2=touser))
                 if sharedkey.partner1 == request.user:
                     shkey = sharedkey.shared_key1
-                    iv = sharedkey.iv1
                 else:
                     shkey = sharedkey.shared_key2
-                    iv = sharedkey.iv2
             except:
                 return redirect('set-sharedkey', touser=touser)
 
-            context = {'msgs': msgs, 'privkey': encprivkey, 'pubkey': pubkey, 'sharedkey': shkey, 'iv': iv,}
+            context = {'msgs': msgs, 'privkey': encprivkey, 'sharedkey': shkey,}
         else:
             messages.warning(request, 'User Doesn\'t Exist')
             return redirect('messages-list')
