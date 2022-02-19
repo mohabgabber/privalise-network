@@ -4,9 +4,8 @@ Privalise, A Secure, Privacy-Friendly Social Network
 Copyright (C) 2022  Mohab Gabber
 
 This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+it under the terms of the GNU General Public License version 3 as published by
+the Free Software Foundation.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,7 +28,6 @@ INSTALLED_APPS = [
     'mod.apps.ModConfig',
     'crispy_forms',
     "captcha",
-    "channels",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -101,4 +99,3 @@ SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 SESSION_COOKIE_HTTPONLY  = True
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5000000
 CSRF_COOKIE_HTTPONLY = True
-ASGI_APPLICATION = "privalises.routing.application"

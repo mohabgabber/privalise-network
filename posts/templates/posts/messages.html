@@ -7,7 +7,8 @@
 <script src="{% static 'js/libraries/jquery.min.js' %}"></script>
 <script src="{% static 'js/libraries/openpgp.js' %}"></script>
 <script src="{% static 'js/libraries/forge.min.js' %}"></script>
-<script type="text/javascript">
+<script type="text/javascript">    
+    // END-TO-END ENCRYPTION FUNCTIONS!
     function getCookie(cname) 
     {
         let name = cname + "=";
@@ -16,10 +17,10 @@
         for(let i = 0; i <ca.length; i++) {
             let c = ca[i];
             while (c.charAt(0) == ' ') {
-            c = c.substring(1);
+                c = c.substring(1);
             }
             if (c.indexOf(name) == 0) {
-            return c.substring(name.length, c.length);
+                return c.substring(name.length, c.length);
             }
         }
         return "";
@@ -36,7 +37,8 @@
     var decryptsharedkey = new JSEncrypt();
     decryptsharedkey.setPrivateKey(plainprivkey);
     var uncryptedsharedkey = decryptsharedkey.decrypt(sharedkey);
-    async function encmesg() 
+    console.log(uncryptedsharedkey);
+    async function encmesg(msg) 
     {
         const message = await openpgp.createMessage({ text: document.getElementById('contentmsg').value }); 
         const encrypted = await openpgp.encrypt({message, passwords: [uncryptedsharedkey],});
@@ -56,29 +58,30 @@
     }
 </script>
 <div class="w-100 content">
-    <div class="w-100 mx-auto container ">
+    <div class="w-100 mx-auto container" id="msgsboxlist">
         {% for msg in msgs %}
         <script>decryptmsgs(`{{msg.msg}}`, `{{msg.id}}`)</script>
         <div class="row">
             {% if msg.author == request.user %}
-                    <div class="card border-success mb-2 bg-dark w-100" style="width: 18rem;">
-                        <div class="card-body">
-                            <h6 class="card-subtitle mb-3 text-muted"><a href="{% url 'profile' msg.author.username %}" class="username card-link">{{msg.author}}</a> {{msg.date|date:"SHORT_DATE_FORMAT"}}</h6>
-                            <p class="card-text" id="{{msg.id}}"></p>
-                        </div>
+                <div class="card border-success border-3 mb-2 bg-dark w-100" style="width: 18rem;">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-3 text-muted"><a href="{% url 'profile' msg.author.username %}" class="username card-link">{{msg.author}}</a> {{msg.date|date:"SHORT_DATE_FORMAT"}}</h6>
+                        <p class="card-text" id="{{msg.id}}"></p>
                     </div>
-                    {% else %}
-                    <div class="card bg-dark mb-3 w-100" style="width: 18rem;">
-                        <div class="card-body">
-                            <h6 class="card-subtitle mb-2 text-muted"><a href="{% url 'profile' msg.author.username %}" class="username card-link">{{msg.author}}</a> {{msg.date}}</h6>
-                            <p class="card-text" id="{{msg.id}}"></p>
-                        </div>
-                    </div>
-                    {% endif %}
                 </div>
-                {% endfor %}
-            </div>
-    <div id="bottomviewscroll" class="mx-auto text-muted text-center mb-5">End-To-End Encrypted Messages</div>
+            {% else %}
+                <div class="card bg-dark mb-3 w-100" style="width: 18rem;">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted"><a href="{% url 'profile' msg.author.username %}" class="username card-link">{{msg.author}}</a> {{msg.date}}</h6>
+                        <p class="card-text" id="{{msg.id}}"></p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    <div id="bottomviewscroll" class="mx-auto text-muted text-center mb-5"><a href="javascript:location.reload(true)" class="btn btn-outline-info">Refresh To See If There Are New Messages</a>
+    </div>
     <div style="margin-top: 30px;" class="content">
         <form method="POST" name="msgform" class="mx-auto w-75 mb-auto mt-5 content fixed-bottom">
             {% csrf_token %}
