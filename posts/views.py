@@ -733,7 +733,13 @@ class key_set(LoginRequiredMixin, View):
 class messages_list(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         mesgs = Message.objects.filter(Q(to=request.user)|Q(author=request.user))
-        context = {'msgs': mesgs,}
+        partners = []
+        for ms in mesgs:
+            if request.user == ms.author:
+                partners.add(User.objects.get(username=ms.to.username))
+            else:
+                partners.append(User.objects.get(username=ms.author.username))
+        context = {'msgs': partners,}
         return render(request, 'posts/messages_list.html', context)
 class shared_key(LoginRequiredMixin, View):
     def get(self, request, touser, *args, **kwargs):
@@ -764,9 +770,8 @@ class messages_view(LoginRequiredMixin, View):
                 return redirect('set-sharedkey', touser=touser)
             # Getting Message Parties's Pub/Priv Keys
             encprivkey = request.user.profile.privatekey
-            pubkey = touser.profile.publickey
             
-            context = {'msgs': msgs, 'privkey': encprivkey, 'sharedkey': shkey, 'room_name': touser.username}
+            context = {'msgs': msgs, 'privkey': encprivkey, 'sharedkey': shkey,}
         else:
             messages.warning(request, 'User Doesn\'t Exist')
             return redirect('messages-list')
@@ -787,7 +792,6 @@ class messages_view(LoginRequiredMixin, View):
             # Messages Listing
             msgs = Message.objects.filter(Q(to=request.user, author=touser)|Q(author=request.user, to=touser)).order_by('date')
             encprivkey = request.user.profile.privatekey
-            pubkey = touser.profile.publickey
             try:
                 sharedkey = Keys.objects.get(Q(partner1=touser, partner2=request.user)|Q(partner1=request.user, partner2=touser))
                 if sharedkey.partner1 == request.user:
@@ -797,7 +801,7 @@ class messages_view(LoginRequiredMixin, View):
             except:
                 return redirect('set-sharedkey', touser=touser)
 
-            context = {'msgs': msgs, 'privkey': encprivkey, 'sharedkey': shkey, 'room_name': touser.username}
+            context = {'msgs': msgs, 'privkey': encprivkey, 'sharedkey': shkey,}
         else:
             messages.warning(request, 'User Doesn\'t Exist')
             return redirect('messages-list')

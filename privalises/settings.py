@@ -28,7 +28,6 @@ INSTALLED_APPS = [
     'mod.apps.ModConfig',
     'crispy_forms',
     "captcha",
-    "channels",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -82,7 +81,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
@@ -101,4 +99,3 @@ SESSION_ENGINE = "django.contrib.sessions.backends.signed_cookies"
 SESSION_COOKIE_HTTPONLY  = True
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5000000
 CSRF_COOKIE_HTTPONLY = True
-ASGI_APPLICATION = "privalises.routing.application"

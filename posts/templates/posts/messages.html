@@ -37,11 +37,13 @@
     var decryptsharedkey = new JSEncrypt();
     decryptsharedkey.setPrivateKey(plainprivkey);
     var uncryptedsharedkey = decryptsharedkey.decrypt(sharedkey);
+    console.log(uncryptedsharedkey);
     async function encmesg(msg) 
     {
-        const message = await openpgp.createMessage({ text: msg }); 
+        const message = await openpgp.createMessage({ text: document.getElementById('contentmsg').value }); 
         const encrypted = await openpgp.encrypt({message, passwords: [uncryptedsharedkey],});
-        return await encrypted;
+        document.getElementById('encryptedmsgs').value = await encrypted;
+        document.msgform.submit();
     }
     async function decryptmsgs(msg, id) {
         const message = await openpgp.readMessage({
@@ -90,33 +92,4 @@
         </form>
     </div>
 </div>
-{{ room_name|json_script:"room-name" }}
-<script>
-    
-    // WEBSOCKETS!
-    const roomName = JSON.parse(document.getElementById('room-name').textContent);
-    const chatSocket = new WebSocket('ws://' + window.location.host + '/ws/chat/' + roomName + '/');
-    chatSocket.onmessage = function(e) {
-        const data = JSON.parse(e.data);
-        console.log(decryptmsgs(data.message, `ca76391f-8d56-46de-8e0c-1058b7255af9`))
-    }
-    chatSocket.onclose = function(e) {
-        console.error('Chat socket closed unexpectedly');
-    };
-    document.querySelector('#contentmsg').onkeyup = function(e) {
-        if (e.keyCode === 13) {
-            document.querySelector('#sendmsg').click();
-        }
-    };
-    document.querySelector('#sendmsg').onclick = function(e) {
-        e.preventDefault();
-        const messageInputDom = document.querySelector('#contentmsg');
-        const message = encmesg(messageInputDom.value);
-        chatSocket.send(JSON.stringify({
-            'message': message
-        }));
-        messageInputDom.value = '';
-    };
-
-</script>
 {% endblock %}
