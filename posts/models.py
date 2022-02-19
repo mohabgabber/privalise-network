@@ -109,6 +109,11 @@ class Keys(models.Model):
     shared_key1 = models.TextField()
     shared_key2 = models.TextField()
 
+class Chats(models.Model):
+    id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
+    user = models.ForeignKey(User, related_name='messages', on_delete=models.CASCADE)
+    partners = models.ManyToManyField(User, blank=True, related_name='partners')
+
 class Message(models.Model):
     id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     msg = models.TextField(null=False, blank=False)

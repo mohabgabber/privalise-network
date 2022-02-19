@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Post, Comment, Profile, Notification, Tag, Notes, Message, Keys
+from .models import Post, Comment, Profile, Notification, Tag, Notes, Message, Keys, Chats
 from django.views import View
 from cryptography.fernet import Fernet
 from django.http import HttpResponseRedirect
@@ -732,27 +732,40 @@ class key_set(LoginRequiredMixin, View):
         return response
 class messages_list(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        mesgs = Message.objects.filter(Q(to=request.user)|Q(author=request.user))
-        partners = []
-        for ms in mesgs:
-            if request.user == ms.author:
-                partners.add(User.objects.get(username=ms.to.username))
-            else:
-                partners.append(User.objects.get(username=ms.author.username))
-        context = {'msgs': partners,}
+        mesgs = Chats.objects.filter(user=request.user)
+        context = {'msgs': mesgs,}
         return render(request, 'posts/messages_list.html', context)
 class shared_key(LoginRequiredMixin, View):
     def get(self, request, touser, *args, **kwargs):
+        user1 = User.objects.get(username=touser)
+        if Keys.objects.filter(Q(partner1=user1, partner2=request.user)|Q(partner1=request.user, partner2=user1)).exists():
+            response = redirect('messages')
+            response['Location'] += f'?username={user1.username}'
+            return response 
+        elif user1 == request.user:
+            messages.warning(request, "Don't Talk To Your Self, I'm worried about you.")
+            return redirect('messages-list')
         pubkey1 = request.user.profile.publickey
         pubkey2 = User.objects.get(username=touser)
         return render(request, 'posts/set_shared_key.html', {'pubkey1': pubkey1, 'pubkey2': pubkey2})
     def post(self, request, touser, *args, **kwargs):
         user1 = User.objects.get(username=touser)
+        if Keys.objects.filter(Q(partner1=user1, partner2=request.user)|Q(partner1=request.user, partner2=user1)).exists():
+            response = redirect('messages')
+            response['Location'] += f'?username={user1.username}'
+            return response
+        elif user1 == request.user:
+            messages.warning(request, "Don't Talk To Your Self, I'm worried about you.")
+            return redirect('messages-list')
         shared_key1 = request.POST.get('sharedkey1')
         shared_key2 = request.POST.get('sharedkey2')
         Keys.objects.create(partner1=request.user, partner2=user1, shared_key1=shared_key1, shared_key2=shared_key2)
         response = redirect('messages')
         response['Location'] += f'?username={user1.username}'
+        chat = Chats.objects.get(user=request.user)
+        chat1 = Chats.objects.get(user=user1)
+        chat.partners.add(user1) 
+        chat1.partners.add(request.user)
         return response
 class messages_view(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):

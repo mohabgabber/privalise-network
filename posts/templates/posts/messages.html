@@ -80,7 +80,8 @@
         </div>
         {% endfor %}
     </div>
-    <div id="bottomviewscroll" class="mx-auto text-muted text-center mb-5">End-To-End Encrypted Messages</div>
+    <div id="bottomviewscroll" class="mx-auto text-muted text-center mb-5"><a href="javascript:location.reload(true)" class="btn btn-outline-info">Refresh To See If There Are New Messages</a>
+    </div>
     <div style="margin-top: 30px;" class="content">
         <form method="POST" name="msgform" class="mx-auto w-75 mb-auto mt-5 content fixed-bottom">
             {% csrf_token %}
