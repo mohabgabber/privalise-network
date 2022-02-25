@@ -1,26 +1,64 @@
 {% extends 'posts/base.html' %}
 {% block title %}About Us. Privalise!, Where Everything Is Awesome{% endblock title %}
 {% block content %}
-<div class="post">
-	<div class="post-text">
-		<h1 style="color: azure;">What Is Privalise?</h1>
-		<p style="font-size: large;">-> Privalise is an <a href="https://github.com/mohabgabber/privalise-network" target="_blank">Open-Source</a> Social Media network that focuses on privacy and security of it's users. it's made by and for the community with no profits Or ads at all</p>
-		<h2 style="color: azure;">What Do You Mean Privacy And Security?</h2>
-		<p style="font-size: large;">-> Well, Privalise doesn't record any data at all about it's users (No ips, no emails/phone numbers, no tracking or any fingerprinting). So the only data we have on you is what you actually post, comment, etc... hence even if our database was leaked no one would be able to identify you.</p>
-		<h2 style="color: azure;">What Are The Technologies Behind Privalise?</h2>
-		<p style="font-size: large;">-> Everything Privalise uses is Open-Source. We do not use an y api or remote resources, meaning that any framework we use like bootstrap, fontawesome, django, etc... is stored locally to terminate any possibilty of user-tracking on the website.
-        What we specifically use:
-        <ul style="font-size: large;">
-        	<li>Python 3</li>
-        	<li>Bootstrap 5</li>
-        	<li>Django 4</li>
-        	<li>Html/Css</li>
-        	<li>FontAwesome 5</li>
-        </ul>
-        <p style="font-size: large;">you shouldn't believe us!, open the <a href="https://github.com/mohabgabber/privalise-network" target="_blank">source code</a> and check yourself</p>
-  		</p>
-        <h2 style="color: azure;">How Can You Help Us</h2>
-        <p style="font-size: large;">You can support us by using privalise and caring about privacy, sharing privalise across the internet or becoming a <a href="https://patreon.com/mohabgabber" target="_blank">patreon</a> ;)</p>
+<div class="accordion w-100" id="qanda">
+	<div class="accordion-item">
+	  <h2 class="accordion-header" id="headingOne">
+		<button class="accordion-button text-light bg-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+		What Is Privalise?
+		</button>
+	  </h2>
+	  <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#qanda">
+		<div class="accordion-body bg-dark">
+		  <strong>-> Privalise is an <a href="https://github.com/mohabgabber/privalise-network" target="_blank">Open-Source</a> Social Media network that focuses on the privacy and security of it's users. it's made by and for the community with no profits Or ads at all</p></strong>
+		</div>
+	  </div>
 	</div>
-</div>
+	<div class="accordion-item">
+	  <h2 class="accordion-header" id="headingTwo">
+		<button class="accordion-button collapsed  text-light bg-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+		What Do You Mean Privacy And Security?
+		</button>
+	  </h2>
+	  <div id="collapseTwo" class="accordion-collapse collapse  text-light bg-dark" aria-labelledby="headingTwo" data-bs-parent="#qanda">
+		<div class="accordion-body">
+		  <strong>-> Well, Privalise doesn't record any data at all about it's users (No ips, no emails/phone numbers, no tracking or any fingerprinting). So the only data we have on you is what you actually post, comment, etc... hence even if our database was leaked no one would be able to identify you. and sensitive services like messages, notes, and the password manager are end-to-end encrypted meaning no one can read your them except you</p></strong>
+		</div>
+	  </div>
+	</div>
+	<div class="accordion-item">
+	  <h2 class="accordion-header" id="headingThree">
+		<button class="accordion-button collapsed  text-light bg-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+		What Are The Technologies Behind Privalise?
+		</button>
+	  </h2>
+	  <div id="collapseThree" class="accordion-collapse collapse  text-light bg-dark" aria-labelledby="headingThree" data-bs-parent="#qanda">
+		<div class="accordion-body">
+			-> Everything Privalise uses is Open-Source. We do not use any api or remote resources, meaning that any framework we use like bootstrap, fontawesome, django, etc... is stored locally to terminate any possibilty of user-tracking on the website.
+			What we specifically use:
+			<ul style="font-size: large;">
+				<li>Python 3</li>
+				<li>Bootstrap 5</li>
+				<li>Django 4</li>
+				<li>Html/Css</li>
+				<li>FontAwesome 5</li>
+			</ul>
+			<p style="font-size: large;">you shouldn't believe us!, open the <a href="https://github.com/mohabgabber/privalise-network" target="_blank">source code</a> and check yourself</p>
+			  </p>
+		</div>
+	  </div>
+	</div>
+	<div class="accordion-item">
+		<h2 class="accordion-header" id="headingThree">
+			<button class="accordion-button collapsed  text-light bg-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseThree">
+			How Can You Help Us
+			</button>
+		</h2>
+		<div id="collapseFour" class="accordion-collapse collapse  text-light bg-dark" aria-labelledby="headingThree" data-bs-parent="#qanda">
+			<div class="accordion-body">
+				You can support us by using privalise and caring about privacy, sharing privalise across the internet or becoming a <a href="https://patreon.com/mohabgabber" target="_blank">patreon</a> ;)
+			</div>
+		</div>
+	</div>
+  </div>
 {% endblock content %}

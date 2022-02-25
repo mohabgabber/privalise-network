@@ -707,29 +707,9 @@ class del_note(LoginRequiredMixin, View):
         return redirect('notes')
 class key_set(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        try:
-            request.COOKIES['key']
-            messages.success(request, 'your key is already set.')
-            return redirect('home')
-        except:
-            pass
         return render(request, 'posts/set_key.html')
     def post(self, request, *args, **kwargs):
-        try:
-            request.COOKIES['key']
-            messages.success(request, 'your key is already set.')
-            return redirect('home')
-        except:
-            pass
-        password = request.POST.get('password')
-        user = authenticate(username=request.user.username,password=password)
-        if user:
-            response = redirect('home')
-            messages.success(request, 'your key is set')
-        else:
-            messages.warning(request, 'wrong authentication')
-            return render(request, 'posts/set_key.html')
-        return response
+        return 
 class messages_list(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         mesgs = Chats.objects.filter(user=request.user)

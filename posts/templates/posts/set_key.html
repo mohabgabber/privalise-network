@@ -1,14 +1,44 @@
 {% extends 'posts/base.html' %}
-{% load post_extras %}
+{% load static %}
 {% block title %}Set Your Key On Privalise!, Where Everything Is Awesome{% endblock title %}
 {% block content %}
+<script>
+    function getCookie(cname) 
+    {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+    if (getCookie('key') != '') {
+        window.location.replace("{% url 'messages-list' %}");
+    }
+</script>
 <center>
     <form method="POST" class="align-middle">
         {% csrf_token %}
         <div class="input-group mb-3" style="margin: 0 auto;">
-            <input type="password" class="form-control form-control-lg" placeholder="Please Type Your Password" aria-label="password" name="password">
-            <button class="btn btn-primary" type="submit">Submit <i class="fas fa-save"></i></button>
+            <input type="password" class="form-control form-control-lg" id="password" placeholder="Please Type Your Password" aria-label="password" name="password">
+            <button class="btn btn-primary" onclick="setcooki()" type="submit">Submit <i class="fas fa-save"></i></button>
         </div>
     </form>
 </center>
+<script src="{% static 'js/libraries/forge.min.js' %}"></script>
+<script>
+    function setcooki(){
+        var md = forge.md.sha512.create();
+        md.update(document.getElementById('password').value);
+        document.cookie = "key=" + md.digest().toHex() + "; path=/;";
+        window.location.replace("{% url 'messages-list' %}")
+    }
+</script>
 {% endblock %}

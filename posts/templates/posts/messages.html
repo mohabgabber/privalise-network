@@ -8,6 +8,7 @@
 <script src="{% static 'js/libraries/openpgp.min.js' %}"></script>
 <script src="{% static 'js/libraries/forge.min.js' %}"></script>
 <script type="text/javascript">    
+
     // END-TO-END ENCRYPTION FUNCTIONS!
     function getCookie(cname) 
     {
@@ -24,7 +25,10 @@
             }
         }
         return "";
-    }    
+    }
+    if (getCookie('key') == '') {
+        window.location.replace("{% url 'set-key' %}");
+    }
     function decryptkey(password) 
     {
         var pki = forge.pki;
