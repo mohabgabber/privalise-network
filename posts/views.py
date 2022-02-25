@@ -712,8 +712,8 @@ class key_set(LoginRequiredMixin, View):
         return 
 class messages_list(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        mesgs = Chats.objects.filter(user=request.user)
-        context = {'msgs': mesgs,}
+        partners = Chats.objects.get(user=request.user)
+        context = {'partners': partners,}
         return render(request, 'posts/messages_list.html', context)
 class shared_key(LoginRequiredMixin, View):
     def get(self, request, touser, *args, **kwargs):
