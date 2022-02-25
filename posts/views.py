@@ -19,7 +19,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 import os
-from .validations import valid_addr, valid_sig, create_addr, pay, receive, check_addr, check_conf, check_conf_number
+from .validations import valid_addr, valid_sig, create_addr, pay, receive, check_addr, check_conf, check_conf_number, gpgkeyimport
 from users.forms import verification
 from django.urls import reverse_lazy
 from django.http import HttpResponse
@@ -211,13 +211,6 @@ def settings(request):
             p_form.bio = request.POST.get('bio')
             p_form.public_key = request.POST.get('public_key')
             p_form.image = request.POST.get('image')
-            p_form.fingerprint = request.POST.get('fingerprint')
-            if p_form.public_key != '' and p_form.fingerprint == '':
-                messages.warning(request, f'You Can\'t Add Public Key Without It\'s FingerPrint')
-                return redirect('profile-update')
-            elif p_form.public_key == '' and p_form.fingerprint != '':
-                messages.warning(request, f'You Can\'t Add FingerPrint Without It\'s Public Key')
-                return redirect('profile-update')
             if p_form.public_key != '':
                 f = open(f'keys/{request.user.username}+{request.user.id}.txt', 'w')
                 key = f'''
@@ -225,7 +218,15 @@ def settings(request):
                 '''
                 f.write(key)
                 f.close()
-                pgp = os.popen(f'gpg --import keys/{request.user.username}+{request.user.id}.txt')
+                with open(f'keys/{request.user.username}+{request.user.id}.txt', 'rb') as s:
+                    armorkey = s.read()
+                if gpgkeyimport(armorkey) != False:
+                    p_form.fingerprint = gpgkeyimport(armorkey)
+                    os.remove(f'keys/{request.user.username}+{request.user.id}.txt')
+                else:
+                    os.remove(f'keys/{request.user.username}+{request.user.id}.txt')
+                    messages.warning(request, "Not A PGP Key")
+                    return redirect('profile-update')
             if p_form.monero == '':
                 p_form.save()
                 messages.success(request, f'your account has been updated')
