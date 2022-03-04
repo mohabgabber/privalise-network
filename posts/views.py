@@ -220,19 +220,22 @@ def settings(request):
                 f.close()
                 with open(f'keys/{request.user.username}+{request.user.id}.txt', 'rb') as s:
                     armorkey = s.read()
-                if gpgkeyimport(armorkey) != False:
-                    p_form.fingerprint = gpgkeyimport(armorkey)
+                imprtkey = gpgkeyimport(armorkey)
+                if imprtkey != False:
+                    profile = Profile.objects.get(user=request.user)
+                    profile.fingerprint = imprtkey
+                    profile.save()
                     os.remove(f'keys/{request.user.username}+{request.user.id}.txt')
                 else:
                     os.remove(f'keys/{request.user.username}+{request.user.id}.txt')
                     messages.warning(request, "Not A PGP Key")
                     return redirect('profile-update')
             if p_form.monero == '':
-                p_form.save()
+                profileform.save()
                 messages.success(request, f'your account has been updated')
                 return redirect('profile', username=request.user)
             elif valid_addr(p_form.monero):
-                p_form.save()
+                profileform.save()
                 messages.success(request, f'your account has been updated')
                 return redirect('profile', username=request.user)
             else:
@@ -672,31 +675,17 @@ class more_view(LoginRequiredMixin, View):
         return render(request, 'posts/more_temp.html', {'w':w,})
 class notes(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        try:
-            request.COOKIES['key']
-        except:
-            return redirect('set-key')
-        key = request.COOKIES['key']
-        private_key = serialization.load_pem_private_key(bytes(request.user.profile.privatekey, 'utf-8'), password=None)
+        encprivkey = request.user.profile.privatekey
+        pubkey = request.user.profile.publickey
         notes = Notes.objects.filter(author=request.user).order_by('-date')
-        response = render(request, 'posts/notes.html')
+        response = render(request, 'posts/notes.html', {'privkey': encprivkey, 'notes': notes, 'pubkey': pubkey,})
         return response
     def post(self, request, *args, **kwargs):
-        content = bytes(request.POST.get('content'), 'utf-8').strip()
-        if len(content) > 420:
-            messages.warning(request, 'Please Do not write more than 420 characters')
-            return render(request, 'posts/notes.html', {'content': content,})
-        try:
-            request.COOKIES['key']
-        except:
-            return redirect('set-key')
-        key = request.COOKIES['key']
-        private_key = serialization.load_pem_private_key(bytes(request.user.profile.privatekey, 'utf-8'), password=None)
-        public_key = private_key.public_key()
-        ciphertext = public_key.encrypt(content, padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None))
-        Notes.objects.create(author=request.user, content=ciphertext)
         notes = Notes.objects.filter(author=request.user).order_by('-date')
-        response = render(request, 'posts/notes.html')
+        Notes.objects.create(author=request.user, content=request.POST.get('note'))
+        encprivkey = request.user.profile.privatekey
+        pubkey = request.user.profile.publickey
+        response = render(request, 'posts/notes.html', {'privkey': encprivkey, 'notes': notes, 'pubkey': pubkey,})
         return response
 class del_note(LoginRequiredMixin, View):
     def post(self, request, id, *args, **kwargs):
@@ -710,7 +699,7 @@ class key_set(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         return render(request, 'posts/set_key.html')
     def post(self, request, *args, **kwargs):
-        return 
+        return render(request, 'posts/set_key.html')
 class messages_list(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         partners = Chats.objects.get(user=request.user)

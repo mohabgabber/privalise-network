@@ -95,7 +95,7 @@ class Profile(models.Model):
     factor_auth = models.BooleanField(default=False)
     debosited = models.BooleanField(default=False)
     rec_addr = models.CharField(max_length=106, blank=False, default='')
-    fingerprint = models.CharField(max_length=50, blank=True)
+    fingerprint = models.CharField(max_length=100, blank=True)
     privatekey = models.TextField()
     publickey = models.TextField()
     def __str__(self):
@@ -145,10 +145,12 @@ class Hashtag(models.Model):
         return self.title
 '''
 class Notes(models.Model):
+    id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     content = models.TextField(blank=False)
     author = models.ForeignKey(User, related_name='notes', blank=False, null=False, on_delete=models.CASCADE)
     date = models.DateTimeField(default=timezone.now)
 class Passwords(models.Model):
+    id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     password = models.TextField(blank=False)
     url = models.TextField()
     name = models.TextField()

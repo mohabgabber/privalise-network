@@ -4,7 +4,6 @@ from monero.wallet import Wallet
 from decimal import Decimal
 from monero.address import address
 from cryptography.fernet import Fernet 
-import sys
 c = gpg.Context(armor=True)
 c.home_dir = os.path.expanduser("~/.gnupg")
 w = Wallet(port=28088)
@@ -63,7 +62,7 @@ def valid_addr(addr):
 def gpgkeyimport(ssss):
     try: 
         result = c.key_import(ssss)
-        fingerprint = result.imports[0].fpr
+        fingerprint = str(result.imports[0].fpr)
         return fingerprint
     except:
         return False
