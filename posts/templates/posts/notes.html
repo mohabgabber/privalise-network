@@ -1,17 +1,70 @@
 {% extends 'posts/base.html' %}
 {% load post_extras %}
+{% load static %}
 {% block title %}Search Posts And Users On Privalise!, Where Everything Is Awesome{% endblock title %}
 {% block content %}
+<script src="{% static 'js/libraries/jsencrypt.min.js' %}"></script>
+<script src="{% static 'js/libraries/jquery.min.js' %}"></script>
+<script src="{% static 'js/libraries/openpgp.min.js' %}"></script>
+<script src="{% static 'js/libraries/forge.min.js' %}"></script>
+<script type="text/javascript">    
+
+    // END-TO-END ENCRYPTION FUNCTIONS!
+    function getCookie(cname) 
+    {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+    if (getCookie('key') == '') {
+        window.location.replace("{% url 'set-key' %}");
+    }
+    function decryptkey(password) 
+    {
+        var pki = forge.pki;
+        var privateKey = pki.decryptRsaPrivateKey(`{{privkey}}`, password);
+        var pem = pki.privateKeyToPem(privateKey);
+        return pem
+    }
+    var plainprivkey = decryptkey(getCookie('key'));
+    function encnote() 
+    {
+        var encrypt = new JSEncrypt();
+        encrypt.setPublicKey(`{{pubkey}}`);
+        var encryptednote = encrypt.encrypt(document.getElementById('notecontent').value);
+        document.getElementById('noteencrypted').value = encryptednote;
+        document.msgform.submit();
+    }
+    function decryptnotes(note, id) {
+        var decrypt = new JSEncrypt();
+        decrypt.setPrivateKey(plainprivkey);
+        var decryptednote = decrypt.decrypt(note);
+        console.log(decryptednote);
+        document.getElementById(id).innerHTML = decryptednote;
+    //    document.getElementById('bottomviewscroll').scrollIntoView();
+    }
+</script>
 <center>
     <form method="POST">
         {% csrf_token %}
         <div class="input-group mb-3" style="margin: 0 auto;">
           {% if content %}
-            <textarea class="form-control form-control-lg" placeholder="NOTE BODY (420 Characters MAX)" cols="55" rows="6" aria-label="Username" name="content">{{content}}</textarea>
+            <textarea class="form-control form-control-lg" id="notecontent" placeholder="NOTE BODY (420 Characters MAX)" cols="55" rows="6" name="notes">{{content}}</textarea>
           {% else %}
-            <textarea class="form-control form-control-lg" placeholder="NOTE BODY (420 Characters MAX)" cols="55" rows="6" aria-label="Username" name="content"></textarea>
+            <textarea class="form-control form-control-lg" id="notecontent" placeholder="NOTE BODY (420 Characters MAX)" cols="55" rows="6" name="notes"></textarea>
           {% endif %}
-            <button class="btn btn-primary" type="submit">Save <i class="fas fa-save"></i></button>
+          <textarea style="display: none;" id="noteencrypted" name="note"></textarea>
+            <button onclick="encnote()" class="btn btn-primary" type="submit">Save <i class="fas fa-save"></i></button>
         </div>
     </form>
 </center>
@@ -19,16 +72,21 @@
     <div class="row">
         <center><h2>Your End-To-End Encrypted Notes <i class="fas fa-list-alt"></i></h2></center>
         {% for note in notes %}
-            <div class="col-sm" style='margin-bottom:7px;'>
-                <div class="card bg-dark" style="width: 18rem;">
-                    <div class="card-body">
-                        <h5 class="card-title">@{{request.user.username}}</h5>
-                        <p class="card-text">{{note}}</p>
-                        <a href="#" class="card-link">Open</a>
-                        <a href="#" class="card-link">Remove</a>
-                    </div>
+        <div class="col-sm" style='margin-bottom:7px;'>
+            <div class="card bg-dark" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">@{{request.user.username}} {{note.date}}</h5>
+                    <p class="card-text" id="{{note.id}}"></p>
+                    <!-- <a href="#" class="card-link">Open</a> -->
+                    <form method="POST" action="{% url 'delete-note' note.id %}">
+                        {% csrf_token %}
+                        <button class="card-link btn btn-outline-danger" type="submit">Remove</button>
+                    </form>
                 </div>
+
             </div>
+        </div>
+        <script>decryptnotes(`{{note.content}}`, `{{note.id}}`)</script>
         {% endfor %}
     </div>
 </div>
