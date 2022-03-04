@@ -30,7 +30,7 @@
                         </div>
                         <a style="text-decoration: inherit; color: inherit;" href="{% url 'post-detail' post.pk %}">
                             <div class="post-text text-wrap text-break" style="width: 100;">
-                                <p>{{ post.content|convert_markdown|safe }}</p>
+                                <p>{{ post.content }}</p>
                                 <a style="width: 40%; height: 35%;" href="{% url 'post-detail' post.pk %}" class="btn btn-outline-info">Open Post</a>
                             </div>
                         </a>
@@ -70,7 +70,7 @@
                         </div>
                         <a style="text-decoration: inherit; color: inherit;" href="{% url 'post-detail' comment.post.id %}#{{comment.id}}">
                             <div class="post-text text-wrap text-break" style="width: 100; text-align: left;">
-                                <p>{{ comment.content|convert_markdown|safe }}</p>
+                                <p>{{ comment.content }}</p>
                                 <a style="width: 40%; height: 35%;" href="{% url 'post-detail' comment.post.pk %}" class="btn btn-outline-info">Open Comment</a>
                             </div>
                         </a>

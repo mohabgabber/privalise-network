@@ -1,6 +1,5 @@
 {% extends 'posts/base.html' %}
 {% load static %}
-{% load post_extras %}
 {% load crispy_forms_tags %}
 {% block title %}{{post.author}}'s Post On Privalise!, Where Everything Is Awesome{% endblock title %}
 {% block content %}
@@ -19,7 +18,7 @@
         </div>
 
         <div class="post-text text-wrap text-break" style="width: 100%;">
-          <p>{{ post.content|convert_markdown|safe }}</p>
+          <p>{{ post.content }}</p>
           {% if request.user == post.author %}
             <button class="btn btn-primary">{{post.likes.count}} Upvotes</button>
               <div class="dropdown" style="margin-bottom: 6px;">
@@ -114,7 +113,7 @@
             </div>
           </div>
           <div class="post-text text-wrap text-break" style="text-align: left; width: 100%;">
-            <p>{{ comment.content|convert_markdown|safe }}</p>
+            <p>{{ comment.content }}</p>
             {% if request.user == comment.author %}
                <style type="text/css">
                   #editcomment{{comment.id}}:target 
