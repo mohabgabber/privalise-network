@@ -1,4 +1,3 @@
-{% load post_extras %}
 {% for post in posts %}
             <div class="post shadow-lg" style="text-align: left;  margin: 0 auto; margin-bottom: 8px;">
                 <div class="picture-containers">
@@ -16,7 +15,7 @@
 
                     <a style="text-decoration: inherit; color: inherit;" href="{% url 'post-detail' post.pk %}">
                         <div class="post-text text-wrap text-break" style="width: 100%;">
-                            <p>{{ post.content|convert_markdown|safe|truncatechars:150 }}</p>
+                            <p>{{ post.content|truncatechars:150 }}</p>
                                 <button class="btn btn-outline-info" style="margin: 5px;">{{ post.likes.count }} Upvotes</button>
                                 <a href="{% url 'post-detail' post.pk %}" class="btn btn-outline-info">Open Post</a>
                         </div>
