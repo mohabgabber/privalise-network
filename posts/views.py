@@ -222,8 +222,8 @@ def settings(request):
                     armorkey = s.read()
                 imprtkey = gpgkeyimport(armorkey)
                 if imprtkey != False:
-                    profile = Profile.objects.get(user=request.user)
-                    profile.fingerprint = imprtkey
+                    profile = request.user.profile
+                    profile.fingerprint = str(imprtkey)
                     profile.save()
                     os.remove(f'keys/{request.user.username}+{request.user.id}.txt')
                 else:
