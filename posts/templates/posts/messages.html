@@ -57,7 +57,7 @@
             message,
             passwords: [uncryptedsharedkey],
         });
-        document.getElementById(id).innerHTML = await decrypted.data;
+        document.getElementById(id).innerText = await decrypted.data;
         document.getElementById('bottomviewscroll').scrollIntoView();
     }
 </script>

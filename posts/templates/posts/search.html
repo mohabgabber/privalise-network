@@ -4,7 +4,7 @@
     <center><br>
         <form method="GET" action="{% url 'search-results' %}">
             <div class="input-group" style="margin: 0 auto;">
-                <input type="text" class="form-control form-control-lg" placeholder="Username" aria-label="Username" name="query" value="{{ request.GET.query }}">
+                <input type="text" class="form-control form-control-lg" placeholder="Search Content" name="query" value="{{ request.GET.query }}">
                 <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i></button>
             </div>
         </form>

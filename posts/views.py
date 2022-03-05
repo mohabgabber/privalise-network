@@ -26,6 +26,9 @@ from django.http import HttpResponse
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.contrib import messages
 from django.contrib.auth import authenticate
+
+# POSTS HANDLING
+
 class PostListView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         logged_in_user = request.user
@@ -44,6 +47,53 @@ class PostListView(LoginRequiredMixin, View):
         context = {'posts': post_list, 'postscount': postscount, 'ver': ver,}
         response = render(request, 'posts/post_list.html', context)
         return response
+class PostCreateView(LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        if request.user.profile.debosited == True:
+            ver = verification()
+            form = PostForm()
+        else:
+            messages.warning(request, 'You Need To Deposit First')
+            return redirect('home')
+        context = {'form': form, 'ver': ver,}
+        return render(request, 'posts/post_form.html', context)
+    def post(self, request, *args, **kwargs):
+        if request.user.profile.debosited == True:
+            form = PostForm(request.POST)
+            ver = verification(request.POST)
+            if form.is_valid() and ver.is_valid():
+                new_post = form.save(commit=False)
+                new_post.content = request.POST.get('content').strip()
+                new_post.author = request.user
+                new_post.save()
+                new_post.create_tags()
+            else:
+                ver = verification()
+                content = request.POST.get('content')
+                messages.warning(request, 'Wrong Captcha!')
+                return render(request, 'posts/post_form.html', {'content': content, 'ver': ver,})
+            context = {'form': form, 'ver': ver,}
+        else:
+            messages.warning(request, 'You Need To Deposit First')
+            return redirect('home')
+        return redirect('post-detail', id=new_post.id)
+class PostDeleteView(LoginRequiredMixin, View):
+    def get(self, request, id, *args, **kwargs):
+        if request.user.profile.debosited == True:
+            post = Post.objects.get(id=id)
+            if post:
+                if request.user == post.author:
+                    post.delete()
+                    messages.success(request, 'Post Deleted!')
+                    return redirect('home')
+                else:
+                    return redirect('home')
+            else:
+                return redirect('home')
+        else:
+            messages.warning(request, 'You Need To Deposit First')
+            return redirect('home')
 class PostDetailView(LoginRequiredMixin, View):
     def get(self, request, id, *args, **kwargs):
         post = Post.objects.get(id=id)
@@ -131,149 +181,6 @@ class PostDetailView(LoginRequiredMixin, View):
             messages.warning(request, 'You Need To Deposit First')
             return redirect('home')
         return render(request, 'posts/post_detail.html', context)
-class CommentReply(LoginRequiredMixin, View):
-    def post(self, request, post_id, id, *args, **kwargs):
-        if request.user.profile.debosited == True:
-            post = Post.objects.get(id=post_id)
-            parent_comment = Comment.objects.get(id=id)
-            form = CommentForm(request.POST)
-            if form.is_valid():
-                new_comment = form.save(commit=False)
-                new_comment.author = request.user
-                new_comment.post = post
-                new_comment.parent = parent_comment
-                new_comment.save()
-            if new_comment.author == new_comment.post.author or new_comment.author == parent_comment.author:
-                pass
-            else:
-                notification = Notification.objects.create(notification_type=2, from_user=request.user, to_user=parent_comment.author, comment=new_comment)
-        else:
-            messages.warning(request, 'You Need To Deposit First')
-            return redirect('home')
-        return redirect('post-detail', id=post_id)
-class PostCreateView(LoginRequiredMixin, View):
-
-    def get(self, request, *args, **kwargs):
-        if request.user.profile.debosited == True:
-            ver = verification()
-            form = PostForm()
-        else:
-            messages.warning(request, 'You Need To Deposit First')
-            return redirect('home')
-        context = {'form': form, 'ver': ver,}
-        return render(request, 'posts/post_form.html', context)
-    def post(self, request, *args, **kwargs):
-        if request.user.profile.debosited == True:
-            form = PostForm(request.POST)
-            ver = verification(request.POST)
-            if form.is_valid() and ver.is_valid():
-                new_post = form.save(commit=False)
-                new_post.content = request.POST.get('content').strip()
-                new_post.author = request.user
-                new_post.save()
-                new_post.create_tags()
-            else:
-                ver = verification()
-                content = request.POST.get('content')
-                messages.warning(request, 'Wrong Captcha!')
-                return render(request, 'posts/post_form.html', {'content': content, 'ver': ver,})
-            context = {'form': form, 'ver': ver,}
-        else:
-            messages.warning(request, 'You Need To Deposit First')
-            return redirect('home')
-        return redirect('post-detail', id=new_post.id)
-class PostDeleteView(LoginRequiredMixin, View):
-    def get(self, request, id, *args, **kwargs):
-        if request.user.profile.debosited == True:
-            post = Post.objects.get(id=id)
-            if post:
-                if request.user == post.author:
-                    post.delete()
-                    messages.success(request, 'Post Deleted!')
-                    return redirect('home')
-                else:
-                    return redirect('home')
-            else:
-                return redirect('home')
-        else:
-            messages.warning(request, 'You Need To Deposit First')
-            return redirect('home')
-@login_required
-def settings(request):
-    if request.method == 'POST':
-        p_form = ProfileUpdteForm(request.POST, request.FILES, instance=request.user.profile)
-        if p_form.is_valid():
-            profileform = p_form.save(commit=False)
-            p_form.name = request.POST.get('name')
-            p_form.xmppusername = request.POST.get('xmppusername')
-            p_form.xmppserver = request.POST.get('xmppserver')
-            p_form.monero = request.POST.get('monero')
-            p_form.bio = request.POST.get('bio')
-            p_form.public_key = request.POST.get('public_key')
-            p_form.image = request.POST.get('image')
-            if p_form.public_key != '':
-                f = open(f'keys/{request.user.username}+{request.user.id}.txt', 'w')
-                key = f'''
-{p_form.public_key}
-                '''
-                f.write(key)
-                f.close()
-                with open(f'keys/{request.user.username}+{request.user.id}.txt', 'rb') as s:
-                    armorkey = s.read()
-                imprtkey = gpgkeyimport(armorkey)
-                if imprtkey != False:
-                    profile = request.user.profile
-                    profile.fingerprint = str(imprtkey)
-                    profile.save()
-                    os.remove(f'keys/{request.user.username}+{request.user.id}.txt')
-                else:
-                    os.remove(f'keys/{request.user.username}+{request.user.id}.txt')
-                    messages.warning(request, "Not A PGP Key")
-                    return redirect('profile-update')
-            if p_form.monero == '':
-                profileform.save()
-                messages.success(request, f'your account has been updated')
-                return redirect('profile', username=request.user)
-            elif valid_addr(p_form.monero):
-                profileform.save()
-                messages.success(request, f'your account has been updated')
-                return redirect('profile', username=request.user)
-            else:
-                messages.warning(request, f'monero address isn\'t correct')
-                return redirect('profile-update')
-    else:
-        p_form = ProfileUpdteForm(instance=request.user.profile)
-    wallet = Wallet.objects.get(user=request.user)
-    context = {'p_form': p_form, 'wallet': wallet,}
-    return render(request, 'posts/settings.html', context)
-class UserDetails(LoginRequiredMixin, View):
-    def get(self, request, username, *args, **kwargs):
-        user = User.objects.get(username=username)
-        context = {'user': user,}
-        return render(request, 'posts/user_details.html', context)
-class CommentDeleteView(LoginRequiredMixin, View):
-    def get(self, request, id, *args, **kwargs):
-        if request.user.profile.debosited == True:
-            comment = Comment.objects.get(id=id)
-            post = comment.post
-            if request.user == comment.author:
-                comment.delete()
-        else:
-            messages.warning(request, 'You Need To Deposit First')
-            return redirect('home')
-        return redirect('post-detail', id=post.id)
-class CommentEditView(LoginRequiredMixin, View):
-    def post(self, request, id, *args, **kwargs):
-        if request.user.profile.debosited == True:
-            comment = Comment.objects.get(id=id)
-            post = comment.post
-            if request.user == comment.author:
-                comment.content = request.POST.get('content')
-                comment.save()
-        else:
-            messages.warning(request, 'You Need To Deposit First')
-            return redirect('home')
-        return redirect('post-detail', id=post.id)
 class PostUpdateView(LoginRequiredMixin, View):
     def post(self, request, id, *args, **kwargs):
         post = Post.objects.get(id=id)
@@ -287,129 +194,6 @@ class PostUpdateView(LoginRequiredMixin, View):
                 return redirect('home')
         else:
             return redirect('home')
-class ProfileView(LoginRequiredMixin, View):
-    def get(self, request, username, *args, **kwargs):
-        user = User.objects.get(username=username)
-        profile = user.profile
-        posts = Post.objects.filter(author=user).order_by('-date_posted')
-        followers = profile.followers.all()
-        page = request.GET.get('page', 1)
-        paginator = Paginator(posts, 20)
-        try:
-            post_list = paginator.page(page)
-        except PageNotAnInteger:
-            post_list = paginator.page(1)
-        except EmptyPage:
-            post_list = paginator.page(paginator.num_pages)
-        if len(followers) == 0:
-            is_following = False
-        for follower in followers:
-            if follower == request.user:
-                is_following = True
-                break
-            else:
-                is_following = False
-        postscount = posts.count()
-        followers_num = len(followers)
-        context = {'user': user, 'postscount': postscount, 'profile': profile, 'posts': post_list, 'followers_num': followers_num, 'is_following': is_following,}
-        return render(request, 'posts/profile.html', context)
-class AddFollower(LoginRequiredMixin, View):
-    def post(self, request, username, *args, **kwargs):
-        user = User.objects.get(username=username)
-        profile = user.profile
-        profile.followers.add(request.user)
-        notification = Notification.objects.create(notification_type=3, from_user=request.user, to_user=user)
-        return redirect('profile', username=user.username)
-class RemoveFollower(LoginRequiredMixin, View):
-    def post(self, request, username, *args, **kwargs):
-        user = User.objects.get(username=username)
-        profile = user.profile
-        profile.followers.remove(request.user)
-        return redirect('profile', username=user.username)
-class Search(LoginRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
-        return render(request, 'posts/search.html')
-class SearchResults(LoginRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
-        query = self.request.GET.get('query')
-        profiles = Profile.objects.filter(Q(user__username__icontains=query))
-        posts = Post.objects.filter(Q(content__icontains=query))
-        comments = Comment.objects.filter(Q(content__icontains=query))
-
-        postspage = request.GET.get('posts', 1)
-        postspaginator = Paginator(posts, 20)
-        try:
-            post_list = postspaginator.page(postspage)
-        except PageNotAnInteger:
-            post_list = postspaginator.page(1)
-        except EmptyPage:
-            post_list = postspaginator.page(postspaginator.num_pages)
-
-        commentspage = request.GET.get('comments', 1)
-        commentspaginator = Paginator(comments, 20)
-        try:
-            comment_list = commentspaginator.page(commentspage)
-        except PageNotAnInteger:
-            comment_list = commentspaginator.page(1)
-        except EmptyPage:
-            comment_list = commentspaginator.page(commentspaginator.num_pages)
-
-        profilespage = request.GET.get('profiles', 1)
-        profilepaginator = Paginator(profiles, 20)
-        try:
-            profile_list = profilepaginator.page(profilespage)
-        except PageNotAnInteger:
-            profile_list = profilepaginator.page(1)
-        except EmptyPage:
-            profile_list = profilepaginator.page(profilepaginator.num_pages)
-        commentscount = comments.count()
-        postscount = posts.count()
-        profilescount = profiles.count()
-        context = {'profilescount': profilescount, 'postscount': postscount, 'commentscount': commentscount,'profiles': profile_list, 'posts': post_list, 'comments': comment_list,}
-        return render(request, 'posts/search_results.html', context)
-class AddCommentLike(LoginRequiredMixin, View):
-    def get(self, request, id, *args, **kwargs):
-        comment = Comment.objects.get(id=id)
-        is_dislike = False
-        for dislike in comment.dislikes.all():
-            if dislike == request.user:
-                is_dislike = True
-                break
-        if is_dislike:
-            comment.dislikes.remove(request.user)
-        is_like = False
-        for like in comment.likes.all():
-            if like == request.user:
-                is_like = True
-                break
-        if not is_like:
-            comment.likes.add(request.user)
-            notification = Notification.objects.create(notification_type=1, from_user=request.user, to_user=comment.author, comment=comment)
-        if is_like:
-            comment.likes.remove(request.user)
-        comment.likescount = comment.likes.count() - comment.dislikes.count()
-        return redirect('post-detail', id=comment.post.id)
-class AddCommentDislike(LoginRequiredMixin, View):
-    def get(self, request, id, *args, **kwargs):
-        comment = Comment.objects.get(id=id)
-        is_like = False
-        for like in comment.likes.all():
-            if like == request.user:
-                is_like = True
-                break
-        if is_like:
-            comment.likes.remove(request.user)
-        is_dislike = False
-        for dislike in comment.dislikes.all():
-            if dislike == request.user:
-                is_dislike = True
-                break
-        if not is_dislike:
-            comment.dislikes.add(request.user)
-        if is_dislike:
-            comment.dislikes.remove(request.user)
-        comment.likescount = comment.likes.count() - comment.dislikes.count()
-        return redirect('post-detail', id=comment.post.id)
 class AddLike(LoginRequiredMixin, View):
     def get(self, request, id, *args, **kwargs):
         post = Post.objects.get(id=id)
@@ -465,6 +249,244 @@ def AddFavourites(request, id):
         post.favourites.add(request.user)
         messages.success(request, f'Post Is MarkaLised! Amazing :D')
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
+# COMMENTS HANDLING
+
+class CommentReply(LoginRequiredMixin, View):
+    def post(self, request, post_id, id, *args, **kwargs):
+        if request.user.profile.debosited == True:
+            post = Post.objects.get(id=post_id)
+            parent_comment = Comment.objects.get(id=id)
+            form = CommentForm(request.POST)
+            if form.is_valid():
+                new_comment = form.save(commit=False)
+                new_comment.author = request.user
+                new_comment.post = post
+                new_comment.parent = parent_comment
+                new_comment.save()
+            if new_comment.author == new_comment.post.author or new_comment.author == parent_comment.author:
+                pass
+            else:
+                notification = Notification.objects.create(notification_type=2, from_user=request.user, to_user=parent_comment.author, comment=new_comment)
+        else:
+            messages.warning(request, 'You Need To Deposit First')
+            return redirect('home')
+        return redirect('post-detail', id=post_id)
+class CommentDeleteView(LoginRequiredMixin, View):
+    def get(self, request, id, *args, **kwargs):
+        if request.user.profile.debosited == True:
+            comment = Comment.objects.get(id=id)
+            post = comment.post
+            if request.user == comment.author:
+                comment.delete()
+        else:
+            messages.warning(request, 'You Need To Deposit First')
+            return redirect('home')
+        return redirect('post-detail', id=post.id)
+class CommentEditView(LoginRequiredMixin, View):
+    def post(self, request, id, *args, **kwargs):
+        if request.user.profile.debosited == True:
+            comment = Comment.objects.get(id=id)
+            post = comment.post
+            if request.user == comment.author:
+                comment.content = request.POST.get('content')
+                comment.save()
+        else:
+            messages.warning(request, 'You Need To Deposit First')
+            return redirect('home')
+        return redirect('post-detail', id=post.id)
+class AddCommentLike(LoginRequiredMixin, View):
+    def get(self, request, id, *args, **kwargs):
+        comment = Comment.objects.get(id=id)
+        is_dislike = False
+        for dislike in comment.dislikes.all():
+            if dislike == request.user:
+                is_dislike = True
+                break
+        if is_dislike:
+            comment.dislikes.remove(request.user)
+        is_like = False
+        for like in comment.likes.all():
+            if like == request.user:
+                is_like = True
+                break
+        if not is_like:
+            comment.likes.add(request.user)
+            notification = Notification.objects.create(notification_type=1, from_user=request.user, to_user=comment.author, comment=comment)
+        if is_like:
+            comment.likes.remove(request.user)
+        comment.likescount = comment.likes.count() - comment.dislikes.count()
+        return redirect('post-detail', id=comment.post.id)
+class AddCommentDislike(LoginRequiredMixin, View):
+    def get(self, request, id, *args, **kwargs):
+        comment = Comment.objects.get(id=id)
+        is_like = False
+        for like in comment.likes.all():
+            if like == request.user:
+                is_like = True
+                break
+        if is_like:
+            comment.likes.remove(request.user)
+        is_dislike = False
+        for dislike in comment.dislikes.all():
+            if dislike == request.user:
+                is_dislike = True
+                break
+        if not is_dislike:
+            comment.dislikes.add(request.user)
+        if is_dislike:
+            comment.dislikes.remove(request.user)
+        comment.likescount = comment.likes.count() - comment.dislikes.count()
+        return redirect('post-detail', id=comment.post.id)
+
+# USER PROFILE/SETTINGS HANDLING
+
+@login_required
+def settings(request):
+    if request.method == 'POST':
+        p_form = ProfileUpdteForm(request.POST, request.FILES, instance=request.user.profile)
+        if p_form.is_valid():
+            profileform = p_form.save(commit=False)
+            p_form.name = request.POST.get('name')
+            p_form.xmppusername = request.POST.get('xmppusername')
+            p_form.xmppserver = request.POST.get('xmppserver')
+            p_form.monero = request.POST.get('monero')
+            p_form.bio = request.POST.get('bio')
+            p_form.public_key = request.POST.get('public_key')
+            p_form.image = request.POST.get('image')
+            if p_form.public_key != '':
+                f = open(f'keys/{request.user.username}+{request.user.id}.txt', 'w')
+                key = f'''
+{p_form.public_key}
+                '''
+                f.write(key)
+                f.close()
+                with open(f'keys/{request.user.username}+{request.user.id}.txt', 'rb') as s:
+                    armorkey = s.read()
+                imprtkey = gpgkeyimport(armorkey)
+                if imprtkey != False:
+                    profile = request.user.profile
+                    profile.fingerprint = str(imprtkey)
+                    profile.save()
+                    os.remove(f'keys/{request.user.username}+{request.user.id}.txt')
+                else:
+                    os.remove(f'keys/{request.user.username}+{request.user.id}.txt')
+                    messages.warning(request, "Not A PGP Key")
+                    return redirect('profile-update')
+            if p_form.monero == '':
+                profileform.save()
+                messages.success(request, f'your account has been updated')
+                return redirect('profile', username=request.user)
+            elif valid_addr(p_form.monero):
+                profileform.save()
+                messages.success(request, f'your account has been updated')
+                return redirect('profile', username=request.user)
+            else:
+                messages.warning(request, f'monero address isn\'t correct')
+                return redirect('profile-update')
+    else:
+        p_form = ProfileUpdteForm(instance=request.user.profile)
+    wallet = Wallet.objects.get(user=request.user)
+    context = {'p_form': p_form, 'wallet': wallet,}
+    return render(request, 'posts/settings.html', context)
+class UserDetails(LoginRequiredMixin, View):
+    def get(self, request, username, *args, **kwargs):
+        user = User.objects.get(username=username)
+        context = {'user': user,}
+        return render(request, 'posts/user_details.html', context)
+class ProfileView(LoginRequiredMixin, View):
+    def get(self, request, username, *args, **kwargs):
+        user = User.objects.get(username=username)
+        profile = user.profile
+        posts = Post.objects.filter(author=user).order_by('-date_posted')
+        followers = profile.followers.all()
+        page = request.GET.get('page', 1)
+        paginator = Paginator(posts, 20)
+        try:
+            post_list = paginator.page(page)
+        except PageNotAnInteger:
+            post_list = paginator.page(1)
+        except EmptyPage:
+            post_list = paginator.page(paginator.num_pages)
+        if len(followers) == 0:
+            is_following = False
+        for follower in followers:
+            if follower == request.user:
+                is_following = True
+                break
+            else:
+                is_following = False
+        postscount = posts.count()
+        followers_num = len(followers)
+        ver = verification()
+        context = {'user': user, 'postscount': postscount, 'ver':ver, 'profile': profile, 'posts': post_list, 'followers_num': followers_num, 'is_following': is_following,}
+        return render(request, 'posts/profile.html', context)
+
+# FOLLOWING/UNFOLLOWING HANDLING
+
+class AddFollower(LoginRequiredMixin, View):
+    def post(self, request, username, *args, **kwargs):
+        user = User.objects.get(username=username)
+        profile = user.profile
+        profile.followers.add(request.user)
+        notification = Notification.objects.create(notification_type=3, from_user=request.user, to_user=user)
+        return redirect('profile', username=user.username)
+class RemoveFollower(LoginRequiredMixin, View):
+    def post(self, request, username, *args, **kwargs):
+        user = User.objects.get(username=username)
+        profile = user.profile
+        profile.followers.remove(request.user)
+        return redirect('profile', username=user.username)
+
+# SEARCH HANDLING    
+
+class Search(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'posts/search.html')
+class SearchResults(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        query = self.request.GET.get('query')
+        if query == '' or query == ' ':
+            messages.warning(request, "Why Are You Searching Everything :(")
+            return redirect('search')
+        profiles = Profile.objects.filter(Q(user__username__icontains=query))
+        posts = Post.objects.filter(Q(content__icontains=query))
+        comments = Comment.objects.filter(Q(content__icontains=query))
+
+        postspage = request.GET.get('posts', 1)
+        postspaginator = Paginator(posts, 20)
+        try:
+            post_list = postspaginator.page(postspage)
+        except PageNotAnInteger:
+            post_list = postspaginator.page(1)
+        except EmptyPage:
+            post_list = postspaginator.page(postspaginator.num_pages)
+
+        commentspage = request.GET.get('comments', 1)
+        commentspaginator = Paginator(comments, 20)
+        try:
+            comment_list = commentspaginator.page(commentspage)
+        except PageNotAnInteger:
+            comment_list = commentspaginator.page(1)
+        except EmptyPage:
+            comment_list = commentspaginator.page(commentspaginator.num_pages)
+
+        profilespage = request.GET.get('profiles', 1)
+        profilepaginator = Paginator(profiles, 20)
+        try:
+            profile_list = profilepaginator.page(profilespage)
+        except PageNotAnInteger:
+            profile_list = profilepaginator.page(1)
+        except EmptyPage:
+            profile_list = profilepaginator.page(profilepaginator.num_pages)
+        commentscount = comments.count()
+        postscount = posts.count()
+        profilescount = profiles.count()
+        context = {'profilescount': profilescount, 'postscount': postscount, 'commentscount': commentscount,'profiles': profile_list, 'posts': post_list, 'comments': comment_list,}
+        return render(request, 'posts/search_results.html', context)
+
+# NOTIFICATIONS HANDLING
+
 class PostNotification(LoginRequiredMixin, View):
     def get(self, request, notification_id, post_id, *args, **kwargs):
         if request.user.profile.debosited == True:
@@ -518,9 +540,14 @@ class ListNotifications(LoginRequiredMixin, View):
             messages.warning(request, 'You Need To Deposit First')
             return redirect('home')
         return render(request, "posts/notifications.html", {'notifications': notifications_list, 'notificationscount': notificationscount,})
-class AboutView(LoginRequiredMixin, View):
+
+# SECURITY & MONETARY FUNCTIONS HANDLING
+
+class key_set(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'posts/about.html')
+        return render(request, 'posts/set_key.html')
+    def post(self, request, *args, **kwargs):
+        return render(request, 'posts/set_key.html')
 class factor_conf(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         return render(request, 'posts/2fa_conf.html')
@@ -545,7 +572,6 @@ class factor_cancel(LoginRequiredMixin, View):
             user.save()
             messages.success(request, "2FA Is Disabled")
         return redirect('home')
-
 class profile_complete(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         valid = valid_addr(request.user.profile.rec_addr)
@@ -669,10 +695,9 @@ class tip_user(LoginRequiredMixin, View):
             messages.warning(request, 'Insufficient Funds!, Please Deposit into your account or tip the user off platform')
             return redirect('home')
         return redirect('continue-tx', id=transaction.id)
-class more_view(LoginRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
-        w = Wallet.objects.get(user=request.user)
-        return render(request, 'posts/more_temp.html', {'w':w,})
+
+# END-TO-END ENCRYPTION FUNCTIONALITIES HANDLING
+
 class notes(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         encprivkey = request.user.profile.privatekey
@@ -695,11 +720,6 @@ class del_note(LoginRequiredMixin, View):
                 note.delete()
                 messages.success(request, 'Note Deleted!')
         return redirect('notes')
-class key_set(LoginRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
-        return render(request, 'posts/set_key.html')
-    def post(self, request, *args, **kwargs):
-        return render(request, 'posts/set_key.html')
 class messages_list(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         partners = Chats.objects.get(user=request.user)
@@ -751,7 +771,6 @@ class messages_view(LoginRequiredMixin, View):
                     shkey = sharedkey.shared_key2
             except:
                 return redirect('set-sharedkey', touser=touser)
-            # Getting Message Parties's Pub/Priv Keys
             encprivkey = request.user.profile.privatekey
             
             context = {'msgs': msgs, 'privkey': encprivkey, 'sharedkey': shkey,}
@@ -761,18 +780,15 @@ class messages_view(LoginRequiredMixin, View):
         return render(request, 'posts/messages.html', context)
     def post(self, request, *args, **kwargs):
         if User.objects.filter(username=request.GET.get('username')).exists():
-            # Getting Message Parties
             touser = User.objects.get(username=request.GET.get('username'))
             fromuser = request.user
             
-            # Creating Message
             msg = request.POST.get('encryptedmsg')
             if len(msg) < 1:
                 pass 
             else:
                 createmsg = Message.objects.create(author=fromuser, msg=str(msg), to=touser)
             
-            # Messages Listing
             msgs = Message.objects.filter(Q(to=request.user, author=touser)|Q(author=request.user, to=touser)).order_by('date')
             encprivkey = request.user.profile.privatekey
             try:
@@ -789,3 +805,13 @@ class messages_view(LoginRequiredMixin, View):
             messages.warning(request, 'User Doesn\'t Exist')
             return redirect('messages-list')
         return render(request, 'posts/messages.html', context)
+
+# OTHER
+
+class AboutView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'posts/about.html')
+class more_view(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        w = Wallet.objects.get(user=request.user)
+        return render(request, 'posts/more_temp.html', {'w':w,})
