@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.urls import reverse
 import uuid
+
 class Post(models.Model):
     id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     image = models.ImageField(blank=True, null=True, upload_to='post_image')
@@ -45,6 +46,7 @@ class Post(models.Model):
         return self.content
     def get_absolute_url(self):
         return reverse("post-detail", kwargs={"id": self.id})
+
 class Comment(models.Model):
     id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     post = models.ForeignKey(Post,on_delete=models.CASCADE,related_name='comments')
@@ -78,6 +80,7 @@ class Comment(models.Model):
         if self.parent is None:
             return True
         return False
+
 class Profile(models.Model):
     id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -123,8 +126,10 @@ class Message(models.Model):
 
 class Tag(models.Model):
     name = models.CharField(max_length=255)
+
 class About(models.Model):
     content = models.TextField()
+
 class Notification(models.Model):
     # 1 = Like, 2 = Comment, 3 = Follow, #4 = Mention
     id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
@@ -135,6 +140,7 @@ class Notification(models.Model):
     comment = models.ForeignKey('Comment', on_delete=models.CASCADE, related_name='+', blank=True, null=True)
     date = models.DateTimeField(default=timezone.now)
     user_has_seen = models.BooleanField(default=False)
+
 '''
 class Hashtag(models.Model):
     title = models.CharField(max_length=255, blank=True, null=True, unique=True)
@@ -144,11 +150,13 @@ class Hashtag(models.Model):
     def __str__(self):
         return self.title
 '''
+
 class Notes(models.Model):
     id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     content = models.TextField(blank=False)
     author = models.ForeignKey(User, related_name='notes', blank=False, null=False, on_delete=models.CASCADE)
     date = models.DateTimeField(default=timezone.now)
+
 class Passwords(models.Model):
     id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
     password = models.TextField(blank=False)

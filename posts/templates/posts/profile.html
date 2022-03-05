@@ -28,12 +28,15 @@
 	            {% endif %}
 				<a class="btn btn-outline-primary" href="{% url 'tip-user' user.username %}" style="margin-left: 8px;">TIP</a>
 	        {% endif %}
-	        <a href="#hashLink" style="margin-left: 8px; margin-right: 8px;" class="btn btn-outline-danger"><i class="fas fa-user-secret"></i></a>
+			<button type="button" style="margin-left: 8px; margin-right: 8px;" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#deetsmodal">
+				<i class="fas fa-user-secret"></i>
+			  </button>
+	        <!-- <a href="#hashLink" style="margin-left: 8px; margin-right: 8px;" class="btn btn-outline-danger"><i class="fas fa-user-secret"></i></a> -->
 	        
 		</div>
 	</div>
 </center>
-<div>
+<!-- <div>
 	<p id="hashLink">
 	    Name: {% if user.profile.name == '' %}NO NAME{% else %}{{user.profile.name}}{% endif %}<br>
 	    Monero: {% if user.profile.monero == '' %}NO ADDRESS{% else %}<a href="{% url 'user-details' user.username %}">Show Full Address</a>{% endif %}<br>
@@ -44,28 +47,62 @@
 
 	    <a class="btn-primary btn-lg" style="text-decoration: inherit; color: inherit;" href="#">collapse</a>    
 	</p>
-</div>
+</div> -->
+  
+  <!-- Modal -->
+  <div class="modal fade" id="deetsmodal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog text-light modal-dialog-scrollable modal-dialog-centered ">
+	  <div class="modal-content bg-dark">
+		<div class="modal-header">
+		  <h5 class="modal-title" id="exampleModalLabel">User Details</h5>
+		  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		</div>
+		<div class="modal-body">
+			Name: {% if user.profile.name == '' %}NO NAME{% else %}{{user.profile.name}}{% endif %}<br>
+			XMPP: {% if user.profile.xmppusername == '' or user.profile.xmppserver == '' %}NO XMPP{% else %}{{user.profile.xmppusername}}@{{user.profile.xmppserver}}{% endif %}<br><br>
+			<p style="word-break: break-all;">Monero: {% if user.profile.monero == '' %}NO MONERO ADDRESS{% else %}{{user.profile.monero}}{% endif %}</p>
+			<p style="word-break: break-all;">FingerPrint: {% if user.profile.fingerprint == '' %}NO FINGERPRINT{% else %}{{user.profile.fingerprint}}{% endif %}</p>
+			<textarea class="form-control" cols="70" rows="25">{% if user.profile.public_key == '' %}NO KEY{% else %}{{user.profile.public_key}}{% endif %}</textarea>
+		</div>
+		<div class="modal-footer">
+		  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+		</div>
+	  </div>
+	</div>
+  </div>
 <div class="post-list">
 	{% if request.user == user %}
 	{% if request.user.profile.debosited == True %}
 		<center>
-    		<a class="btn btn-primary" style="width: 100%; margin-bottom: 10px;" href="#createapost">Create A Post</a>
-	        <div class='post-creation' id="createapost">
-	          <br/>
-	          <form method='POST' action="{% url 'post-create' %}">
-	            {% csrf_token %}
-	            {% if post %}
-	            <textarea name="content" class="form-control" style="width: 100%;" cols="100" rows="7" placeholder="Post Human!">{{ content }}</textarea><br/>
-	            {% else %}
-	            <textarea name="content" class="form-control" style="width: 100%;" cols="100" rows="7" placeholder="Post Human!"></textarea><br/>
-	            {% endif %}
-	            <button class="btn btn-primary">Post</button>
-	            <a href="#" class="btn btn-danger">Cancel</a>
-	          </form>
-	          <br/>
-	        </div>
-        </center>
-		{% endif %}
+    		<button class="btn btn-primary" style="width: 100%; margin-bottom: 10px;" data-bs-toggle="modal" data-bs-target="#postmodal">Create A Post &#9997;</button>
+		</center>
+		<form method='POST' action="{% url 'post-create' %}">
+			<div class="modal fade" id="postmodal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+				<div class="modal-dialog text-light modal-dialog-centered modal-dialog-scrollable">
+					<div class="modal-content bg-dark">
+						<div class="modal-header">
+							<h5 class="modal-title" id="exampleModalLabel">Create A Post</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+					<div class="modal-body">
+						{% csrf_token %}
+						{% if post %}
+						<textarea name="content" class="form-control" style="width: 100%;" cols="100" rows="7" placeholder="Post Human!">{{ content }}</textarea><br/>
+						{% else %}
+						<textarea name="content" class="form-control" style="width: 100%;" cols="100" rows="7" placeholder="Post Human!"></textarea><br/>
+						{% endif %}
+						{{ver.captcha}}
+						<br/>
+						</div>
+						<div class="modal-footer">
+							<button class="btn btn-primary" type="submit">Post</button>
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	{% endif %}
 	{% endif %}
 	{% include 'posts/post.html' %}
 </div>

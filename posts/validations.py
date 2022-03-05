@@ -4,8 +4,9 @@ from monero.wallet import Wallet
 from decimal import Decimal
 from monero.address import address
 from cryptography.fernet import Fernet 
-c = gpg.Context(armor=True)
-c.home_dir = os.path.expanduser("~/.gnupg")
+
+# CRYPTO
+
 w = Wallet(port=28088)
 def create_addr():
     new_addr = w.new_address()
@@ -45,6 +46,17 @@ def check_conf(addr, hash, amnt):
         return True
     else:
         return False
+def valid_addr(addr):
+    try:
+        monero = address(addr)
+        return True
+    except:
+        return False
+
+# GPG
+
+c = gpg.Context(armor=True)
+c.home_dir = os.path.expanduser("~/.gnupg")
 def valid_sig(signature, username, author, pk):
     try:
        msg = c.verify(open(f'signatures/{username}+{author}+{pk}.txt'))
@@ -53,12 +65,6 @@ def valid_sig(signature, username, author, pk):
     except:
        os.remove(f'signatures/{username}+{author}+{pk}.txt')
        return False
-def valid_addr(addr):
-    try:
-        monero = address(addr)
-        return True
-    except:
-        return False
 def gpgkeyimport(ssss):
     try: 
         result = c.key_import(ssss)
