@@ -805,6 +805,9 @@ class messages_view(LoginRequiredMixin, View):
             messages.warning(request, 'User Doesn\'t Exist')
             return redirect('messages-list')
         return render(request, 'posts/messages.html', context)
+class passwords_list(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'posts/passwords_list.html')
 
 # OTHER
 
