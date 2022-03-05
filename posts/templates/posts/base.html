@@ -134,14 +134,14 @@
         </li>
 
         <li class="nav-item">
-          <a href="{% url 'search' %}" class="nav-link">
+          <a href="{% url 'search' %}" class="nav-link"  data-bs-toggle="modal" data-bs-target="#searchmodal">
             <img src="{% static 'img/search_black.png' %}" alt="Search link icon">
             <span class="link-text">Search</span>
           </a>
         </li>
 
         <li class="nav-item">
-          <a href="{% url 'notifications-list' %}" class="nav-link">
+          <a href="{% url 'notifications-list' %}" class="nav-link" data-bs-toggle="offcanvas" data-bs-target="#notificationsoffcanvas" aria-controls="offcanvasRight">
               <div class="position-relative"><img src="{% static 'img/bell_black.png' %}" alt="Notifications link icon"><span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                 {{request.user.notification_to.count}}
                 <span class="visually-hidden">unread notifications</span>
@@ -176,6 +176,93 @@
 
       </ul>
     </nav>
+<div class="modal fade" id="searchmodal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog bg-transparent modal-dialog-centered">
+    <div class="modal-content bg-transparent">
+      <div class="modal-body bg-transparent">
+        <form method="GET" action="{% url 'search-results' %}">
+          <div class="input-group" style="margin: 0 auto;">
+              <input type="text" class="form-control form-control-lg" placeholder="Search Content" name="query" value="{{ request.GET.query }}">
+              <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i></button>
+          </div>
+      </form>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="offcanvas bg-dark offcanvas-end" tabindex="-1" id="notificationsoffcanvas" aria-labelledby="offcanvasRightLabel">
+      <div class="offcanvas-header">
+        <h5 id="offcanvasRightLabel">You have {{request.user.notification_to.count}} Notifications</h5>
+        <button type="button" class="btn-close text-reset text-light" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+      <div class="offcanvas-body">
+        {% for notification in request.user.notification_to.all %}
+        {% if notification.post %}
+        {% if notification.notification_type == 1 %}
+        <div class="container">
+          <a style="text-decoration: inherit;" href="{% url 'post-notification' notification.id notification.post.id %}">
+            <div class="container-fluid" style="text-align: center;">
+              <div class="post-text tags-id mentions-id">
+                @{{ notification.from_user }} liked your post
+                <a class="btn btn-outline-danger" style="margin-left: 18px;" href="{% url 'notification-delete' notification.id %}">DELETE</a>
+              </div>
+            </div>
+            </a>	
+        </div>
+        {% elif notification.notification_type == 2 %}
+        <div class="container bg-light">
+          <a style="text-decoration: inherit;" href="{% url 'post-notification' notification.id notification.post.id %}">
+            <div class="post container-fluid" style="text-align: center;">
+              <div class="post-text tags-id mentions-id">
+                @{{ notification.from_user }} Commented On your post
+                <a class="btn btn-outline-danger" style="margin-left: 18px;" href="{% url 'notification-delete' notification.id %}">DELETE</a>
+              </div>
+            </div>
+            </a>	
+        </div>
+        {% endif %}
+      {% elif notification.comment %}
+        {% if notification.notification_type == 1 %}
+          <div class="container bg-light">
+            <a style="text-decoration: inherit;" href="{% url 'post-notification' notification.id notification.comment.post.id %}">
+              <div class="post container-fluid" style="text-align: center;">
+                <div class="post-text tags-id mentions-id">
+                  @{{ notification.from_user }} liked your comment
+                  <a class="btn btn-outline-danger" style="margin-left: 18px;" href="{% url 'notification-delete' notification.id %}">DELETE</a>
+                </div>
+              </div>
+              </a>	
+            </div>
+        {% elif notification.notification_type == 2 %}
+          <div class="container bg-light">
+            <a style="text-decoration: inherit;" href="{% url 'post-notification' notification.id notification.comment.post.id %}">
+              <div class="post container-fluid" style="text-align: center;">
+                <div class="post-text tags-id mentions-id">
+                  @{{ notification.from_user }} Replied To your comment
+                  <a class="btn btn-outline-danger" style="margin-left: 18px;" href="{% url 'notification-delete' notification.id %}">DELETE</a>
+                </div>
+              </div>
+              </a>	
+            </div>
+          {% endif %}
+        {% else %}
+             <div class="container bg-light">
+            <a style="text-decoration: inherit;" href="{% url 'follow-notification' notification.id notification.from_user.username %}">
+              <div class="post container-fluid" style="text-align: center;">
+                <div class="post-text tags-id mentions-id">
+                  @{{ notification.from_user }} Has Started Following You								<a class="btn btn-outline-danger" style="margin-left: 18px;" href="{% url 'notification-delete' notification.id %}">DELETE</a>
+                </div>
+              </div>
+              </a>	
+            </div>
+      {% endif %}
+      {% if request.user.notification_to.count == 0 %}
+      <h2>Uhmm, Try To Be More Interesting! &#128513;</h2>
+      {% endif %}
+        {% endfor %}
+        <a href="{% url 'notifications-list' %}">View All Notifcations Here.</a>
+      </div>
+    </div>
     <main class="container-fluid mx-auto content">
       <div class="logo-text mx-auto">
         <div>Priva<span>Lise</span></div>
