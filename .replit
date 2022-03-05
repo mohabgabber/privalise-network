@@ -1,2 +1,0 @@
-language = "python3"
-run = "cd privalises && python manage.py makemigrations && python manage.py migrate && python manage.py runserver"
