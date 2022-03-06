@@ -156,10 +156,3 @@ class Notes(models.Model):
     content = models.TextField(blank=False)
     author = models.ForeignKey(User, related_name='notes', blank=False, null=False, on_delete=models.CASCADE)
     date = models.DateTimeField(default=timezone.now)
-
-class Passwords(models.Model):
-    id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
-    password = models.TextField(blank=False)
-    url = models.TextField()
-    name = models.TextField()
-    author = models.ForeignKey(User, related_name='passwords', blank=False, null=False, on_delete=models.CASCADE)

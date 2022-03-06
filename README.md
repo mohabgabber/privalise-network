@@ -16,7 +16,7 @@ We don't use any 3rd party software, such as google APIs, google analytics, any 
 ## Main Features:
    Privalise has your normal social-media feature (i.e. likes/dislikes, follow/unfollow, comments/replies, posting) but we've added a lot of other Privacy-Focused features, Like:
    * 2 Factor Authentication Via PGP
-   * End-To-End Encryption For users Notes, Messages, Password.
+   * End-To-End Encryption For users Notes, Messages.
    * No Personal Info For Registration
    * We Added A Mandatory 0.004 XMR Deposit For Every User To Combat Spam, Users Can Withdraw It If They Leave The Platform
    * User-To-User Payments Using Monero
