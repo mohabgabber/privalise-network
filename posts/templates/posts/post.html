@@ -1,4 +1,31 @@
+{% load mathfilters %}
 {% for post in posts %}
+<style type="text/css">
+    #confirmdeletepost{{post.id}}:target 
+    {
+      display: block;
+    }
+    #confirmdeletepost{{post.id}} 
+    {
+     display: none;
+    }
+    #editpost{{post.id}}:target
+    {
+      display: block;
+    }
+    #editpost{{post.id}}
+    {
+      display: none;
+    }
+    #sharepost{{post.id}}:target
+    {
+      display: block;
+    }
+    #sharepost{{post.id}}
+    {
+      display: none;
+    }
+  </style>
             <div class="post shadow-lg" style="text-align: left;  margin: 0 auto; margin-bottom: 8px;">
                 <div class="picture-containers">
                     <img class="profile-picture" src="{{ post.author.profile.image.url }}">
@@ -16,8 +43,46 @@
                     <a style="text-decoration: inherit; color: inherit;" href="{% url 'post-detail' post.pk %}">
                         <div class="post-text text-wrap text-break" style="width: 100%;">
                             <p>{{ post.content|truncatechars:150 }}</p>
-                                <button class="btn btn-outline-info" style="margin: 5px;">{{ post.likes.count }} Upvotes</button>
-                                <a href="{% url 'post-detail' post.pk %}" class="btn btn-outline-info">Open Post</a>
+                            {% if request.user == post.author %}
+                            <button class="btn btn-primary">{{ post.likes.count|sub:post.dislikes.count }} Upvotes</button>
+                              <div class="dropdown" style="margin-bottom: 6px;">
+                                <button class="btn btn-outline-info">Actions</button>
+                                <div class="dropdown-content">
+                                  <a href="#confirmdeletepost{{post.id}}">Delete</a>
+                                  <a href="#editpost{{post.id}}">Edit</a>
+                                  <a href="#sharepost{{post.id}}">Share</a>
+                                </div><br>
+                              </div>
+                              <p id="confirmdeletepost{{post.id}}">
+                              <a style="margin-top: 5px;" href="{% url 'post-delete' post.id %}" class="btn btn-danger">
+                                Confirm Delete
+                              </a>
+                              <a href="#" style="margin-left: 5px; margin-top: 5px;"  class="btn btn-primary">
+                                Safe My Post
+                              </a>
+                            </p>
+                            <p id="sharepost{{post.id}}">
+                              <a class="btn btn-outline-info" href="{% url 'post-detail' post.id %}">Copy This</a>
+                              <a class="btn btn-outline-danger" href="#">Done</a>
+                            </p>
+                            <div id="editpost{{post.id}}">
+                              <form method="POST" action="{% url 'post-update' post.id %}">
+                                {% csrf_token %}
+                                <textarea name="content" class="form-control" style="width: 100%; margin-bottom: 6px;" cols="10" rows="7" placeholder="Post Human!">{{post.content}}</textarea>
+                                <button type="submit" class="btn btn-primary">
+                                  Publish
+                                </button>
+                                <a href="#" style="margin-left: 5px;"  class="btn btn-primary">
+                                  Cancel
+                                </a>
+                              </form>
+                            </div>
+                
+                          {% else %}
+                              <a style="width: 60px; height: 35%;" href="{% url 'add-like' post.id %}" class="btn btn-primary"><i class="fas fa-kiss-wink-heart"></i></a>
+                              <button class="btn btn-outline-info" style="margin: 5px;">{{ post.likes.count|sub:post.dislikes.count }}</button>
+                              <a style="width: 60px; height: 35%;" href="{% url 'add-dislike' post.id %}" class="btn btn-danger"><i class="fas fa-hand-middle-finger"></i></a>
+                          {% endif %}
                         </div>
                    </a>
                 </div>
