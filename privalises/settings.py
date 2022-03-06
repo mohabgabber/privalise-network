@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'posts.apps.PostsConfig',
     'users.apps.UsersConfig',
     'mod.apps.ModConfig',
+    'market.apps.MarketConfig',
     'crispy_forms',
     "captcha",
     "mathfilters",

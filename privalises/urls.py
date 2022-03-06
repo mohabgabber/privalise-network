@@ -7,6 +7,7 @@ urlpatterns = [
     path('auth/', include('users.urls')),
     path('', include('posts.urls')),
     path('mod/', include('mod.urls')),
+    path('market/', include('market.urls')),
     path('captcha/',include("captcha.urls"))
 
 ]
