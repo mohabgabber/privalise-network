@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import shared_key, messages_view, messages_list, notes, del_note, more_view, key_set, tip_user, list_txs, confirm_deposit, profile_complete, check_deposit, factor_conf, factor_cancel, factor_done, CommentReply, AboutView, CommentEditView, AddLike, AddDislike, SearchResults, UserDetails, AddFavourites, RemoveNotification, ListNotifications, PostNotification, FollowNotification,  Search, AddCommentLike, AddCommentDislike, ProfileView, settings, AddFollower, RemoveFollower, PostListView, PostCreateView, PostDetailView, PostUpdateView, PostDeleteView, CommentDeleteView
+from .views import *
 urlpatterns = [
 
     # POSTS HANDLING
