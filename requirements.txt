@@ -18,6 +18,7 @@ pycryptodomex==3.14.1
 PyNaCl==1.4.0
 python-decouple==3.6
 requests==2.27.1
+django-mathfilters==1.0
 six==1.16.0
 sqlparse==0.4.2
 urllib3==1.26.8
