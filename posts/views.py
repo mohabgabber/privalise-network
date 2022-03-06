@@ -214,7 +214,7 @@ class AddLike(LoginRequiredMixin, View):
             notification = Notification.objects.create(notification_type=1, from_user=request.user, to_user=post.author, post=post)
         if is_like:
             post.likes.remove(request.user)
-        return redirect('post-detail', id=id)
+        return HttpResponseRedirect(request.META['HTTP_REFERER'] + '#' + str(post.id))
 class AddDislike(LoginRequiredMixin, View):
     def get(self, request, id, *args, **kwargs):
         post = Post.objects.get(id=id)
@@ -234,7 +234,7 @@ class AddDislike(LoginRequiredMixin, View):
             post.dislikes.add(request.user)
         if is_dislike:
             post.dislikes.remove(request.user)
-        return redirect('post-detail', id=id)
+        return HttpResponseRedirect(request.META['HTTP_REFERER'] + '#' + str(post.id))
 @login_required
 def FavouritesList(request):
     new = Post.newmanager.filter(favourites=request.user)

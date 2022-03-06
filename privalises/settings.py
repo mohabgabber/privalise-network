@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'mod.apps.ModConfig',
     'crispy_forms',
     "captcha",
+    "mathfilters",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
