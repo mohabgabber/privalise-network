@@ -74,34 +74,8 @@
 	{% if request.user == user %}
 	{% if request.user.profile.debosited == True %}
 		<center>
-    		<button class="btn btn-primary" style="width: 100%; margin-bottom: 10px;" data-bs-toggle="modal" data-bs-target="#postmodal">Create A Post &#9997;</button>
+    		<button class="btn btn-primary" style="width: 100%; margin-bottom: 10px;" data-bs-toggle="modal" data-bs-target="#postcreatemodal">Create A Post &#9997;</button>
 		</center>
-		<form method='POST' action="{% url 'post-create' %}">
-			<div class="modal fade" id="postmodal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-				<div class="modal-dialog text-light modal-dialog-centered modal-dialog-scrollable">
-					<div class="modal-content bg-dark">
-						<div class="modal-header">
-							<h5 class="modal-title" id="exampleModalLabel">Create A Post</h5>
-							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-						</div>
-					<div class="modal-body">
-						{% csrf_token %}
-						{% if post %}
-						<textarea name="content" class="form-control" style="width: 100%;" cols="100" rows="7" placeholder="Post Human!">{{ content }}</textarea><br/>
-						{% else %}
-						<textarea name="content" class="form-control" style="width: 100%;" cols="100" rows="7" placeholder="Post Human!"></textarea><br/>
-						{% endif %}
-						{{ver.captcha}}
-						<br/>
-						</div>
-						<div class="modal-footer">
-							<button class="btn btn-primary" type="submit">Post</button>
-							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-						</div>
-					</div>
-				</div>
-			</div>
-		</form>
 	{% endif %}
 	{% endif %}
 	{% include 'posts/post.html' %}

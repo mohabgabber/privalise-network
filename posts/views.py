@@ -33,7 +33,7 @@ class PostListView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         logged_in_user = request.user
         ver = verification()
-        posts = Post.objects.filter(author__profile__followers__in=[logged_in_user.id]).order_by('-date_posted')
+        posts = Post.objects.filter(author__profile__followers__in=[logged_in_user.id]).order_by('likes', '-date_posted')
         page = request.GET.get('page', 1)
         paginator = Paginator(posts, 20)
         try:
@@ -805,9 +805,10 @@ class messages_view(LoginRequiredMixin, View):
             messages.warning(request, 'User Doesn\'t Exist')
             return redirect('messages-list')
         return render(request, 'posts/messages.html', context)
-class passwords_list(LoginRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
-        return render(request, 'posts/passwords_list.html')
+
+# STORE HANDLING
+
+
 
 # OTHER
 
