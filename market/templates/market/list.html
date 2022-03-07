@@ -1,0 +1,20 @@
+{% extends "posts/base.html" %}
+{% block title %}Buy & Sell Products On Privalise!, Where Everything Is Awesome{% endblock title %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            {% for product in products %}
+                <div class="col-md">
+                    <div class="card" style="width: 18rem;">
+                        <img src="{{ product.picture.url }}" class="card-img-top" alt="{{product.name}}">
+                        <div class="card-body">
+                          <h5 class="card-title">{{ product.name|truncatechars:30 }}</h5>
+                          <p class="card-text"></p>
+                          <a href="" class="btn btn-primary">Open Product</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock content %}
