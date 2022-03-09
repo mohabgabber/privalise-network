@@ -21,7 +21,7 @@ We don't use any 3rd party software, such as google APIs, google analytics, any 
    * We Added A Mandatory 0.004 XMR Deposit For Every User To Combat Spam, Users Can Withdraw It If They Leave The Platform
    * User-To-User Payments Using Monero
 ## The front-end
-The frontend is mostly made (like 90%) by [margual56](https://github.com/margual56)
+The frontend theme is made by [margual56](https://github.com/margual56)
 
 ## Set Up: 
   Please Check [The Wiki For Instructions](https://github.com/mohabgabber/privalise-network/wiki/Setup)
