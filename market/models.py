@@ -10,8 +10,9 @@ class Product(models.Model):
     description = models.TextField(blank=False, null=False)
     price = models.FloatField(blank=False, null=False)
     picture = models.ImageField(blank=True, null=True, upload_to='products_images')
+    date = models.DateTimeField(auto_now_add=True)
 
 class Seller(models.Model):
     id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
-    name = models.ForeignKey(User, blank=False, null=False, related_name="sell", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, blank=False, null=False, related_name="sell", on_delete=models.CASCADE)
     

@@ -3,7 +3,6 @@
 {% load static %}
 {% block title %}Privalise!, Where Everything Is Awesome{% endblock title %}
 {% block content %}
-
     <div class="container post-list">
 		{% if request.user.profile.debosited == True %}
     	<center>
@@ -11,4 +10,5 @@
 		</center>
 		{% endif %}
 		{% include 'posts/post.html' %}
+	</div>
 {% endblock content %}
