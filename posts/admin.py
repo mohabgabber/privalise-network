@@ -9,3 +9,4 @@ admin.site.register(Comment)
 admin.site.register(Notification)
 admin.site.register(Tag)
 admin.site.register(Notes)
+admin.site.site_header = "Privalise Network"
