@@ -10,6 +10,7 @@ We don't use any 3rd party software, such as google APIs, google analytics, any 
    * Python 3.10
    * Django 4
    * Bootstrap 5
+   * OpenpgpJS
    * Jsencrypt
    * Forge
 
@@ -18,7 +19,7 @@ We don't use any 3rd party software, such as google APIs, google analytics, any 
    * 2 Factor Authentication Via PGP
    * End-To-End Encryption For users Notes, Messages.
    * No Personal Info For Registration
-   * We Added A Mandatory 0.004 XMR Deposit For Every User To Combat Spam, Users Can Withdraw It If They Leave The Platform
+   * We Added A Mandatory 0.004 XMR Deposit For Every User To Combat Spam, Users Can Withdraw It If They Leave The Platform (It's Testnet not a real cryptocurrency)
    * User-To-User Payments Using Monero
 ## The front-end
 The frontend theme is made by [margual56](https://github.com/margual56)
