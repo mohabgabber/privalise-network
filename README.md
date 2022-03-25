@@ -10,6 +10,7 @@ We don't use any 3rd party software, such as google APIs, google analytics, any 
    * Python 3.10
    * Django 4
    * Bootstrap 5
+   * OpenpgpJS
    * Jsencrypt
    * Forge
 
