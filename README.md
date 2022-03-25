@@ -1,6 +1,9 @@
 # PrivaLise 
 ### Social Media Network Focuses On Data Security And Being Community Driven Web App
 
+## Important!
+this web application is a demonstration only do not it's not audited, and it contains security vulnurabilities, USE IT AT YOUR OWN RESPONSIBILITY
+
 ## The Main Idea:
 Can you imagine a centralized, but privacy-respecting social network? One that is modern, easy to use, fast and provides security and protection for everyone. That is why we created PrivaLise!
 
