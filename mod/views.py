@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import reports, Txs
+from .models import reports
 from django.views import View
 from django.http import HttpResponseRedirect
 from monero.address import address 
@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 import os
-from posts.validations import valid_sig #create_addr, pay, receive, check_addr, check_conf
+from posts.validations import valid_sig
 from users.forms import verification
 from posts.models import Post
 from django.urls import reverse_lazy
