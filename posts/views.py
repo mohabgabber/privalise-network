@@ -7,7 +7,6 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.forms import UserCreationForm
 from .forms import ProfileUpdteForm, CommentForm, PostForm
 import hashlib
-from mod.models import Txs, Wallet
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.db.models import Q
@@ -19,7 +18,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 import os
-from .validations import valid_addr, valid_sig, create_addr, pay, receive, check_addr, check_conf, check_conf_number, gpgkeyimport
+from .validations import gpgkeyimport
 from users.forms import verification
 from django.urls import reverse_lazy
 from django.http import HttpResponse
@@ -59,40 +58,32 @@ class PostCreateView(LoginRequiredMixin, View):
         context = {'form': form, 'ver': ver,}
         return render(request, 'posts/post_form.html', context)
     def post(self, request, *args, **kwargs):
-        if request.user.profile.debosited == True:
-            form = PostForm(request.POST)
-            ver = verification(request.POST)
-            if form.is_valid() and ver.is_valid():
-                new_post = form.save(commit=False)
-                new_post.content = request.POST.get('content').strip()
-                new_post.author = request.user
-                new_post.save()
-                new_post.create_tags()
-            else:
-                ver = verification()
-                content = request.POST.get('content')
-                messages.warning(request, 'Wrong Captcha!')
-                return render(request, 'posts/post_form.html', {'content': content, 'ver': ver,})
-            context = {'form': form, 'ver': ver,}
+        form = PostForm(request.POST)
+        ver = verification(request.POST)
+        if form.is_valid() and ver.is_valid():
+            new_post = form.save(commit=False)
+            new_post.content = request.POST.get('content').strip()
+            new_post.author = request.user
+            new_post.save()
+            new_post.create_tags()
         else:
-            messages.warning(request, 'You Need To Deposit First')
-            return redirect('home')
+            ver = verification()
+            content = request.POST.get('content')
+            messages.warning(request, 'Wrong Captcha!')
+            return render(request, 'posts/post_form.html', {'content': content, 'ver': ver,})
+        context = {'form': form, 'ver': ver,}
         return redirect('post-detail', id=new_post.id)
 class PostDeleteView(LoginRequiredMixin, View):
     def get(self, request, id, *args, **kwargs):
-        if request.user.profile.debosited == True:
-            post = Post.objects.get(id=id)
-            if post:
-                if request.user == post.author:
-                    post.delete()
-                    messages.success(request, 'Post Deleted!')
-                    return redirect('home')
-                else:
-                    return redirect('home')
+        post = Post.objects.get(id=id)
+        if post:
+            if request.user == post.author:
+                post.delete()
+                messages.success(request, 'Post Deleted!')
+                return redirect('home')
             else:
                 return redirect('home')
         else:
-            messages.warning(request, 'You Need To Deposit First')
             return redirect('home')
 class PostDetailView(LoginRequiredMixin, View):
     def get(self, request, id, *args, **kwargs):
@@ -123,63 +114,59 @@ class PostDetailView(LoginRequiredMixin, View):
         }
         return render(request, 'posts/post_detail.html', context)
     def post(self, request, id, *args, **kwargs):
-        if request.user.profile.debosited == True:
-            post = Post.objects.get(id=id)
-            form = CommentForm(request.POST)
-            valid = True
-            ver = verification(request.POST)
-            if form.is_valid() and ver.is_valid():
-                new_comment = form.save(commit=False)
-                new_comment.content = request.POST.get('content')
-                new_comment.author = request.user
-                new_comment.post = post
-                new_comment.save()
-                new_comment.create_tags()
+        post = Post.objects.get(id=id)
+        form = CommentForm(request.POST)
+        valid = True
+        ver = verification(request.POST)
+        if form.is_valid() and ver.is_valid():
+            new_comment = form.save(commit=False)
+            new_comment.content = request.POST.get('content')
+            new_comment.author = request.user
+            new_comment.post = post
+            new_comment.save()
+            new_comment.create_tags()
 
-                if new_comment.author == new_comment.post.author:
-                    pass
-                else:
-                    notification = Notification.objects.create(notification_type=2, from_user=request.user, to_user=post.author, post=post)
+            if new_comment.author == new_comment.post.author:
+                pass
             else:
-                ver = verification()
-                valid = False
-                comment_content = request.POST.get('content')
-                ms.warning(request, 'Wrong Captcha!')
-            comments = Comment.objects.filter(post=post)
-            commentcount = 0
-            for comment in comments:
-                commentcount += 1
-            likes = post.likes.count() - post.dislikes.count()
-            page = request.GET.get('page', 1)
-            paginator = Paginator(comments, 20)
-            try:
-                comments_list = paginator.page(page)
-            except PageNotAnInteger:
-                comments_list = paginator.page(1)
-            except EmptyPage:
-                comments_list = paginator.page(paginator.num_pages)
-            if not valid:
-                context = {
-                    'likes': likes,
-                    'post': post,
-                    'ver': ver,
-                    'form': form,
-                    'comment_content': comment_content,
-                    'commentcount': commentcount,
-                    'comments': comments_list,
-                }
-            else:
-                context = {
-                    'likes': likes,
-                    'post': post,
-                    'ver': ver,
-                    'form': form,
-                    'commentcount': commentcount,
-                    'comments': comments_list,
-                }
+                notification = Notification.objects.create(notification_type=2, from_user=request.user, to_user=post.author, post=post)
         else:
-            messages.warning(request, 'You Need To Deposit First')
-            return redirect('home')
+            ver = verification()
+            valid = False
+            comment_content = request.POST.get('content')
+            messages.warning(request, 'Wrong Captcha!')
+        comments = Comment.objects.filter(post=post)
+        commentcount = 0
+        for comment in comments:
+            commentcount += 1
+        likes = post.likes.count() - post.dislikes.count()
+        page = request.GET.get('page', 1)
+        paginator = Paginator(comments, 20)
+        try:
+            comments_list = paginator.page(page)
+        except PageNotAnInteger:
+            comments_list = paginator.page(1)
+        except EmptyPage:
+            comments_list = paginator.page(paginator.num_pages)
+        if not valid:
+            context = {
+                'likes': likes,
+                'post': post,
+                'ver': ver,
+                'form': form,
+                'comment_content': comment_content,
+                'commentcount': commentcount,
+                'comments': comments_list,
+            }
+        else:
+            context = {
+                'likes': likes,
+                'post': post,
+                'ver': ver,
+                'form': form,
+                'commentcount': commentcount,
+                'comments': comments_list,
+            }
         return render(request, 'posts/post_detail.html', context)
 class PostUpdateView(LoginRequiredMixin, View):
     def post(self, request, id, *args, **kwargs):
@@ -235,65 +222,39 @@ class AddDislike(LoginRequiredMixin, View):
         if is_dislike:
             post.dislikes.remove(request.user)
         return HttpResponseRedirect(request.META['HTTP_REFERER'] + '#' + str(post.id))
-@login_required
-def FavouritesList(request):
-    new = Post.newmanager.filter(favourites=request.user)
-    return render(request, 'accounts/favourites.html', {'new': new})
-@login_required
-def AddFavourites(request, id):
-    post = get_object_or_404(Post, id=id)
-    if post.favourites.filter(id=request.user.id).exists():
-        post.favourites.remove(request.user)
-        messages.success(request, f'Post Is UnMarkaLised :( Maybe It\'s For The Better')
-    else:
-        post.favourites.add(request.user)
-        messages.success(request, f'Post Is MarkaLised! Amazing :D')
-    return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 # COMMENTS HANDLING
 
 class CommentReply(LoginRequiredMixin, View):
     def post(self, request, post_id, id, *args, **kwargs):
-        if request.user.profile.debosited == True:
-            post = Post.objects.get(id=post_id)
-            parent_comment = Comment.objects.get(id=id)
-            form = CommentForm(request.POST)
-            if form.is_valid():
-                new_comment = form.save(commit=False)
-                new_comment.author = request.user
-                new_comment.post = post
-                new_comment.parent = parent_comment
-                new_comment.save()
-            if new_comment.author == new_comment.post.author or new_comment.author == parent_comment.author:
-                pass
-            else:
-                notification = Notification.objects.create(notification_type=2, from_user=request.user, to_user=parent_comment.author, comment=new_comment)
+        post = Post.objects.get(id=post_id)
+        parent_comment = Comment.objects.get(id=id)
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            new_comment = form.save(commit=False)
+            new_comment.author = request.user
+            new_comment.post = post
+            new_comment.parent = parent_comment
+            new_comment.save()
+        if new_comment.author == new_comment.post.author or new_comment.author == parent_comment.author:
+            pass
         else:
-            messages.warning(request, 'You Need To Deposit First')
-            return redirect('home')
+            notification = Notification.objects.create(notification_type=2, from_user=request.user, to_user=parent_comment.author, comment=new_comment)
         return redirect('post-detail', id=post_id)
 class CommentDeleteView(LoginRequiredMixin, View):
     def get(self, request, id, *args, **kwargs):
-        if request.user.profile.debosited == True:
-            comment = Comment.objects.get(id=id)
-            post = comment.post
-            if request.user == comment.author:
-                comment.delete()
-        else:
-            messages.warning(request, 'You Need To Deposit First')
-            return redirect('home')
+        comment = Comment.objects.get(id=id)
+        post = comment.post
+        if request.user == comment.author:
+            comment.delete()
         return redirect('post-detail', id=post.id)
 class CommentEditView(LoginRequiredMixin, View):
     def post(self, request, id, *args, **kwargs):
-        if request.user.profile.debosited == True:
-            comment = Comment.objects.get(id=id)
-            post = comment.post
-            if request.user == comment.author:
-                comment.content = request.POST.get('content')
-                comment.save()
-        else:
-            messages.warning(request, 'You Need To Deposit First')
-            return redirect('home')
+        comment = Comment.objects.get(id=id)
+        post = comment.post
+        if request.user == comment.author:
+            comment.content = request.POST.get('content')
+            comment.save()
         return redirect('post-detail', id=post.id)
 class AddCommentLike(LoginRequiredMixin, View):
     def get(self, request, id, *args, **kwargs):
@@ -350,7 +311,6 @@ def settings(request):
             p_form.name = request.POST.get('name')
             p_form.xmppusername = request.POST.get('xmppusername')
             p_form.xmppserver = request.POST.get('xmppserver')
-            p_form.monero = request.POST.get('monero')
             p_form.bio = request.POST.get('bio')
             p_form.public_key = request.POST.get('public_key')
             p_form.image = request.POST.get('image')
@@ -373,26 +333,19 @@ def settings(request):
                     os.remove(f'keys/{request.user.username}+{request.user.id}.txt')
                     messages.warning(request, "Not A PGP Key")
                     return redirect('profile-update')
-            if p_form.monero == '':
-                profileform.save()
-                messages.success(request, f'your account has been updated')
-                return redirect('profile', username=request.user)
-            elif valid_addr(p_form.monero):
-                profileform.save()
-                messages.success(request, f'your account has been updated')
-                return redirect('profile', username=request.user)
-            else:
-                messages.warning(request, f'monero address isn\'t correct')
-                return redirect('profile-update')
+            profileform.save()
+            messages.success(request, f'your account has been updated')
+            return redirect('profile', username=request.user)
     else:
         p_form = ProfileUpdteForm(instance=request.user.profile)
-    wallet = Wallet.objects.get(user=request.user)
-    context = {'p_form': p_form, 'wallet': wallet,}
+    ver = verification()
+    context = {'p_form': p_form, "ver": ver}
     return render(request, 'posts/settings.html', context)
 class UserDetails(LoginRequiredMixin, View):
     def get(self, request, username, *args, **kwargs):
         user = User.objects.get(username=username)
-        context = {'user': user,}
+        ver = verification()
+        context = {'user': user, "ver": ver}
         return render(request, 'posts/user_details.html', context)
 class ProfileView(LoginRequiredMixin, View):
     def get(self, request, username, *args, **kwargs):
@@ -442,7 +395,8 @@ class RemoveFollower(LoginRequiredMixin, View):
 
 class Search(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'posts/search.html')
+        ver = verification()
+        return render(request, 'posts/search.html', {"ver": ver})
 class SearchResults(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         query = self.request.GET.get('query')
@@ -482,64 +436,50 @@ class SearchResults(LoginRequiredMixin, View):
         commentscount = comments.count()
         postscount = posts.count()
         profilescount = profiles.count()
-        context = {'profilescount': profilescount, 'postscount': postscount, 'commentscount': commentscount,'profiles': profile_list, 'posts': post_list, 'comments': comment_list,}
+        ver = verification()
+        context = {'profilescount': profilescount, "ver": ver, 'postscount': postscount, 'commentscount': commentscount,'profiles': profile_list, 'posts': post_list, 'comments': comment_list,}
         return render(request, 'posts/search_results.html', context)
 
 # NOTIFICATIONS HANDLING
 
 class PostNotification(LoginRequiredMixin, View):
     def get(self, request, notification_id, post_id, *args, **kwargs):
-        if request.user.profile.debosited == True:
-            notification = Notification.objects.get(id=notification_id)
-            post = Post.objects.get(id=post_id)
-            notification.user_has_seen = True
-            notification.save()
-        else:
-            messages.warning(request, 'You Need To Deposit First')
-            return redirect('home')
+        notification = Notification.objects.get(id=notification_id)
+        post = Post.objects.get(id=post_id)
+        notification.user_has_seen = True
+        notification.save()
         return redirect('post-detail', id=post_id)
 class FollowNotification(LoginRequiredMixin, View):
     def get(self, request, notification_id, username, *args, **kwargs):
-        if request.user.profile.debosited == True:
-            notification = Notification.objects.get(id=notification_id)
-            user = User.objects.get(username=username)
-            profile = user.profile
-            notification.user_has_seen = True
-            notification.save()
-        else:
-            messages.warning(request, 'You Need To Deposit First')
-            return redirect('home')
+        notification = Notification.objects.get(id=notification_id)
+        user = User.objects.get(username=username)
+        profile = user.profile
+        notification.user_has_seen = True
+        notification.save()
         return redirect('profile', username=username)
 class RemoveNotification(LoginRequiredMixin, View):
     def get(self, request, notification_id, *args, **kwargs):
-        if request.user.profile.debosited == True:
-            notification = Notification.objects.get(id=notification_id)
-            if notification.to_user == request.user:
-                notification.delete()
-            return redirect('notifications-list')
-        else:
-            messages.warning(request, 'You Need To Deposit First')
-            return redirect('home')
+        notification = Notification.objects.get(id=notification_id)
+        if notification.to_user == request.user:
+            notification.delete()
+        return redirect('notifications-list')
 class ListNotifications(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        if request.user.profile.debosited == True:
-            notifications = Notification.objects.filter(to_user=request.user)
-            page = request.GET.get('page', 1)
-            paginator = Paginator(notifications, 10)
-            try:
-                notifications_list = paginator.page(page)
-            except PageNotAnInteger:
-                notifications_list = paginator.page(1)
-            except EmptyPage:
-                notifications_list = paginator.page(paginator.num_pages)
-            notificationscount = notifications.count()
-            for notification in notifications:
-                notification.user_has_seen = True 
-                notification.save()
-        else:
-            messages.warning(request, 'You Need To Deposit First')
-            return redirect('home')
-        return render(request, "posts/notifications.html", {'notifications': notifications_list, 'notificationscount': notificationscount,})
+        notifications = Notification.objects.filter(to_user=request.user)
+        page = request.GET.get('page', 1)
+        paginator = Paginator(notifications, 10)
+        try:
+            notifications_list = paginator.page(page)
+        except PageNotAnInteger:
+            notifications_list = paginator.page(1)
+        except EmptyPage:
+            notifications_list = paginator.page(paginator.num_pages)
+        notificationscount = notifications.count()
+        for notification in notifications:
+            notification.user_has_seen = True 
+            notification.save()
+        ver = verification()
+        return render(request, "posts/notifications.html", {"ver":ver, 'notifications': notifications_list, 'notificationscount': notificationscount,})
 
 # SECURITY & MONETARY FUNCTIONS HANDLING
 
@@ -550,7 +490,8 @@ class key_set(LoginRequiredMixin, View):
         return render(request, 'posts/set_key.html')
 class factor_conf(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'posts/2fa_conf.html')
+        ver = verification()
+        return render(request, 'posts/2fa_conf.html', {"ver": ver})
 class factor_done(LoginRequiredMixin, View):
     def get(self, request, username, *args, **kwargs):
         user = User.objects.get(username=username)
@@ -571,146 +512,27 @@ class factor_cancel(LoginRequiredMixin, View):
             user.profile.factor_auth = False
             user.save()
             messages.success(request, "2FA Is Disabled")
+        else:
+            messages.warning(request, "YOU ARE A HACKER")
         return redirect('home')
-class profile_complete(LoginRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
-        valid = valid_addr(request.user.profile.rec_addr)
-        if not valid:
-            monero_address = create_addr()
-            profile = request.user.profile
-            profile.rec_addr = monero_address[0]
-            profile.save()
-            context = {
-                'addr': profile.rec_addr,
-            }
-        else:
-            profile = request.user.profile
-            if check_addr(profile.rec_addr):
-                context = {
-                    'addr': profile.rec_addr,
-                }
-            else:
-                monero_address = create_addr()
-                profile = request.user.profile
-                profile.rec_addr = monero_address[0]
-                profile.save()
-                context = {
-                    'addr': profile.rec_addr,
-                }
-        return render(request, 'posts/complete_profile.html', context)
-@method_decorator(csrf_exempt, name='dispatch')
-class confirm_deposit(LoginRequiredMixin, View):
-    #def get(self, request, *args, **kwargs):
-    def post(self, request, address, *args, **kwargs):
-        txhash = request.POST.get('txhash')
-        loc_addr = request.user.profile.rec_addr
-        amount = request.POST.get('amount')
-        if receive(amount, loc_addr, txhash):
-            if check_conf(loc_addr, txhash, amount):
-                profile = request.user.profile
-                profile.debosited = True
-                profile.save()
-                transaction = Txs.objects.create(sender=request.user, amnt=float(amount), rec_addr=loc_addr, confs=check_conf_number(loc_addr, txhash, float(amount)), hash=txhash, types='deposit')
-                wallet = Wallet.objects.get(user=request.user)
-                wallet.balance += float(amount)
-                messages.success(request, 'Your Transaction, Is Received, Your Account Is Activated! ')
-                return redirect('continue-tx', id=transaction.id)
-            else:
-                transaction = Txs.objects.create(sender=request.user, amnt=float(amount), rec_addr=loc_addr, confs=check_conf_number(loc_addr, txhash, float(amount)), hash=txhash, types='deposit')
-                messages.warning(request, 'Amount Received, but waiting for at least 5 confirmations! check the transaction in your settings')
-                return redirect('continue-tx', id=transaction.id)
-        else:
-            messages.warning(request, 'nothing received, try again')
-        return render(request, 'posts/confirm_deposit.html')
-class check_deposit(LoginRequiredMixin, View):
-    def get(self, request, id, *args, **kwargs):
-        transaction = Txs.objects.filter(id=id)
-        wallets = Wallet.objects.get(user=request.user)
-        if transaction.exists():
-            tx = Txs.objects.get(id=id)
-            if request.user == tx.sender:
-                if tx.types != 'TIP':
-                    tx.confs = check_conf_number(tx.rec_addr, tx.hash, tx.amnt)
-                    tx.save()
-                if tx.confs >= 5:
-                    if request.user.profile.debosited == False:
-                        profile = request.user.profile
-                        profile.debosited = True
-                        profile.save()
-                        tx.types == 'deposit'
-                        tx.save()
-                    else:
-                        pass
-                    if Wallet.objects.filter(trx=tx, user=request.user).exists():
-                        pass
-                    else:
-                        wallets.balance += float(tx.amnt)
-                        wallets.trx.add(tx)
-                        wallets.save()
-            else:
-                messages.warning(request, 'TX Doesn\'t Exist')
-                return redirect('home')
-        else:
-            messages.warning(request, 'TX Doesn\'t Exist')
-            return redirect('home')
-        return render(request, 'posts/continue_tx.html', {'tx': tx,})
-class list_txs(LoginRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
-        user = request.user
-        transactions = Txs.objects.filter(sender=user)
-        tips = Txs.objects.filter(receiver=user)
-        wallet = Wallet.objects.get(user=user)
-        return render(request, 'posts/list_txs.html', {'txs': transactions, 'tips': tips, 'wallet': wallet,})
-class tip_user(LoginRequiredMixin, View):
-    def get(self, request, username, *args, **kwargs):
-        if User.objects.filter(username=username).exists():
-            return render(request, 'posts/tip_user.html', {'touser':username,})
-        else:
-            messages.warning(request, 'User Doesn\'t Exist')
-            return redirect('home')
-    def post(self, request, username, *args, **kwargs):
-        amount = float(request.POST.get('amnt'))
-        fromuser = request.user
-        touser = User.objects.get(username=username)
-        fromwallet = Wallet.objects.get(user=request.user)
-        msg = request.POST.get('txmessage')
-        mes = False
-        if len(msg) > 2:
-            mes = True
-        if fromwallet.balance > amount:
-            if Wallet.objects.filter(user=touser).exists():
-                towallet =  Wallet.objects.get(user=touser)
-                fromwallet.balance -= amount
-                towallet.balance += amount
-                fromwallet.save()
-                towallet.save()
-                transaction = Txs.objects.create(confs=10, receiver=touser, sender=fromuser, amnt=amount, hash="INTERNAL", types='TIP', rec_addr='INTERNAL')
-                if mes == True:
-                    transaction.message = msg
-                transaction.save()
-            else:
-                messages.warning(request, 'NONE Existent User')
-                return redirect('home')
-        else:
-            messages.warning(request, 'Insufficient Funds!, Please Deposit into your account or tip the user off platform')
-            return redirect('home')
-        return redirect('continue-tx', id=transaction.id)
 
 # END-TO-END ENCRYPTION FUNCTIONALITIES HANDLING
 
 class notes(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
+        ver = verification()
         encprivkey = request.user.profile.privatekey
         pubkey = request.user.profile.publickey
         notes = Notes.objects.filter(author=request.user).order_by('-date')
-        response = render(request, 'posts/notes.html', {'privkey': encprivkey, 'notes': notes, 'pubkey': pubkey,})
+        response = render(request, 'posts/notes.html', {'privkey': encprivkey, 'notes': notes, 'pubkey': pubkey,"ver": ver})
         return response
     def post(self, request, *args, **kwargs):
+        ver = verification()
         notes = Notes.objects.filter(author=request.user).order_by('-date')
         Notes.objects.create(author=request.user, content=request.POST.get('note'))
         encprivkey = request.user.profile.privatekey
         pubkey = request.user.profile.publickey
-        response = render(request, 'posts/notes.html', {'privkey': encprivkey, 'notes': notes, 'pubkey': pubkey,})
+        response = render(request, 'posts/notes.html', {'privkey': encprivkey, 'notes': notes, 'pubkey': pubkey,"ver": ver})
         return response
 class del_note(LoginRequiredMixin, View):
     def post(self, request, id, *args, **kwargs):
@@ -723,7 +545,8 @@ class del_note(LoginRequiredMixin, View):
 class messages_list(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         partners = Chats.objects.get(user=request.user)
-        context = {'partners': partners,}
+        ver = verification()
+        context = {'partners': partners, "ver": ver}
         return render(request, 'posts/messages_list.html', context)
 class shared_key(LoginRequiredMixin, View):
     def get(self, request, touser, *args, **kwargs):
@@ -759,6 +582,7 @@ class shared_key(LoginRequiredMixin, View):
         return response
 class messages_view(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
+        ver = verification()
         if User.objects.filter(username=request.GET.get('username')).exists():
             touser = User.objects.get(username=request.GET.get('username'))
             msgs = Message.objects.filter(Q(to=request.user, author=touser)|Q(author=request.user, to=touser)).order_by('date')
@@ -773,12 +597,13 @@ class messages_view(LoginRequiredMixin, View):
                 return redirect('set-sharedkey', touser=touser)
             encprivkey = request.user.profile.privatekey
             
-            context = {'msgs': msgs, 'privkey': encprivkey, 'sharedkey': shkey,}
+            context = {'msgs': msgs, 'privkey': encprivkey, 'sharedkey': shkey, "ver": ver}
         else:
             messages.warning(request, 'User Doesn\'t Exist')
             return redirect('messages-list')
         return render(request, 'posts/messages.html', context)
     def post(self, request, *args, **kwargs):
+        ver = verification()
         if User.objects.filter(username=request.GET.get('username')).exists():
             touser = User.objects.get(username=request.GET.get('username'))
             fromuser = request.user
@@ -800,22 +625,20 @@ class messages_view(LoginRequiredMixin, View):
             except:
                 return redirect('set-sharedkey', touser=touser)
 
-            context = {'msgs': msgs, 'privkey': encprivkey, 'sharedkey': shkey,}
+            context = {'msgs': msgs, 'privkey': encprivkey, 'sharedkey': shkey, "ver": ver}
         else:
             messages.warning(request, 'User Doesn\'t Exist')
             return redirect('messages-list')
         return render(request, 'posts/messages.html', context)
-
-# STORE HANDLING
-
 
 
 # OTHER
 
 class AboutView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'posts/about.html')
+        ver = verification()
+        return render(request, 'posts/about.html', {"ver": ver})
 class more_view(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        w = Wallet.objects.get(user=request.user)
-        return render(request, 'posts/more_temp.html', {'w':w,})
+        ver = verification()
+        return render(request, 'posts/more_temp.html', {"ver": ver})

@@ -10,7 +10,6 @@ urlpatterns = [
     path('post/form/create/', PostCreateView.as_view(), name='post-create'),
     path('post/delete/<str:id>/', PostDeleteView.as_view(), name='post-delete'),
     path('post/add/like/<str:id>/', AddLike.as_view(), name='add-like'),
-    path('fav/add/<str:id>/', AddFavourites, name='add-fav'),
     path('post/remove/like/<str:id>/', AddDislike.as_view(), name='add-dislike'),
     
     # COMMENTS HANDLING
@@ -46,9 +45,6 @@ urlpatterns = [
     
     # SECURITY & MONETARY FUNCTIONALITIES HANDLING
     
-    path('complete/profile/', profile_complete.as_view(), name='complete-profile'),
-    path('deposit/confirm/<str:address>/', confirm_deposit.as_view(), name='conf-deposit'),
-    path('deposit/continue/<str:id>/', check_deposit.as_view(), name='continue-tx'),
     path('set/key/', key_set.as_view(), name='set-key'),
     path('2fa/conf/', factor_conf.as_view(), name='2fa-conf'),
     path('2fa/conf/done/<str:username>/', factor_done.as_view(), name='2fa-done'),
@@ -61,8 +57,6 @@ urlpatterns = [
     path('list/messages/', messages_list.as_view(), name='messages-list'),
     path('message/', messages_view.as_view(), name='messages'),
     path('delete/note/<str:id>', del_note.as_view(), name='delete-note'),
-    path('tip/user/<str:username>', tip_user.as_view(), name='tip-user'),
-    path('list/txs/', list_txs.as_view(), name='txs-list'),
     
     # OTHER
 

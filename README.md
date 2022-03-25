@@ -4,7 +4,7 @@
 ## The Main Idea:
 Can you imagine a centralized, but privacy-respecting social network? One that is modern, easy to use, fast and provides security and protection for everyone. That is why we created PrivaLise!
 
-2 factor authentication via PGP, monero integration, End-To-End Encryption, no associated personal information to hack... To Put It Simply: The Web App will not record anything about its users. <br/>
+2 factor authentication via PGP, End-To-End Encryption, no associated personal information to hack... To Put It Simply: The Web App will not record anything about its users. <br/>
 We don't use any 3rd party software, such as google APIs, google analytics, any FAANG framework (React, Vue...), so rest assured that you will be totally anonymous :D
 ## The Technology Behind It:
    * Python 3.10
@@ -19,8 +19,6 @@ We don't use any 3rd party software, such as google APIs, google analytics, any 
    * 2 Factor Authentication Via PGP
    * End-To-End Encryption For users Notes, Messages.
    * No Personal Info For Registration
-   * We Added A Mandatory 0.004 XMR Deposit For Every User To Combat Spam, Users Can Withdraw It If They Leave The Platform (It's Testnet not a real cryptocurrency)
-   * User-To-User Payments Using Monero
 ## The front-end
 The frontend theme is made by [margual56](https://github.com/margual56)
 

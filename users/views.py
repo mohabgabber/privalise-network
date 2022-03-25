@@ -22,22 +22,20 @@ def register(request):
             form.username = request.POST.get('username')
             form.password1 = request.POST.get('password1')
             form.password2 = request.POST.get('password2')
-            try:
-                form.save()
-            except:
-                messages.warning(request, f'there is an error')
-                return render(request, 'users/register.html', {"form": form})
+            form.save()
             try:
                 new_user = authenticate(username=form.cleaned_data['username'],password=form.cleaned_data['password1'],)
                 login(request, new_user)
             except:
                 messages.warning(request, f'there is an error')
-                return render(request, 'users/register.html', {"form": form})
+                return render(request, 'users/register.html', {"form": form, "ver": ver,})
             profile = request.user.profile
             profile.privatekey = request.POST.get('privatekey')
             profile.publickey = request.POST.get('publickey')
             profile.save()
-            return redirect('complete-profile')
+            return redirect('home')
+        else:
+            messages.warning(request, "wrong Captcha")
     else:
        form = UserRegister()
        ver = verification()
