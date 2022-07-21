@@ -3,7 +3,6 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from .models import reports
 from django.views import View
 from django.http import HttpResponseRedirect
-from monero.address import address 
 from django.contrib import messages
 from django.db.models import Q
 from django.contrib.auth.models import User
