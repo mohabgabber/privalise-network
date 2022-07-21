@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Post, Comment, Profile, Notification, Tag, Notes, Message, Keys, Chats
 from django.views import View
-from cryptography.fernet import Fernet
 from django.http import HttpResponseRedirect
 from django.contrib.auth.forms import UserCreationForm
 from .forms import ProfileUpdteForm, CommentForm, PostForm

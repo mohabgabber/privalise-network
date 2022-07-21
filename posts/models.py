@@ -138,15 +138,6 @@ class Notification(models.Model):
     date = models.DateTimeField(default=timezone.now)
     user_has_seen = models.BooleanField(default=False)
 
-'''
-class Hashtag(models.Model):
-    title = models.CharField(max_length=255, blank=True, null=True, unique=True)
-    posts = models.ManyToManyField(Post)
-    date = models.DateTimeField(default=timezone.now)
-
-    def __str__(self):
-        return self.title
-'''
 
 class Notes(models.Model):
     id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
